@@ -1,0 +1,56 @@
+{
+	"info": {
+		"_postman_id": "64cd2e2d-116f-4b67-8793-f5ae52471f33",
+		"name": "staucktion",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26266539"
+	},
+	"item": [
+		{
+			"name": "health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "photo",
+							"type": "file",
+							"src": "postman-cloud:///1efa6675-b333-46a0-9300-ee6d3ae9035a"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"upload"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
