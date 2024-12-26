@@ -61,9 +61,9 @@ class PhotoService {
       await image.composite(compositeInput).toFile(outputPath);
     } catch (error: any) {
       CustomError.builder()
-        .setErrorType("Prisma Error")
+        .setErrorType("Server Error")
         .setClassName(this.constructor.name)
-        .setMethodName("getAccountFromCard")
+        .setMethodName("addTextWatermark")
         .setError(error)
         .build()
         .throwError();

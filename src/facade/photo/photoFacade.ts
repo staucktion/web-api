@@ -1,24 +1,26 @@
 import { Request, Response } from "express";
 import Config from "src/config/Config";
 import PhotoService from "src/service/photo/PhotoService";
+import PhotoValidation from "src/validation/photo/PhotoValidation";
 
 class PhotoFacade {
   private photoService: PhotoService;
+  private photoValidation: PhotoValidation;
 
   constructor() {
     this.photoService = new PhotoService();
+    this.photoValidation = new PhotoValidation();
   }
 
   public async uploadPhoto(req: Request, res: Response): Promise<Response> {
-    // validate input photo
-    if (!req.file) {
-      return res.status(400).send("No file uploaded.");
+    let photoSource: string, photoName: string;
+
+    // get valid body from request
+    try {
+      ({ photoSource, photoName } = await this.photoValidation.uploadPhotoRequest(req));
+    } catch (e: any) {
+      return res.status(400).send({ error: e.message });
     }
-
-    const photoSource = req.file.destination;
-    const photoName = req.file.filename;
-
-    // todo validation kısmına alınıcak
 
     // Add a watermark to the uploaded photo
     try {
