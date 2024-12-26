@@ -1,12 +1,5 @@
-import express from "express";
-import setupRoutes from "./src/route/route";
-import envVariables from "src/env/envVariables";
+import App from "src/app/App";
 
-const app = express();
+const app = new App();
 
-// Setup routes
-setupRoutes(app);
-
-app.listen(envVariables.PORT, () => {
-  console.log(`API running at: http://localhost:${envVariables.PORT}`);
-});
+app.listen();

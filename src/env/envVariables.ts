@@ -1,11 +1,16 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const envVariables = {
-  PORT: process.env.PORT || 3000,
-  WATERMARK_FONT_SIZE: Number(process.env.WATERMARK_FONT_SIZE || 10),
-  WATERMARK_TRANSPARENCY: Number(process.env.WATERMARK_TRANSPARENCY || 0.8),
-  WATERMARK_TEXT: process.env.WATERMARK_TEXT || "STAUCKTION",
-};
+class EnvVairables {
+  static port = process.env.PORT || 8082;
 
-export default envVariables;
+  static mode = process.env.MODE || "dev";
+
+  static watermark = {
+    fontSize: Number(process.env.WATERMARK_FONT_SIZE || 10),
+    transparency: Number(process.env.WATERMARK_TRANSPARENCY || 0.8),
+    text: process.env.WATERMARK_TEXT || "STAUCKTION",
+  };
+}
+
+export default EnvVairables;

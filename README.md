@@ -1,3 +1,7 @@
+### Configure env variables
+According to mode:
+Rename `.env.prod.example` or `.env.dev.example` as `.env` with proper configurations.
+
 ### Install dependencies
 npm i
 
