@@ -5,6 +5,7 @@ class EnvVariables {
   static port = process.env.PORT || 8082;
   static mode = process.env.MODE || "dev";
   static log = process.env.LOG === "true";
+  static multerFileSize = Number(process.env.MULTER_FILE_SIZE || 100000000);
 
   static watermark = {
     fontSize: Number(process.env.WATERMARK_FONT_SIZE || 10),

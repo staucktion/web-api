@@ -1,6 +1,7 @@
 import multer, { StorageEngine } from "multer";
 import path from "path";
 import DateUtil from "./DateUtil";
+import Config from "src/config/Config";
 
 class MulterUtil {
   private multerStorage: StorageEngine;
@@ -20,7 +21,7 @@ class MulterUtil {
 
     this.upload = multer({
       storage: this.multerStorage,
-      limits: { fileSize: 2000000 }, // Max file size: 2MB
+      limits: { fileSize: Config.multerFileSize },
     });
   }
 
