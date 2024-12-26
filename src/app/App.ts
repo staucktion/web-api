@@ -16,7 +16,7 @@ class App {
 
   private initializeMiddlewares(): void {
     // log incoming requests
-    this.app.use(Logger.logRequest);
+    if (Config.log) this.app.use(Logger.logRequest);
 
     // parse JSON request body
     this.app.use(express.json());

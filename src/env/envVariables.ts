@@ -3,8 +3,8 @@ dotenv.config();
 
 class EnvVariables {
   static port = process.env.PORT || 8082;
-
   static mode = process.env.MODE || "dev";
+  static log = process.env.LOG === "true";
 
   static watermark = {
     fontSize: Number(process.env.WATERMARK_FONT_SIZE || 10),
