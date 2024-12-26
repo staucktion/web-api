@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-class EnvVairables {
+class EnvVariables {
   static port = process.env.PORT || 8082;
 
   static mode = process.env.MODE || "dev";
@@ -13,4 +13,4 @@ class EnvVairables {
   };
 }
 
-export default EnvVairables;
+export default EnvVariables;
