@@ -1,30 +1,42 @@
-import photoService from "../../service/photo/photoService";
-import envVariables from "src/env/envVariables";
+import { Request, Response } from "express";
+import Config from "src/config/Config";
+import PhotoService from "src/service/photo/PhotoService";
+import PhotoValidation from "src/validation/photo/PhotoValidation";
 
-const uploadPhoto = async (req, res) => {
-  // photo validation
-  if (!req.file) {
-    return res.status(400).send("No file uploaded.");
+class PhotoFacade {
+  private photoService: PhotoService;
+  private photoValidation: PhotoValidation;
+
+  constructor() {
+    this.photoService = new PhotoService();
+    this.photoValidation = new PhotoValidation();
   }
 
-  const photoSource = req.file.destination;
-  const photoName = req.file.filename;
+  public async uploadPhoto(req: Request, res: Response): Promise<Response> {
+    let photoSource: string, photoName: string;
 
-  try {
-    await photoService.addTextWatermark(
-      `${photoSource}${photoName}`,
-      `./storage/watermark/${photoName}`,
-      envVariables.WATERMARK_TEXT,
-      envVariables.WATERMARK_FONT_SIZE,
-      envVariables.WATERMARK_TRANSPARENCY
-    );
-  } catch (e: any) {
-    return res.status(500).send(e.message);
+    // get valid body from request
+    try {
+      ({ photoSource, photoName } = await this.photoValidation.uploadPhotoRequest(req));
+    } catch (e: any) {
+      return res.status(400).send({ error: e.message });
+    }
+
+    // Add a watermark to the uploaded photo
+    try {
+      await this.photoService.addTextWatermark(
+        `${photoSource}${photoName}`,
+        `./storage/watermark/${photoName}`,
+        Config.watermark.text,
+        Config.watermark.fontSize,
+        Config.watermark.transparency
+      );
+    } catch (error: any) {
+      return res.status(500).send(error.message);
+    }
+
+    return res.status(200).send();
   }
+}
 
-  return res.status(200).send();
-};
-
-export default {
-  uploadPhoto,
-};
+export default PhotoFacade;
