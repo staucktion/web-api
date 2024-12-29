@@ -50,11 +50,11 @@ class CustomError {
 
 	// nested builder class
 	private static Builder = class {
-		private errorType: string;
-		private className: string;
-		private methodName: string;
-		private error: Error;
-		private message: string;
+		private errorType: string | undefined;
+		private className: string | undefined;
+		private methodName: string | undefined;
+		private error: Error | undefined;
+		private message: string | undefined;
 
 		public setErrorType(errorType: string): this {
 			this.errorType = errorType;
@@ -82,6 +82,12 @@ class CustomError {
 		}
 
 		public build(): CustomError {
+			if (!this.errorType) throw new Error("errorType is required");
+			if (!this.className) throw new Error("className is required");
+			if (!this.methodName) throw new Error("methodName is required");
+			if (!this.error) throw new Error("error is required");
+			if (!this.message) throw new Error("message is required");
+
 			return new CustomError(
 				this.errorType,
 				this.className,
