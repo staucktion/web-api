@@ -1,5 +1,5 @@
 import express from "express";
-import FrontendEndpoint from "src/endpoint/frontend/FrontendEntpoint";
+import FrontendEndpoint from "src/endpoint/frontend/FrontendEndpoint";
 import HealthEndpoint from "src/endpoint/health/HealthEndpoint";
 import MailEndpoint from "src/endpoint/mail/MailEndpoint";
 import PhotoEndpoint from "src/endpoint/photo/PhotoEndpoint";
