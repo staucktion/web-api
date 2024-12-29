@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import Config from "src/config/Config";
 import PhotoService from "src/service/photo/photoService";
 import PhotoValidation from "src/validation/photo/PhotoValidation";
+import * as path from "path";
+import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 
 class PhotoFacade {
 	private photoService: PhotoService;
@@ -27,7 +29,7 @@ class PhotoFacade {
 		try {
 			await this.photoService.addTextWatermark(
 				`${photoSource}${photoName}`,
-				`./storage/watermark/${photoName}`,
+				path.join(WATERMARK_PHOTO_DIR, photoName),
 				Config.watermark.text,
 				Config.watermark.fontSize,
 				Config.watermark.transparency

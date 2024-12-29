@@ -2,6 +2,7 @@ import multer, { StorageEngine } from "multer";
 import path from "path";
 import DateUtil from "./dateUtil";
 import Config from "src/config/Config";
+import { ORIGINAL_PHOTO_DIR } from "src/constants/photoConstants";
 
 class MulterUtil {
 	private multerStorage: StorageEngine;
@@ -9,10 +10,10 @@ class MulterUtil {
 
 	constructor() {
 		this.multerStorage = multer.diskStorage({
-			destination(req, file, cb) {
-				cb(null, "./storage/upload/");
+			destination(_req, _file, cb) {
+				cb(null, ORIGINAL_PHOTO_DIR);
 			},
-			filename(req, file, cb) {
+			filename(_req, file, cb) {
 				const fileExtension = path.extname(file.originalname);
 				const uniqueSuffix = DateUtil.format(new Date());
 				cb(null, uniqueSuffix + fileExtension);
