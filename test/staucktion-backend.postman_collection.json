@@ -129,7 +129,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"photoName\": \"2024-12-29-04-39-911\",\r\n    \"action\": \"Approve Purchase\"\r\n}",
+							"raw": "{\r\n    \"photoName\": \"2024-12-29-06-00-336.png\",\r\n    \"action\": \"Approve Purchase\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
