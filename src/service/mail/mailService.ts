@@ -1,7 +1,7 @@
 import CustomError from "src/error/CustomError";
 import nodemailer from "nodemailer";
 import Config from "src/config/Config";
-import { MailAction } from "src/types/mail/mailTypes";
+import { MailAction } from "src/types/mailTypes";
 
 let transporter: nodemailer.Transporter | null = null;
 

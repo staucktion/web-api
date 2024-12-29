@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import MailService from "src/service/mail/mailService";
-import { MailAction } from "src/types/mail/mailTypes";
+import { MailAction } from "src/types/mailTypes";
 import MailValidation from "src/validation/mail/MailValidation";
 
 class MailFacade {

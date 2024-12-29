@@ -1,6 +1,6 @@
 import { Request } from "express";
 import CustomError from "src/error/CustomError";
-import { MailAction } from "src/types/mail/mailTypes";
+import { MailAction } from "src/types/mailTypes";
 import { isValidMailAction } from "src/util/mailUtil";
 
 class MailValidation {
