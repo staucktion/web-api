@@ -3,7 +3,7 @@ import CustomError from "src/error/CustomError";
 
 declare module "express" {
 	interface Request {
-		file: { destination: string; filename: string };
+		file?: { destination: string; filename: string };
 	}
 }
 
@@ -20,6 +20,9 @@ class PhotoValidation {
 				.setMessage("request does not include photo file")
 				.build()
 				.throwError();
+			throw Error(
+				"This throw is unreachable, but required for compilation at the moment due to CustomError.throwError() being a void function."
+			);
 		}
 
 		const photoSource = req.file.destination;
