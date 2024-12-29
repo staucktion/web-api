@@ -1,4 +1,4 @@
 export enum MailAction {
-	APPROVE_PURCHES = "Approve Purchase",
+	APPROVE_PURCHASE = "Approve Purchase",
 	REJECT_PURCHASE = "Reject Purchase",
 }

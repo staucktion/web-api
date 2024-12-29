@@ -75,7 +75,7 @@ class MailService {
 				text: `The selected action for image '${photoName}' is: ${action}`,
 			};
 
-			if (action === MailAction.APPROVE_PURCHES) {
+			if (action === MailAction.APPROVE_PURCHASE) {
 				mailOptions.attachments = [
 					{
 						filename: `original-${photoName}`,
