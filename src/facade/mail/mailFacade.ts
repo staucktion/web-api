@@ -28,7 +28,7 @@ class MailFacade {
 			return res.status(500).send(error.message);
 		}
 
-		return res.status(200).send();
+		return res.status(200).send({ message: "Email sent successfully" });
 	}
 }
 
