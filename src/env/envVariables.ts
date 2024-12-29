@@ -12,6 +12,13 @@ class EnvVariables {
 		transparency: Number(process.env.WATERMARK_TRANSPARENCY || 0.8),
 		text: process.env.WATERMARK_TEXT || "STAUCKTION",
 	};
+
+	static email = {
+		to: process.env.EMAIL_TO || "",
+		from: process.env.EMAIL_FROM || "",
+		pass: process.env.EMAIL_PASS || "",
+		service: process.env.EMAIL_SERVICE || "",
+	};
 }
 
 export default EnvVariables;

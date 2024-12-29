@@ -9,8 +9,8 @@ class CustomError {
 		errorType: string,
 		className: string,
 		methodName: string,
-		error: Error,
-		message: string
+		message: string,
+		error?: Error
 	) {
 		this.errorType = errorType;
 		this.className = className;
@@ -85,15 +85,14 @@ class CustomError {
 			if (!this.errorType) throw new Error("errorType is required");
 			if (!this.className) throw new Error("className is required");
 			if (!this.methodName) throw new Error("methodName is required");
-			if (!this.error) throw new Error("error is required");
 			if (!this.message) throw new Error("message is required");
 
 			return new CustomError(
 				this.errorType,
 				this.className,
 				this.methodName,
-				this.error,
-				this.message
+				this.message,
+				this.error
 			);
 		}
 	};

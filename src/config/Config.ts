@@ -7,6 +7,8 @@ class Config {
 	static multerFileSize = EnvVariables.multerFileSize;
 
 	static watermark = { ...EnvVariables.watermark };
+
+	static email = { ...EnvVariables.email };
 }
 
 export default Config;
