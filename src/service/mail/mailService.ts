@@ -43,7 +43,7 @@ class MailService {
 
 		try {
 			const mailOptions = {
-				from: Config.email.from,
+				from: Config.email.from, // TODO: maybe also add name alias here
 				to: Config.email.to,
 				subject: "ST{AU}CKTION: Action Selected",
 				text: `The selected action is: ${action}`,
