@@ -14,7 +14,6 @@ class EnvVariables {
 	};
 
 	static email = {
-		to: process.env.EMAIL_TO || "",
 		from: process.env.EMAIL_FROM || "",
 		pass: process.env.EMAIL_PASS || "",
 		service: process.env.EMAIL_SERVICE || "",

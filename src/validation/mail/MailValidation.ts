@@ -3,11 +3,13 @@ import CustomError from "src/error/CustomError";
 import { MailAction } from "src/types/mailTypes";
 import { isValidMailAction } from "src/util/mailUtil";
 
+const mailRegex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/);
+
 class MailValidation {
 	public async sendMailRequest(
 		req: Request
-	): Promise<{ photoName: string; action: MailAction }> {
-		const { photoName, action } = req.body;
+	): Promise<{ photoName: string; action: MailAction; email: string }> {
+		const { photoName, action, email } = req.body;
 
 		if (!photoName) {
 			CustomError.builder()
@@ -29,6 +31,26 @@ class MailValidation {
 				.throwError();
 		}
 
+		if (!email) {
+			CustomError.builder()
+				.setErrorType("Input Validation Error")
+				.setClassName(this.constructor.name)
+				.setMethodName("sendMailRequest")
+				.setMessage("request does not include email")
+				.build()
+				.throwError();
+		}
+
+		if (!mailRegex.test(email)) {
+			CustomError.builder()
+				.setErrorType("Input Validation Error")
+				.setClassName(this.constructor.name)
+				.setMethodName("sendMailRequest")
+				.setMessage("email is not valid")
+				.build()
+				.throwError();
+		}
+
 		if (!isValidMailAction(action)) {
 			CustomError.builder()
 				.setErrorType("Input Validation Error")
@@ -39,7 +61,7 @@ class MailValidation {
 				.throwError();
 		}
 
-		return { photoName, action };
+		return { photoName, action, email };
 	}
 }
 

@@ -9,12 +9,7 @@ import { ORIGINAL_PHOTO_DIR } from "src/constants/photoConstants";
 let transporter: nodemailer.Transporter | null = null;
 
 if (
-	[
-		Config.email.to,
-		Config.email.from,
-		Config.email.pass,
-		Config.email.service,
-	].every(Boolean)
+	[Config.email.from, Config.email.pass, Config.email.service].every(Boolean)
 ) {
 	transporter = nodemailer.createTransport({
 		service: Config.email.service,
@@ -32,7 +27,8 @@ if (
 class MailService {
 	public async sendMail(
 		photoName: string,
-		action: MailAction
+		action: MailAction,
+		receiverEmail: string
 	): Promise<void> {
 		if (!transporter) {
 			CustomError.builder()
@@ -70,7 +66,7 @@ class MailService {
 
 			const mailOptions: nodemailer.SendMailOptions = {
 				from: `ST{AU}CKTION <${Config.email.from}>`,
-				to: Config.email.to,
+				to: receiverEmail,
 				subject,
 				text: `The selected action for image '${photoName}' is: ${action}`,
 			};

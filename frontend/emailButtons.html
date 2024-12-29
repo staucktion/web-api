@@ -31,13 +31,20 @@
 			document.querySelector("#originalImage").src = imgPath;
 			document.querySelector("#photoName").textContent = photoName;
 
+			let email = localStorage.getItem("email");
+			const emailRegex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/);
+			while (!email || !emailRegex.test(email)) {
+				email = prompt("Please enter your email address:");
+				localStorage.setItem("email", email);
+			}
+
 			function sendAction(action) {
 				fetch("/mail/send", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({ action, photoName }),
+					body: JSON.stringify({ action, photoName, email }),
 				})
 					.then((response) => {
 						if (response.ok) {
