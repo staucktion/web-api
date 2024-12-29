@@ -77,6 +77,45 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photo/list",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photo",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "view",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photo/view/static/2024-12-29-04-39-911.jpg",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photo",
+								"view",
+								"static",
+								"2024-12-29-04-39-911.jpg"
+							]
+						},
+						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
+					},
+					"response": []
 				}
 			]
 		},
