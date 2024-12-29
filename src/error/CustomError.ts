@@ -3,14 +3,14 @@ class CustomError {
 	private readonly className: string;
 	private readonly methodName: string;
 	private readonly error: any;
-	private readonly message: string;
+	private readonly message?: string;
 
 	private constructor(
 		errorType: string,
 		className: string,
 		methodName: string,
-		message: string,
-		error?: Error
+		error?: Error,
+		message?: string
 	) {
 		this.errorType = errorType;
 		this.className = className;
@@ -85,14 +85,13 @@ class CustomError {
 			if (!this.errorType) throw new Error("errorType is required");
 			if (!this.className) throw new Error("className is required");
 			if (!this.methodName) throw new Error("methodName is required");
-			if (!this.message) throw new Error("message is required");
 
 			return new CustomError(
 				this.errorType,
 				this.className,
 				this.methodName,
-				this.message,
-				this.error
+				this.error,
+				this.message
 			);
 		}
 	};
