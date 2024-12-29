@@ -2,6 +2,9 @@ import CustomError from "src/error/CustomError";
 import nodemailer from "nodemailer";
 import Config from "src/config/Config";
 import { MailAction } from "src/types/mailTypes";
+import * as path from "path";
+import * as fs from "fs";
+import { ORIGINAL_PHOTO_DIR } from "src/constants/photoConstants";
 
 let transporter: nodemailer.Transporter | null = null;
 
@@ -44,6 +47,19 @@ class MailService {
 			);
 		}
 
+		const photoPath = path.join(ORIGINAL_PHOTO_DIR, photoName);
+		const photoExists = fs.existsSync(photoPath);
+
+		if (!photoExists) {
+			CustomError.builder()
+				.setErrorType("Input Validation Error")
+				.setClassName(this.constructor.name)
+				.setMethodName("sendMail")
+				.setMessage("Requested photo does not exist")
+				.build()
+				.throwError();
+		}
+
 		try {
 			let subject = `Purchase ${action.split(" ")[0]}`;
 			if (subject.endsWith("e")) {
@@ -52,12 +68,22 @@ class MailService {
 				subject += "ed"; // reject -> rejected
 			}
 
-			const mailOptions = {
+			const mailOptions: nodemailer.SendMailOptions = {
 				from: `ST{AU}CKTION <${Config.email.from}>`,
 				to: Config.email.to,
 				subject,
 				text: `The selected action for image '${photoName}' is: ${action}`,
 			};
+
+			if (action === MailAction.APPROVE_PURCHES) {
+				mailOptions.attachments = [
+					{
+						filename: `original-${photoName}`,
+						path: photoPath,
+					},
+				];
+				mailOptions.text += "\n\nThe image you purchased is attached.";
+			}
 
 			transporter.sendMail(mailOptions, (error, info) => {
 				if (error) {
