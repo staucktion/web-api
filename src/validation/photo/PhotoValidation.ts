@@ -1,8 +1,15 @@
+import { Request } from "express";
 import CustomError from "src/error/CustomError";
+
+declare module "express" {
+	interface Request {
+		file: { destination: string; filename: string };
+	}
+}
 
 class PhotoValidation {
 	public async uploadPhotoRequest(
-		req: any
+		req: Request
 	): Promise<{ photoSource: string; photoName: string }> {
 		// validate input photo
 		if (!req.file) {
