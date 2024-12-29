@@ -16,8 +16,8 @@ class PhotoValidation {
 			CustomError.builder()
 				.setErrorType("Input Validation Error")
 				.setClassName(this.constructor.name)
-				.setMethodName("getAccountFromCardRequest")
-				.setMessage("request not include photo file")
+				.setMethodName("uploadPhotoRequest")
+				.setMessage("request does not include photo file")
 				.build()
 				.throwError();
 		}
