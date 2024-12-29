@@ -25,7 +25,7 @@ class PhotoService {
           .watermark {
             fill: rgba(255, 255, 255, ${opacity}); /* White text with opacity */
             font-size: ${fontSize}px;
-            font-family: Arial, sans-serif;
+            font-family: sans-serif;
             font-weight: bold;
           }
         </style>
