@@ -13,17 +13,19 @@ class MailFacade {
 	}
 
 	public async sendMail(req: Request, res: Response): Promise<Response> {
-		let action: MailAction;
+		let photoName: string, action: MailAction;
 
 		// get valid body from request
 		try {
-			action = (await this.mailValidation.sendMailRequest(req)).action;
+			const validated = await this.mailValidation.sendMailRequest(req);
+			action = validated.action;
+			photoName = validated.photoName;
 		} catch (e: any) {
 			return res.status(400).send({ error: e.message });
 		}
 
 		try {
-			await this.mailService.sendMail(action);
+			await this.mailService.sendMail(photoName, action);
 		} catch (error: any) {
 			return res.status(500).send(error.message);
 		}

@@ -27,7 +27,10 @@ if (
 }
 
 class MailService {
-	public async sendMail(action: MailAction): Promise<void> {
+	public async sendMail(
+		photoName: string,
+		action: MailAction
+	): Promise<void> {
 		if (!transporter) {
 			CustomError.builder()
 				.setErrorType("Server Error")
@@ -46,7 +49,7 @@ class MailService {
 				from: Config.email.from, // TODO: maybe also add name alias here
 				to: Config.email.to,
 				subject: "ST{AU}CKTION: Action Selected",
-				text: `The selected action is: ${action}`,
+				text: `The selected action for image '${photoName}' is: ${action}`,
 			};
 
 			transporter.sendMail(mailOptions, (error, info) => {

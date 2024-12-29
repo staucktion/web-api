@@ -6,8 +6,18 @@ import { isValidMailAction } from "src/util/mailUtil";
 class MailValidation {
 	public async sendMailRequest(
 		req: Request
-	): Promise<{ action: MailAction }> {
-		const action = req.body.action;
+	): Promise<{ photoName: string; action: MailAction }> {
+		const { photoName, action } = req.body;
+
+		if (!photoName) {
+			CustomError.builder()
+				.setErrorType("Input Validation Error")
+				.setClassName(this.constructor.name)
+				.setMethodName("sendMailRequest")
+				.setMessage("request does not include photo name")
+				.build()
+				.throwError();
+		}
 
 		if (!action) {
 			CustomError.builder()
@@ -29,7 +39,7 @@ class MailValidation {
 				.throwError();
 		}
 
-		return { action };
+		return { photoName, action };
 	}
 }
 
