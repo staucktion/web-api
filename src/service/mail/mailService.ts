@@ -45,10 +45,17 @@ class MailService {
 		}
 
 		try {
+			let subject = `Purchase ${action.split(" ")[0]}`;
+			if (subject.endsWith("e")) {
+				subject += "d"; // approve -> approved
+			} else {
+				subject += "ed"; // reject -> rejected
+			}
+
 			const mailOptions = {
-				from: Config.email.from, // TODO: maybe also add name alias here
+				from: `ST{AU}CKTION <${Config.email.from}>`,
 				to: Config.email.to,
-				subject: "ST{AU}CKTION: Action Selected",
+				subject,
 				text: `The selected action for image '${photoName}' is: ${action}`,
 			};
 
