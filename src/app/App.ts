@@ -31,7 +31,9 @@ class App {
 		const port = Config.port;
 		this.app.listen(port, () => {
 			console.log("🚀🚀🚀");
-			console.log(`API launched on: http://localhost:${port}`);
+			console.log(
+				`API and Frontend launched on: http://localhost:${port}`
+			);
 			console.log("🚀🚀🚀");
 		});
 	}
