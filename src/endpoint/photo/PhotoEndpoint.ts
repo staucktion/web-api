@@ -1,4 +1,5 @@
 import express, { Router } from "express";
+import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import PhotoFacade from "src/facade/photo/photoFacade";
 import MulterUtil from "src/util/multerUtil";
 
@@ -21,6 +22,15 @@ class PhotoEndpoint {
 			async (req, res) => {
 				return await this.photoFacade.uploadPhoto(req, res);
 			}
+		);
+
+		this.router.get("/photo/list", async (_req, res) => {
+			return await this.photoFacade.listPhotos(_req, res);
+		});
+
+		this.router.use(
+			"/photo/view/static",
+			express.static(WATERMARK_PHOTO_DIR)
 		);
 	}
 

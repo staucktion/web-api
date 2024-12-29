@@ -1,5 +1,8 @@
 import sharp from "sharp";
 import CustomError from "src/error/CustomError";
+import { Photo } from "src/types/photoTypes";
+import * as fs from "fs";
+import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 
 class PhotoService {
 	public async addTextWatermark(
@@ -60,6 +63,7 @@ class PhotoService {
 
 			await image.composite(compositeInput).toFile(outputPath);
 		} catch (error: any) {
+			console.error("Error adding watermark:", error);
 			CustomError.builder()
 				.setErrorType("Server Error")
 				.setClassName(this.constructor.name)
@@ -67,9 +71,41 @@ class PhotoService {
 				.setError(error)
 				.build()
 				.throwError();
-			console.error("Error adding watermark:", error);
 			throw error;
 		}
+	}
+
+	public async listPhotos(): Promise<Photo[]> {
+		let photoFiles: string[];
+		try {
+			photoFiles = fs
+				.readdirSync(WATERMARK_PHOTO_DIR)
+				.filter(
+					(file) =>
+						file.endsWith(".jpg") ||
+						file.endsWith(".jpeg") ||
+						file.endsWith(".png")
+				);
+		} catch (err: any) {
+			console.error("Error reading photos directory:", err);
+			CustomError.builder()
+				.setErrorType("Server Error")
+				.setClassName(this.constructor.name)
+				.setMethodName("listPhotos")
+				.setError(err)
+				.build()
+				.throwError();
+			throw err;
+		}
+
+		const photos: Photo[] = photoFiles.map(
+			(file): Photo => ({
+				filename: file,
+				filepath: `/photo/view/static/${file}`,
+			})
+		);
+
+		return photos;
 	}
 }
 

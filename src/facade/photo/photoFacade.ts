@@ -4,6 +4,7 @@ import PhotoService from "src/service/photo/photoService";
 import PhotoValidation from "src/validation/photo/PhotoValidation";
 import * as path from "path";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
+import { Photo } from "src/types/photoTypes";
 
 class PhotoFacade {
 	private photoService: PhotoService;
@@ -39,6 +40,18 @@ class PhotoFacade {
 		}
 
 		return res.status(200).send({ message: "Photo uploaded successfully" });
+	}
+
+	public async listPhotos(_req: Request, res: Response): Promise<Response> {
+		let photos: Photo[];
+
+		try {
+			photos = await this.photoService.listPhotos();
+		} catch (error: any) {
+			return res.status(500).send(error.message);
+		}
+
+		return res.status(200).send(photos);
 	}
 }
 
