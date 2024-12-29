@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Photo Upload and View</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<h1>Photo Upload and Gallery</h1>
+
+		<form id="uploadForm">
+			<input type="file" id="photoInput" accept="image/*" />
+			<button type="submit">Upload Photo</button>
+		</form>
+
+		<h2>Uploaded Photos</h2>
+		<div id="photoGallery"></div>
+
+		<script>
+			document
+				.getElementById("uploadForm")
+				.addEventListener("submit", async (e) => {
+					e.preventDefault();
+					const fileInput = document.getElementById("photoInput");
+					const formData = new FormData();
+					formData.append("photo", fileInput.files[0]);
+
+					try {
+						const res = await fetch(`/photo/upload`, {
+							method: "POST",
+							body: formData,
+						});
+						const data = await res.json();
+						console.log("Uploaded:", data);
+						alert("Photo uploaded successfully!");
+						loadPhotos();
+					} catch (err) {
+						console.error("Error uploading photo:", err);
+						alert("Error uploading photo.");
+					}
+				});
+
+			async function loadPhotos() {
+				const res = await fetch(`/photo/list`);
+				const photos = await res.json();
+
+				const gallery = document.getElementById("photoGallery");
+				gallery.innerHTML = "";
+
+				photos.forEach((photo) => {
+					const img = document.createElement("img");
+					img.src = photo.filepath;
+					img.alt = photo.filename;
+					img.style.width = "200px";
+					img.style.margin = "10px";
+					img.onclick = () => {
+						location.href = `/emailButtons.html?imgPath=${photo.filepath}&photoName=${photo.filename}`;
+					};
+					gallery.appendChild(img);
+				});
+			}
+
+			loadPhotos();
+		</script>
+	</body>
+</html>
