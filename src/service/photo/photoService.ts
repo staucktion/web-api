@@ -21,26 +21,6 @@ class PhotoService {
 			// calculate the text length and adjust position based on watermark
 			const textLength = watermarkText.length * (fontSize / 2);
 
-			// create the SVG markup for the watermark text
-			const svgText = (x: number, y: number) => `
-      <svg width="${width}" height="${height}">
-        <style>
-          .watermark {
-            fill: rgba(255, 255, 255, ${opacity}); /* White text with opacity */
-            font-size: ${fontSize}px;
-            font-family: sans-serif;
-            font-weight: bold;
-          }
-        </style>
-        <text x="${x}" y="${y}" class="watermark" text-anchor="middle" alignment-baseline="middle">
-          ${watermarkText}
-        </text>
-      </svg>
-    `;
-
-			// Handle repeating watermark
-			const compositeInput: Array<any> = [];
-
 			const horizontalCount = Math.ceil(
 				Number(width) / (textLength + horizontalSpacing)
 			);
@@ -48,20 +28,35 @@ class PhotoService {
 				Number(height) / (fontSize + verticalSpacing)
 			);
 
-			for (let row = 0; row < verticalCount; row++) {
-				for (let col = 0; col < horizontalCount; col++) {
-					let x = col * (textLength + horizontalSpacing);
-					if (row % 2 == 0) x += fontSize * 4;
-					let y = row * (fontSize + verticalSpacing);
-					compositeInput.push({
-						input: Buffer.from(svgText(x, y)),
-						left: x,
-						top: y,
-					});
+			const svgText = () => {
+				let svgContent = "";
+				for (let row = 0; row < verticalCount; row++) {
+					for (let col = 0; col < horizontalCount; col++) {
+						let x = col * (textLength + horizontalSpacing);
+						if (row % 2 == 0) x += fontSize * 4;
+						let y = row * (fontSize + verticalSpacing);
+						svgContent += `<text x="${x}" y="${y}" class="watermark" text-anchor="middle" alignment-baseline="middle">${watermarkText}</text>`;
+					}
 				}
-			}
+				return `
+				  <svg width="${width}" height="${height}">
+					<style>
+					  .watermark {
+						fill: rgba(255, 255, 255, ${opacity});
+						font-size: ${fontSize}px;
+						font-family: sans-serif;
+						font-weight: bold;
+					  }
+					</style>
+					${svgContent}
+				  </svg>
+				`;
+			};
 
-			await image.composite(compositeInput).toFile(outputPath);
+			const svgBuffer = Buffer.from(svgText());
+			await image
+				.composite([{ input: svgBuffer, top: 0, left: 0 }])
+				.toFile(outputPath);
 		} catch (error: any) {
 			console.error("Error adding watermark:", error);
 			CustomError.builder()
