@@ -21,7 +21,7 @@ class PhotoService {
 
 			// Scale font size proportionally to image dimensions
 			const baseDimension = Math.min(width, height); // Use smaller dimension for scaling
-			fontSize = Math.max(fontSize, Math.round(baseDimension * 0.03)); // Font size is 3% of the smallest dimension, minimum 10px
+			fontSize = Math.max(fontSize, Math.round(baseDimension * 0.03)); // Font size is 3% of the smallest dimension, minimum based on fontSize config
 
 			// Further increase spacing for better horizontal distance
 			const horizontalSpacing = fontSize * 10;
