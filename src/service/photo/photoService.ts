@@ -15,6 +15,10 @@ class PhotoService {
 		try {
 			const image = sharp(inputPath);
 			const { width, height } = await image.metadata();
+			if (!width || !height) {
+				throw new Error("Couldn't read image metadata");
+			}
+
 			const horizontalSpacing = 30;
 			const verticalSpacing = 15;
 
@@ -22,10 +26,10 @@ class PhotoService {
 			const textLength = watermarkText.length * (fontSize / 2);
 
 			const horizontalCount = Math.ceil(
-				Number(width) / (textLength + horizontalSpacing)
+				width / (textLength + horizontalSpacing)
 			);
 			const verticalCount = Math.ceil(
-				Number(height) / (fontSize + verticalSpacing)
+				height / (fontSize + verticalSpacing)
 			);
 
 			const svgText = () => {
