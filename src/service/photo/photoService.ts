@@ -19,10 +19,15 @@ class PhotoService {
 				throw new Error("Couldn't read image metadata");
 			}
 
-			const horizontalSpacing = 30;
-			const verticalSpacing = 15;
+			// Scale font size proportionally to image dimensions
+			const baseDimension = Math.min(width, height); // Use smaller dimension for scaling
+			fontSize = Math.max(fontSize, Math.round(baseDimension * 0.03)); // Font size is 3% of the smallest dimension, minimum 10px
 
-			// calculate the text length and adjust position based on watermark
+			// Further increase spacing for better horizontal distance
+			const horizontalSpacing = fontSize * 10;
+			const verticalSpacing = fontSize * 4;
+
+			// Calculate the text length and adjust position based on watermark
 			const textLength = watermarkText.length * (fontSize / 2);
 
 			const horizontalCount = Math.ceil(
@@ -37,7 +42,7 @@ class PhotoService {
 				for (let row = 0; row < verticalCount; row++) {
 					for (let col = 0; col < horizontalCount; col++) {
 						let x = col * (textLength + horizontalSpacing);
-						if (row % 2 == 0) x += fontSize * 4;
+						if (row % 2 == 0) x += horizontalSpacing / 2; // Stagger alternate rows
 						let y = row * (fontSize + verticalSpacing);
 						svgContent += `<text x="${x}" y="${y}" class="watermark" text-anchor="middle" alignment-baseline="middle">${watermarkText}</text>`;
 					}
