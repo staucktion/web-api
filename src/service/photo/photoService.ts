@@ -14,10 +14,13 @@ class PhotoService {
 	): Promise<void> {
 		try {
 			const image = sharp(inputPath);
-			const { width, height } = await image.metadata();
-			if (!width || !height) {
+			const metadata = await image.metadata();
+
+			if (!metadata.width || !metadata.height) {
 				throw new Error("Couldn't read image metadata");
 			}
+
+			const { width, height, orientation } = metadata;
 
 			// Scale font size proportionally to image dimensions
 			const baseDimension = Math.min(width, height); // Use smaller dimension for scaling
@@ -48,7 +51,7 @@ class PhotoService {
 					}
 				}
 				return `
-				  <svg width="${width}" height="${height}">
+				  <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
 					<style>
 					  .watermark {
 						fill: rgba(255, 255, 255, ${opacity});
@@ -62,8 +65,23 @@ class PhotoService {
 				`;
 			};
 
-			const svgBuffer = Buffer.from(svgText());
+			let svgBuffer = Buffer.from(svgText());
+
+			// Rotate the SVG buffer if needed to match image orientation
+			if (orientation && [5, 6, 7, 8].includes(orientation)) {
+				const angle = {
+					5: 90,
+					6: 90,
+					7: -90,
+					8: -90,
+				}[orientation];
+
+				svgBuffer = await sharp(svgBuffer).rotate(angle).toBuffer();
+			}
+
+			// Composite the SVG directly
 			await image
+				.rotate() // Adjust orientation based on EXIF metadata
 				.composite([{ input: svgBuffer, top: 0, left: 0 }])
 				.toFile(outputPath);
 		} catch (error: any) {
