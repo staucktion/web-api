@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "7f032dd7-093f-4f8d-9dd5-74b7873fdfa7",
+		"_postman_id": "e5f1705f-23a4-40ca-a8d4-7bd0b54f2acf",
 		"name": "staucktion-backend",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26266539"
+		"_exporter_id": "5601458"
 	},
 	"item": [
 		{
@@ -15,12 +15,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/health",
-							"protocol": "http",
+							"raw": "{{BASE_URL}}/health",
 							"host": [
-								"localhost"
+								"{{BASE_URL}}"
 							],
-							"port": "8082",
 							"path": [
 								"health"
 							]
@@ -34,12 +32,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/health/info",
-							"protocol": "http",
+							"raw": "{{BASE_URL}}/health/info",
 							"host": [
-								"localhost"
+								"{{BASE_URL}}"
 							],
-							"port": "8082",
 							"path": [
 								"health",
 								"info"
@@ -63,18 +59,17 @@
 							"formdata": [
 								{
 									"key": "photo",
+									"description": "Select a file from your local environment here",
 									"type": "file",
-									"src": "postman-cloud:///1efa6675-b333-46a0-9300-ee6d3ae9035a"
+									"src": []
 								}
 							]
 						},
 						"url": {
-							"raw": "http://localhost:8082/photo/upload",
-							"protocol": "http",
+							"raw": "{{BASE_URL}}/photo/upload",
 							"host": [
-								"localhost"
+								"{{BASE_URL}}"
 							],
-							"port": "8082",
 							"path": [
 								"photo",
 								"upload"
@@ -82,8 +77,107 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photo/list",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photo",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "view",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photo/view/static/2024-12-29-04-39-911.jpg",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photo",
+								"view",
+								"static",
+								"2024-12-29-04-39-911.jpg"
+							]
+						},
+						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
+					},
+					"response": []
 				}
 			]
+		},
+		{
+			"name": "mail",
+			"item": [
+				{
+					"name": "sendMail",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"your-email@example.com\",\r\n    \"photoName\": \"2024-12-29-04-39-911.jpg\",\r\n    \"action\": \"Approve Purchase\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/mail/send",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"mail",
+								"send"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:8082"
 		}
 	]
 }

@@ -1,0 +1,6 @@
+{
+	"recommendations": [
+		"esbenp.prettier-vscode",
+		"dbaeumer.vscode-eslint" // not enforced yet as there is no CI etc, but useful
+	]
+}
