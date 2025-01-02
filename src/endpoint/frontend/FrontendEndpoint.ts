@@ -11,6 +11,9 @@ class FrontendEndpoint {
 
 	private initializeRoutes(): void {
 		this.router.use("/", express.static("frontend"));
+		this.router.get("/apk", (_req, res) => {
+			res.download("frontend/staucktion.apk");
+		});
 	}
 
 	public getRouter(): Router {
