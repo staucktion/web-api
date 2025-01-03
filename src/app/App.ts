@@ -1,4 +1,5 @@
 import express, { Application } from "express";
+import cors from "cors"; // <-- 1) Import cors
 import Config from "src/config/Config";
 import Logger from "src/log/Logger";
 import Router from "src/router/Router";
@@ -15,10 +16,18 @@ class App {
 	}
 
 	private initializeMiddlewares(): void {
-		// log incoming requests
+		// If you want to log incoming requests
 		if (Config.log) this.app.use(Logger.logRequest);
 
-		// parse JSON request body
+		// 2) Enable CORS *before* routes
+		this.app.use(
+			cors({
+				origin: "http://localhost:3000", // your React dev server
+				credentials: true, // if you need cookies/auth
+			})
+		);
+
+		// 3) Parse JSON request body
 		this.app.use(express.json());
 	}
 

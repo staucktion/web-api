@@ -16,18 +16,27 @@ class PhotoEndpoint {
 	}
 
 	private initializeRoutes(): void {
+		// Upload photo and add watermark
 		this.router.post(
 			"/photo/upload",
 			this.multerUtil.getUploader().single("photo"),
 			async (req, res) => {
+				console.log("Uploaded file:", req.file);
+				if (!req.file) {
+					return res
+						.status(400)
+						.json({ message: "No file uploaded" });
+				}
 				return await this.photoFacade.uploadPhoto(req, res);
 			}
 		);
 
+		// List watermarked photos
 		this.router.get("/photo/list", async (_req, res) => {
 			return await this.photoFacade.listPhotos(_req, res);
 		});
 
+		// Serve static watermarked photos
 		this.router.use(
 			"/photo/view/static",
 			express.static(WATERMARK_PHOTO_DIR)
