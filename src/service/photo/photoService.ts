@@ -3,6 +3,7 @@ import CustomError from "src/error/CustomError";
 import { Photo } from "src/types/photoTypes";
 import * as fs from "fs";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
+import { isAcceptablePhotoExtension } from "src/util/photoUtil";
 
 class PhotoService {
 	public async addTextWatermark(
@@ -96,12 +97,7 @@ class PhotoService {
 		try {
 			photoFiles = fs
 				.readdirSync(WATERMARK_PHOTO_DIR)
-				.filter(
-					(file) =>
-						file.endsWith(".jpg") ||
-						file.endsWith(".jpeg") ||
-						file.endsWith(".png")
-				);
+				.filter((file) => isAcceptablePhotoExtension(file));
 		} catch (err: any) {
 			console.error("Error reading photos directory:", err);
 			CustomError.builder()
