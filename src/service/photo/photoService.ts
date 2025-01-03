@@ -16,11 +16,17 @@ class PhotoService {
 			const image = sharp(inputPath);
 			const metadata = await image.metadata();
 
-			if (!metadata.width || !metadata.height) {
+			if (!metadata.width || !metadata.height || !metadata.orientation) {
 				throw new Error("Couldn't read image metadata");
 			}
 
-			const { width, height, orientation } = metadata;
+			const { orientation } = metadata;
+			let { width, height } = metadata;
+
+			// Swap width and height if orientation is 90 or 270 degrees
+			if ([5, 6, 7, 8].includes(orientation)) {
+				[width, height] = [height, width];
+			}
 
 			// Scale font size proportionally to image dimensions
 			const baseDimension = Math.min(width, height); // Use smaller dimension for scaling
@@ -66,18 +72,6 @@ class PhotoService {
 			};
 
 			let svgBuffer = Buffer.from(svgText());
-
-			// Rotate the SVG buffer if needed to match image orientation
-			if (orientation && [5, 6, 7, 8].includes(orientation)) {
-				const angle = {
-					5: 90,
-					6: 90,
-					7: -90,
-					8: -90,
-				}[orientation];
-
-				svgBuffer = await sharp(svgBuffer).rotate(angle).toBuffer();
-			}
 
 			// Composite the SVG directly
 			await image
