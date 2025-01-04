@@ -11,6 +11,12 @@ let transporter: nodemailer.Transporter | null = null;
 if (
 	[Config.email.from, Config.email.pass, Config.email.service].every(Boolean)
 ) {
+	console.log("Email Configuration:", {
+		service: Config.email.service,
+		user: Config.email.from,
+		pass: Config.email.pass ? "****" : "(missing)",
+	});
+
 	transporter = nodemailer.createTransport({
 		service: Config.email.service,
 		auth: {
@@ -43,8 +49,12 @@ class MailService {
 			);
 		}
 
+		console.log("Photo name:", photoName);
+
 		const photoPath = path.join(ORIGINAL_PHOTO_DIR, photoName);
+		console.log("Photo path being checked:", photoPath);
 		const photoExists = fs.existsSync(photoPath);
+		console.log("Does photo exist?", photoExists);
 
 		if (!photoExists) {
 			CustomError.builder()

@@ -52,6 +52,8 @@ class MailValidation {
 		}
 
 		if (!isValidMailAction(action)) {
+			console.log("Invalid action received:", action);
+			console.log("Valid actions are:", Object.values(MailAction));
 			CustomError.builder()
 				.setErrorType("Input Validation Error")
 				.setClassName(this.constructor.name)

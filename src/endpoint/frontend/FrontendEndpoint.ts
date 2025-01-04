@@ -1,6 +1,7 @@
 import express, { Router } from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 
-/** TEMPORARY: Will be changed once React is implemented */
 class FrontendEndpoint {
 	private router: Router;
 
@@ -10,10 +11,13 @@ class FrontendEndpoint {
 	}
 
 	private initializeRoutes(): void {
-		this.router.use("/", express.static("frontend"));
-		this.router.get("/apk", (_req, res) => {
-			res.download("frontend/staucktion.apk");
-		});
+		// Resolve the __dirname equivalent for ES modules
+		const __filename = fileURLToPath(import.meta.url);
+		const __dirname = path.dirname(__filename);
+
+		// Resolve the absolute path to the "frontend" directory
+		const frontendPath = path.resolve(__dirname, "../../../frontend");
+		this.router.use("/", express.static(frontendPath));
 	}
 
 	public getRouter(): Router {

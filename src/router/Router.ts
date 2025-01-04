@@ -18,9 +18,12 @@ class Router {
 	}
 
 	public setupRoute(app: express.Application): void {
+		// Register API routes first
 		app.use(this.healthEndpoint.getRouter());
 		app.use(this.photoEndpoint.getRouter());
 		app.use(this.mailEndpoint.getRouter());
+
+		// Serve React app as fallback
 		app.use(this.frontendEndpoint.getRouter());
 	}
 }
