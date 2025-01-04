@@ -7,7 +7,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "nodemon --exec tsx index.ts",
-		"serve": "tsx index.ts"
+		"serve": "tsx index.ts",
+		"clear-uploads": "tsx scripts/clearUploads.ts"
 	},
 	"keywords": [],
 	"license": "ISC",

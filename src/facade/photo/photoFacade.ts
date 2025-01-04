@@ -18,13 +18,16 @@ class PhotoFacade {
 				req.file?.destination || "",
 				photoName
 			); // Construct full file path
+			console.log("originalPath:", originalPath);
+			console.log("File exists?", fs.existsSync(originalPath));
+
 			const watermarkedPath = path.join(WATERMARK_PHOTO_DIR, photoName);
 
 			// Add watermark to uploaded photo
 			await this.photoService.addTextWatermark(
 				originalPath, // Use constructed path
 				watermarkedPath,
-				"Watermark Text", // Replace with your desired watermark
+				"STAUCKTION", // Replace with your desired watermark
 				12, // Font size
 				0.5 // Transparency
 			);

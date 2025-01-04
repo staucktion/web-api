@@ -11,22 +11,13 @@ class FrontendEndpoint {
 	}
 
 	private initializeRoutes(): void {
+		// Resolve the __dirname equivalent for ES modules
 		const __filename = fileURLToPath(import.meta.url);
 		const __dirname = path.dirname(__filename);
 
-		// Correct the path to the frontend build folder
-		const frontendBuildPath = path.resolve(
-			__dirname,
-			"../../../frontend/build"
-		);
-
-		// Serve the React build folder
-		this.router.use(express.static(frontendBuildPath));
-
-		// Handle React client-side routing
-		this.router.get("*", (_req, res) => {
-			res.sendFile(path.join(frontendBuildPath, "index.html"));
-		});
+		// Resolve the absolute path to the "frontend" directory
+		const frontendPath = path.resolve(__dirname, "../../../frontend");
+		this.router.use("/", express.static(frontendPath));
 	}
 
 	public getRouter(): Router {

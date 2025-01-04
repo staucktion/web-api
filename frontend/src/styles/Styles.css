@@ -1,9 +1,139 @@
 body {
-	margin: 0;
-	font-family: "Roboto", sans-serif;
+	background-color: #f9f9f9;
+}
+.container {
+	text-align: center;
+	margin-top: 20px;
 }
 
-button {
-	font-size: 1rem;
-	padding: 0.5rem 1rem;
+.uploadBox {
+	padding: 20px;
+	margin: 20px auto;
+	max-width: 600px;
+	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 10px;
+	background-color: #f9f9f9;
+	border: 1px solid #d8d2d2;
+}
+
+.uploadTitle {
+	font-family: "Roboto", sans-serif;
+	color: #333;
+}
+
+.emailText {
+	font-size: 14px;
+	color: #666;
+}
+
+.uploadControls {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 15px;
+	flex-direction: column;
+}
+
+.fileInputLabel {
+	padding: 10px 20px;
+	background-color: #007bff;
+	color: #fff;
+	cursor: pointer;
+	border-radius: 5px;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.uploadButton {
+	padding: 10px 20px;
+	background-color: #28a745;
+	color: #fff;
+	cursor: pointer;
+	border-radius: 5px;
+	font-size: 14px;
+	font-weight: bold;
+	border: none;
+	transition: background-color 0.3s ease;
+}
+
+.uploadButton:disabled {
+	background-color: #cccccc;
+	cursor: not-allowed;
+}
+
+.errorMessage {
+	color: red;
+	margin-top: 10px;
+}
+
+.successMessage {
+	color: green;
+	margin-top: 10px;
+}
+
+/* Mevcut kodunuzu koruyabilirsiniz, sadece aşağıdaki kısımları 
+   güncellemeniz ya da eklemeniz yeterli. */
+
+.imageGrid {
+	display: grid;
+	/* Her kolonun minimum 250px, maksimum 1fr olmasını sağlıyoruz. 
+	   Ekran boyutuna göre otomatik yerleşir. */
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 20px; /* Kartlar arası boşluk */
+	justify-items: center;
+	align-items: center;
+	padding: 20px 50px;
+}
+
+.imageCard {
+	position: relative;
+	border-radius: 15px;
+	overflow: hidden;
+	/* Daha zarif bir gölge için değeri biraz büyütüp soft yapıyoruz */
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	cursor: pointer;
+	background-color: #f9f9f9;
+	/* Kartın maksimum genişliği - isterseniz değiştirebilirsiniz */
+	max-width: 300px;
+	width: 90%;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	border: 1px solid #d8d2d2;
+}
+
+/* Hover'da kartın hafif yukarı kalkması ve gölgenin artması */
+.imageCard:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.image {
+	/* Resmin tam genişlikte gösterilmesi */
+	display: block;
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+}
+
+.modalImage {
+	width: 100%;
+	max-height: 600px;
+	object-fit: contain;
+	margin-bottom: 20px;
+	border-radius: 15px;
+}
+
+.purchaseButton {
+	padding: 10px 20px;
+	background-color: #28a745;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	font-size: 16px;
+	cursor: pointer;
+	font-weight: bold;
+	transition: background-color 0.3s ease;
+}
+
+.purchaseButton:hover {
+	background-color: #218838;
 }
