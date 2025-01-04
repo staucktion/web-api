@@ -71,15 +71,10 @@ body {
 	margin-top: 10px;
 }
 
-/* Mevcut kodunuzu koruyabilirsiniz, sadece aşağıdaki kısımları 
-   güncellemeniz ya da eklemeniz yeterli. */
-
 .imageGrid {
 	display: grid;
-	/* Her kolonun minimum 250px, maksimum 1fr olmasını sağlıyoruz. 
-	   Ekran boyutuna göre otomatik yerleşir. */
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	gap: 20px; /* Kartlar arası boşluk */
+	gap: 10px;
 	justify-items: center;
 	align-items: center;
 	padding: 20px 50px;
@@ -89,25 +84,21 @@ body {
 	position: relative;
 	border-radius: 15px;
 	overflow: hidden;
-	/* Daha zarif bir gölge için değeri biraz büyütüp soft yapıyoruz */
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	cursor: pointer;
 	background-color: #f9f9f9;
-	/* Kartın maksimum genişliği - isterseniz değiştirebilirsiniz */
 	max-width: 300px;
 	width: 90%;
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
 	border: 1px solid #d8d2d2;
 }
 
-/* Hover'da kartın hafif yukarı kalkması ve gölgenin artması */
 .imageCard:hover {
 	transform: translateY(-5px);
 	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
 }
 
 .image {
-	/* Resmin tam genişlikte gösterilmesi */
 	display: block;
 	width: 100%;
 	height: auto;
