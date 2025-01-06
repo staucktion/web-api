@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Modal } from "@mui/material";
-import "../styles/Styles.css"; // Import plain CSS file
+import "../styles/Styles.css";
+import EmailButtons from "./EmailButtons.tsx";
 
 const FileUpload: React.FC = () => {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -204,7 +205,7 @@ const FileUpload: React.FC = () => {
 				aria-labelledby="modal-title"
 				aria-describedby="modal-description"
 				BackdropProps={{
-					style: { backgroundColor: "rgba(0, 0, 0, 0.8)" }, // siyah şeffaf perde
+					style: { backgroundColor: "rgba(0, 0, 0, 0.8)" },
 				}}
 			>
 				<Box
@@ -215,8 +216,8 @@ const FileUpload: React.FC = () => {
 						transform: "translate(-50%, -50%)",
 						width: "80%",
 						maxWidth: "600px",
-						backgroundColor: "transparent", // Arka planı kaldır
-						boxShadow: "none", // Gölgeyi kaldır
+						backgroundColor: "transparent",
+						boxShadow: "none",
 						p: 4,
 						textAlign: "center",
 						outline: "none",
@@ -227,14 +228,11 @@ const FileUpload: React.FC = () => {
 						alt="Selected"
 						className="modalImage"
 					/>
-					<button
-						onClick={() =>
+					<EmailButtons
+						onApprove={() =>
 							selectedImage && sendApproveMail(selectedImage)
 						}
-						className="purchaseButton"
-					>
-						Purchase Now
-					</button>
+					/>
 				</Box>
 			</Modal>
 		</div>
