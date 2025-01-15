@@ -21,6 +21,7 @@ class HealthEndpoint {
 				status: "UP",
 				mode: Config.mode,
 				requestLog: Config.requestLog,
+				explicitErrorLog: Config.explicitErrorLog,
 				description: "this API provides the core functionality of the St{au}cktion project.",
 			});
 		});

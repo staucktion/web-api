@@ -25,7 +25,7 @@ class App {
 		// parse JSON request body
 		this.app.use(express.json());
 	}
-	
+
 	private initializeRoutes(): void {
 		// setup routes
 		this.router.setupRoute(this.app);
@@ -38,6 +38,7 @@ class App {
 			console.log(`🚀 API launched on: http://localhost:${port}`);
 			console.log(`🚀 Mode: ${Config.mode}`);
 			console.log(`🚀 Request Log: ${Config.requestLog}`);
+			console.log(`🚀 Explicit Error Log: ${Config.explicitErrorLog}`);
 			console.log("🚀🚀🚀");
 		});
 	}
