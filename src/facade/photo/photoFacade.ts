@@ -1,45 +1,46 @@
 import { Request, Response } from "express";
 import * as fs from "fs";
 import * as path from "path";
+import Config from "src/config/Config";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
+import UploadPhotoDto from "src/dto/photo/UploadPhotoDto";
+import CustomError from "src/error/CustomError";
 import PhotoService from "src/service/photo/photoService";
+import PhotoValidation from "src/validation/photo/PhotoValidation";
 
 class PhotoFacade {
 	private photoService: PhotoService;
+	private photoValidation: PhotoValidation;
 
 	constructor() {
+		this.photoValidation = new PhotoValidation();
 		this.photoService = new PhotoService();
 	}
 
 	public async uploadPhoto(req: Request, res: Response): Promise<Response> {
+		let uploadPhotoDto: UploadPhotoDto;
+
+		// get valid body from request
 		try {
-			const photoName = req.file?.filename || "";
-			const originalPath = path.join(
-				req.file?.destination || "",
-				photoName
-			); // Construct full file path
-			console.log("originalPath:", originalPath);
-			console.log("File exists?", fs.existsSync(originalPath));
-
-			const watermarkedPath = path.join(WATERMARK_PHOTO_DIR, photoName);
-
-			// Add watermark to uploaded photo
-			await this.photoService.addTextWatermark(
-				originalPath, // Use constructed path
-				watermarkedPath,
-				"STAUCKTION", // Replace with your desired watermark
-				12, // Font size
-				0.5 // Transparency
-			);
-
-			return res.status(200).json({
-				message: "Photo uploaded successfully",
-				watermarkedPath: photoName,
-			});
+			uploadPhotoDto = await this.photoValidation.uploadPhotoRequest(req);
 		} catch (error: any) {
-			console.error("Error uploading photo:", error);
-			return res.status(500).json({ error: "Failed to upload photo" });
+			if (error instanceof CustomError) {
+				if (Config.explicitErrorLog) error.log();
+				return res.status(error.getStatusCode()).send(error.getMessage());
+			}
 		}
+
+		// add watermark to the uploaded photo
+		try {
+			await this.photoService.addTextWatermark(`${uploadPhotoDto.destination}${uploadPhotoDto.filename}`, path.join(WATERMARK_PHOTO_DIR, uploadPhotoDto.filename), Config.watermark.text);
+		} catch (error: any) {
+			if (error instanceof CustomError) {
+				if (Config.explicitErrorLog) error.log();
+				return res.status(error.getStatusCode()).send(error.getMessage());
+			}
+		}
+
+		return res.status(204).send();
 	}
 
 	public async listPhotos(_req: Request, res: Response): Promise<Response> {
