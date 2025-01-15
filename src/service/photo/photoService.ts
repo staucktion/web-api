@@ -82,7 +82,9 @@ class PhotoService {
 
 	public async getPhotoPath(photoId: string): Promise<string> {
 		try {
-			return path.resolve(WATERMARK_PHOTO_DIR, photoId);
+			const resolvedPath = path.resolve(WATERMARK_PHOTO_DIR, photoId);
+			if (!fs.existsSync(resolvedPath)) throw new Error();
+			return resolvedPath;
 		} catch (error: any) {
 			CustomError.builder().setMessage("Error reading photo file").setExternalMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
 		}
