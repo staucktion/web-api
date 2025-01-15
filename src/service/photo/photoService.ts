@@ -1,5 +1,8 @@
+import * as fs from "fs";
 import sharp from "sharp";
+import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import CustomError from "src/error/CustomError";
+import { isAcceptablePhotoExtension } from "src/util/photoUtil";
 
 class PhotoService {
 	public async addTextWatermark(inputPath: string, outputPath: string, watermarkText: string): Promise<void> {
@@ -63,7 +66,16 @@ class PhotoService {
 			// Overlay the watermark on the image
 			await image.composite([{ input: svgBuffer, top: 0, left: 0 }]).toFile(outputPath);
 		} catch (error: any) {
-			CustomError.builder().setMessage("Request body is required.").setExternalMessage(error.message).setErrorType("Photo Error").setStatusCode(400).build().throwError();
+			CustomError.builder().setMessage("cannot watermark photo").setExternalMessage(error.message).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
+		}
+	}
+
+	public async listPhotos(): Promise<String[]> {
+		try {
+			const photoFiles = fs.readdirSync(WATERMARK_PHOTO_DIR).filter((file) => isAcceptablePhotoExtension(file));
+			return photoFiles;
+		} catch (error: any) {
+			CustomError.builder().setMessage("Error reading photo files").setExternalMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
 		}
 	}
 }

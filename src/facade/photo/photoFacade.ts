@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import * as fs from "fs";
 import * as path from "path";
 import Config from "src/config/Config";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
@@ -45,17 +44,13 @@ class PhotoFacade {
 
 	public async listPhotos(_req: Request, res: Response): Promise<Response> {
 		try {
-			const files = fs.readdirSync(WATERMARK_PHOTO_DIR);
-
-			// Yalnızca görsel dosyalarını filtrele (ör. .jpg, .png, .jpeg)
-			const photoUrls = files.filter(
-				(file) => file.match(/\.(jpg|jpeg|png|gif)$/i) // Yalnızca görselleri içeren bir regex
-			);
-
-			return res.status(200).json(photoUrls);
+			const photoNames = await this.photoService.listPhotos();
+			return res.status(200).send(photoNames);
 		} catch (error: any) {
-			console.error("Error listing photos:", error);
-			return res.status(500).json({ error: "Failed to list photos" });
+			if (error instanceof CustomError) {
+				if (Config.explicitErrorLog) error.log();
+				return res.status(error.getStatusCode()).send(error.getMessage());
+			}
 		}
 	}
 }
