@@ -1,4 +1,7 @@
 import { Request, Response } from "express";
+import Config from "src/config/Config";
+import EmailDto from "src/dto/email/EmailDto";
+import CustomError from "src/error/CustomError";
 import MailService from "src/service/mail/mailService";
 import { MailAction } from "src/types/mailTypes";
 import MailValidation from "src/validation/mail/MailValidation";
@@ -13,25 +16,30 @@ class MailFacade {
 	}
 
 	public async sendMail(req: Request, res: Response): Promise<Response> {
-		let photoName: string, action: MailAction, email: string;
+		let emailDto: EmailDto;
 
 		// get valid body from request
 		try {
-			const validated = await this.mailValidation.sendMailRequest(req);
-			action = validated.action;
-			photoName = validated.photoName;
-			email = validated.email;
-		} catch (e: any) {
-			return res.status(400).send({ error: e.message });
+			emailDto = await this.mailValidation.sendMailRequest(req);
+		} catch (error: any) {
+			if (error instanceof CustomError) {
+				if (Config.explicitErrorLog) error.log();
+				res.status(error.getStatusCode()).send(error.getMessage());
+				return;
+			}
 		}
 
 		try {
-			await this.mailService.sendMail(photoName, action, email);
+			await this.mailService.sendMail(emailDto.photoName, emailDto.action, emailDto.email);
 		} catch (error: any) {
-			return res.status(500).send(error.message);
+			if (error instanceof CustomError) {
+				if (Config.explicitErrorLog) error.log();
+				res.status(error.getStatusCode()).send(error.getMessage());
+				return;
+			}
 		}
 
-		return res.status(200).send({ message: "Email sent successfully" });
+		return res.status(204).send();
 	}
 }
 

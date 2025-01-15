@@ -13,7 +13,7 @@ class MailEndpoint {
 
 	private initializeRoutes(): void {
 		this.router.post("/mail/send", async (req, res) => {
-			return await this.mailFacade.sendMail(req, res);
+			await this.mailFacade.sendMail(req, res);
 		});
 	}
 

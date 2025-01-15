@@ -1,4 +1,5 @@
 import express, { Router } from "express";
+import path from "path";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import PhotoFacade from "src/facade/photo/photoFacade";
 import MulterUtil from "src/util/multerUtil";
@@ -16,31 +17,17 @@ class PhotoEndpoint {
 	}
 
 	private initializeRoutes(): void {
-		// Upload photo and add watermark
-		this.router.post(
-			"/photo/upload",
-			this.multerUtil.getUploader().single("photo"),
-			async (req, res) => {
-				console.log("Uploaded file:", req.file);
-				if (!req.file) {
-					return res
-						.status(400)
-						.json({ message: "No file uploaded" });
-				}
-				return await this.photoFacade.uploadPhoto(req, res);
-			}
-		);
-
-		// List watermarked photos
-		this.router.get("/photo/list", async (_req, res) => {
-			return await this.photoFacade.listPhotos(_req, res);
+		this.router.post("/photos", this.multerUtil.getUploader().single("photo"), async (req, res) => {
+			await this.photoFacade.uploadPhoto(req, res);
 		});
 
-		// Serve static watermarked photos
-		this.router.use(
-			"/photo/view/static",
-			express.static(WATERMARK_PHOTO_DIR)
-		);
+		this.router.get("/photos", async (_req, res) => {
+			await this.photoFacade.listPhotos(_req, res);
+		});
+
+		this.router.get("/photos/:photoId", async (req, res) => {
+			await this.photoFacade.getPhoto(req, res);
+		});
 	}
 
 	public getRouter(): Router {

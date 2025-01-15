@@ -1,24 +1,20 @@
+import * as fs from "fs";
+import path from "path";
 import sharp from "sharp";
+import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import CustomError from "src/error/CustomError";
+import { isAcceptablePhotoExtension } from "src/util/photoUtil";
 
 class PhotoService {
-	public async addTextWatermark(
-		inputPath: string,
-		outputPath: string,
-		watermarkText: string
-	): Promise<void> {
+	public async addTextWatermark(inputPath: string, outputPath: string, watermarkText: string): Promise<void> {
 		try {
-			console.log("Watermarking image:", { inputPath, outputPath });
-
 			// Read image metadata
 			const image = sharp(inputPath);
 			let { width, height } = await image.metadata();
 
 			// Fallback dimensions if metadata is missing
 			if (!width || !height) {
-				const raw = await image
-					.raw()
-					.toBuffer({ resolveWithObject: true });
+				const raw = await image.raw().toBuffer({ resolveWithObject: true });
 				width = raw.info.width;
 				height = raw.info.height;
 			}
@@ -69,20 +65,28 @@ class PhotoService {
 			const svgBuffer = Buffer.from(svgText);
 
 			// Overlay the watermark on the image
-			await image
-				.composite([{ input: svgBuffer, top: 0, left: 0 }])
-				.toFile(outputPath);
-
-			console.log("Watermarked image saved at:", outputPath);
+			await image.composite([{ input: svgBuffer, top: 0, left: 0 }]).toFile(outputPath);
 		} catch (error: any) {
-			console.error("Error adding watermark:", error);
-			CustomError.builder()
-				.setErrorType("Server Error")
-				.setClassName(this.constructor.name)
-				.setMethodName("addTextWatermark")
-				.setError(error)
-				.build()
-				.throwError();
+			CustomError.builder().setMessage("cannot watermark photo").setExternalMessage(error.message).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
+		}
+	}
+
+	public async listPhotos(): Promise<string[]> {
+		try {
+			const photoFiles = fs.readdirSync(WATERMARK_PHOTO_DIR).filter((file) => isAcceptablePhotoExtension(file));
+			return photoFiles;
+		} catch (error: any) {
+			CustomError.builder().setMessage("Error reading photo files").setExternalMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
+		}
+	}
+
+	public async getPhotoPath(photoId: string): Promise<string> {
+		try {
+			const resolvedPath = path.resolve(WATERMARK_PHOTO_DIR, photoId);
+			if (!fs.existsSync(resolvedPath)) throw new Error();
+			return resolvedPath;
+		} catch (error: any) {
+			CustomError.builder().setMessage("Error reading photo file").setExternalMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
 		}
 	}
 }

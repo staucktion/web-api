@@ -16,18 +16,13 @@ class App {
 	}
 
 	private initializeMiddlewares(): void {
-		// If you want to log incoming requests
-		if (Config.log) this.app.use(Logger.logRequest);
+		// allow cors CORS (Cross-Origin Resource Sharing)
+		this.app.use(cors());
 
-		// 2) Enable CORS *before* routes
-		this.app.use(
-			cors({
-				origin: "http://localhost:3000", // your React dev server
-				credentials: true, // if you need cookies/auth
-			})
-		);
+		// log incoming requests
+		if (Config.requestLog) this.app.use(Logger.logRequest);
 
-		// 3) Parse JSON request body
+		// parse JSON request body
 		this.app.use(express.json());
 	}
 
@@ -40,9 +35,10 @@ class App {
 		const port = Config.port;
 		this.app.listen(port, () => {
 			console.log("🚀🚀🚀");
-			console.log(
-				`API and Frontend launched on: http://localhost:${port}`
-			);
+			console.log(`🚀 API launched on: http://localhost:${port}`);
+			console.log(`🚀 Mode: ${Config.mode}`);
+			console.log(`🚀 Request Log: ${Config.requestLog}`);
+			console.log(`🚀 Explicit Error Log: ${Config.explicitErrorLog}`);
 			console.log("🚀🚀🚀");
 		});
 	}

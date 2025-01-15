@@ -4,7 +4,8 @@ dotenv.config();
 class EnvVariables {
 	static port = process.env.PORT || 8082;
 	static mode = process.env.MODE || "dev";
-	static log = process.env.LOG === "true";
+	static requestLog = process.env.REQUEST_LOG === "true";
+	static explicitErrorLog = process.env.EXPLICIT_ERROR_LOG === "true";
 	static multerFileSize = Number(process.env.MULTER_FILE_SIZE || 100000000);
 
 	static watermark = {

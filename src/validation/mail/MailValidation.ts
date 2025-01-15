@@ -1,69 +1,43 @@
 import { Request } from "express";
+import EmailDto from "src/dto/email/EmailDto";
 import CustomError from "src/error/CustomError";
 import { MailAction } from "src/types/mailTypes";
 import { isValidMailAction } from "src/util/mailUtil";
+import ValidationUtil from "src/util/ValidationUtil";
 
 const mailRegex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/);
 
 class MailValidation {
-	public async sendMailRequest(
-		req: Request
-	): Promise<{ photoName: string; action: MailAction; email: string }> {
-		const { photoName, action, email } = req.body;
+	public async sendMailRequest(req: Request): Promise<EmailDto> {
+		const emailDto = req.body;
+		const requiredFields: string[] = ["photoName", "action", "email"];
 
-		if (!photoName) {
-			CustomError.builder()
-				.setErrorType("Input Validation Error")
-				.setClassName(this.constructor.name)
-				.setMethodName("sendMailRequest")
-				.setMessage("request does not include photo name")
-				.build()
-				.throwError();
+		// validate request body
+		try {
+			ValidationUtil.checkObjectExistence(emailDto);
+		} catch (error: any) {
+			if (error instanceof CustomError) CustomError.builder().setMessage("Request body is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
-		if (!action) {
-			CustomError.builder()
-				.setErrorType("Input Validation Error")
-				.setClassName(this.constructor.name)
-				.setMethodName("sendMailRequest")
-				.setMessage("request does not include action")
-				.build()
-				.throwError();
+		// validate required fields
+		try {
+			ValidationUtil.checkRequiredFields(requiredFields, emailDto);
+		} catch (error: any) {
+			if (error instanceof CustomError)
+				CustomError.builder().setMessage(`Request body is invalid. ${error.getBody().externalMessage}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
-		if (!email) {
-			CustomError.builder()
-				.setErrorType("Input Validation Error")
-				.setClassName(this.constructor.name)
-				.setMethodName("sendMailRequest")
-				.setMessage("request does not include email")
-				.build()
-				.throwError();
+		// validate email
+		if (!mailRegex.test(emailDto.email)) {
+			CustomError.builder().setMessage(`Email is not valid.`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
-		if (!mailRegex.test(email)) {
-			CustomError.builder()
-				.setErrorType("Input Validation Error")
-				.setClassName(this.constructor.name)
-				.setMethodName("sendMailRequest")
-				.setMessage("email is not valid")
-				.build()
-				.throwError();
+		// validate action
+		if (!isValidMailAction(emailDto.action)) {
+			CustomError.builder().setMessage(`Action is not valid.`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
-		if (!isValidMailAction(action)) {
-			console.log("Invalid action received:", action);
-			console.log("Valid actions are:", Object.values(MailAction));
-			CustomError.builder()
-				.setErrorType("Input Validation Error")
-				.setClassName(this.constructor.name)
-				.setMethodName("sendMailRequest")
-				.setMessage("action is not valid")
-				.build()
-				.throwError();
-		}
-
-		return { photoName, action, email };
+		return emailDto;
 	}
 }
 

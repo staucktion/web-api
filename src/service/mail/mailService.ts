@@ -8,15 +8,7 @@ import { ORIGINAL_PHOTO_DIR } from "src/constants/photoConstants";
 
 let transporter: nodemailer.Transporter | null = null;
 
-if (
-	[Config.email.from, Config.email.pass, Config.email.service].every(Boolean)
-) {
-	console.log("Email Configuration:", {
-		service: Config.email.service,
-		user: Config.email.from,
-		pass: Config.email.pass ? "****" : "(missing)",
-	});
-
+if ([Config.email.from, Config.email.pass, Config.email.service].every(Boolean)) {
 	transporter = nodemailer.createTransport({
 		service: Config.email.service,
 		auth: {
@@ -25,46 +17,17 @@ if (
 		},
 	});
 } else {
-	console.warn(
-		"Email configuration is not set up properly. Email service will not work."
-	);
+	console.warn("Email configuration is not set up properly. Email service will not work.");
 }
 
 class MailService {
-	public async sendMail(
-		photoName: string,
-		action: MailAction,
-		receiverEmail: string
-	): Promise<void> {
-		if (!transporter) {
-			CustomError.builder()
-				.setErrorType("Server Error")
-				.setClassName(this.constructor.name)
-				.setMethodName("sendMail")
-				.setMessage("Emails cannot be sent at the moment.")
-				.build()
-				.throwError();
-			throw Error(
-				"This throw is unreachable, but required for compilation at the moment due to CustomError.throwError() being a void function."
-			);
-		}
-
-		console.log("Photo name:", photoName);
+	public async sendMail(photoName: string, action: MailAction, receiverEmail: string): Promise<void> {
+		if (!transporter) CustomError.builder().setMessage("Transporter not reachable.").setErrorType("Email Error").setStatusCode(500).build().throwError();
 
 		const photoPath = path.join(ORIGINAL_PHOTO_DIR, photoName);
-		console.log("Photo path being checked:", photoPath);
 		const photoExists = fs.existsSync(photoPath);
-		console.log("Does photo exist?", photoExists);
 
-		if (!photoExists) {
-			CustomError.builder()
-				.setErrorType("Input Validation Error")
-				.setClassName(this.constructor.name)
-				.setMethodName("sendMail")
-				.setMessage("Requested photo does not exist")
-				.build()
-				.throwError();
-		}
+		if (!photoExists) CustomError.builder().setMessage("Requested photo does not exist.").setErrorType("File Error").setStatusCode(400).build().throwError();
 
 		try {
 			let subject = `Purchase ${action.split(" ")[0]}`;
@@ -92,23 +55,10 @@ class MailService {
 			}
 
 			transporter.sendMail(mailOptions, (error, info) => {
-				if (error) {
-					console.error("Error sending email:", error);
-					throw error;
-				} else {
-					console.log("Email sent:", info.response);
-				}
+				if (error) throw error;
 			});
 		} catch (error: any) {
-			CustomError.builder()
-				.setErrorType("Server Error")
-				.setClassName(this.constructor.name)
-				.setMethodName("sendMail")
-				.setError(error)
-				.build()
-				.throwError();
-			console.error("Error sending mail:", error);
-			throw error;
+			CustomError.builder().setMessage("Cannot send email.").setExternalMessage(error.message).setErrorType("Email Error").setStatusCode(500).build().throwError();
 		}
 	}
 }
