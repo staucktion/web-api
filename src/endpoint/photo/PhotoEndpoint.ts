@@ -17,7 +17,7 @@ class PhotoEndpoint {
 
 	private initializeRoutes(): void {
 		// Upload photo and add watermark
-		this.router.post("/photo/upload", this.multerUtil.getUploader().single("photo"), async (req, res) => {
+		this.router.post("/photos", this.multerUtil.getUploader().single("photo"), async (req, res) => {
 			return await this.photoFacade.uploadPhoto(req, res);
 		});
 
