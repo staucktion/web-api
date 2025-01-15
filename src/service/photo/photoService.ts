@@ -2,23 +2,15 @@ import sharp from "sharp";
 import CustomError from "src/error/CustomError";
 
 class PhotoService {
-	public async addTextWatermark(
-		inputPath: string,
-		outputPath: string,
-		watermarkText: string
-	): Promise<void> {
+	public async addTextWatermark(inputPath: string, outputPath: string, watermarkText: string): Promise<void> {
 		try {
-			console.log("Watermarking image:", { inputPath, outputPath });
-
 			// Read image metadata
 			const image = sharp(inputPath);
 			let { width, height } = await image.metadata();
 
 			// Fallback dimensions if metadata is missing
 			if (!width || !height) {
-				const raw = await image
-					.raw()
-					.toBuffer({ resolveWithObject: true });
+				const raw = await image.raw().toBuffer({ resolveWithObject: true });
 				width = raw.info.width;
 				height = raw.info.height;
 			}
@@ -69,20 +61,9 @@ class PhotoService {
 			const svgBuffer = Buffer.from(svgText);
 
 			// Overlay the watermark on the image
-			await image
-				.composite([{ input: svgBuffer, top: 0, left: 0 }])
-				.toFile(outputPath);
-
-			console.log("Watermarked image saved at:", outputPath);
+			await image.composite([{ input: svgBuffer, top: 0, left: 0 }]).toFile(outputPath);
 		} catch (error: any) {
-			console.error("Error adding watermark:", error);
-			CustomError.builder()
-				.setErrorType("Server Error")
-				.setClassName(this.constructor.name)
-				.setMethodName("addTextWatermark")
-				.setError(error)
-				.build()
-				.throwError();
+			CustomError.builder().setMessage("Request body is required.").setExternalMessage(error.message).setErrorType("Photo Error").setStatusCode(400).build().throwError();
 		}
 	}
 }
