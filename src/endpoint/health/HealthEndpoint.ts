@@ -20,8 +20,8 @@ class HealthEndpoint {
 			res.status(200).json({
 				status: "UP",
 				mode: Config.mode,
-				description:
-					"this API provides the core functionality of the St{au}cktion project.",
+				requestLog: Config.requestLog,
+				description: "this API provides the core functionality of the St{au}cktion project.",
 			});
 		});
 	}
