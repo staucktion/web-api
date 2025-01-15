@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "e5f1705f-23a4-40ca-a8d4-7bd0b54f2acf",
-		"name": "staucktion-backend",
+		"_postman_id": "5f2339e4-b497-41cb-b7d5-c31e1cdd1217",
+		"name": "staucktion-web-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "5601458"
+		"_exporter_id": "26266539"
 	},
 	"item": [
 		{
@@ -50,7 +50,7 @@
 			"name": "photo",
 			"item": [
 				{
-					"name": "upload",
+					"name": "/photos",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -66,51 +66,47 @@
 							]
 						},
 						"url": {
-							"raw": "{{BASE_URL}}/photo/upload",
+							"raw": "{{BASE_URL}}/photos",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
-								"photo",
-								"upload"
+								"photos"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "list",
+					"name": "/photos",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL}}/photo/list",
+							"raw": "{{BASE_URL}}/photos",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
-								"photo",
-								"list"
+								"photos"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "view",
+					"name": "/photos/id",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL}}/photo/view/static/2024-12-29-04-39-911.jpg",
+							"raw": "{{BASE_URL}}/photos/2025-01-15-21-30-814.jpg",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
-								"photo",
-								"view",
-								"static",
-								"2024-12-29-04-39-911.jpg"
+								"photos",
+								"2025-01-15-21-30-814.jpg"
 							]
 						},
 						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
@@ -123,7 +119,7 @@
 			"name": "mail",
 			"item": [
 				{
-					"name": "sendMail",
+					"name": "/mail/send",
 					"request": {
 						"method": "POST",
 						"header": [],
