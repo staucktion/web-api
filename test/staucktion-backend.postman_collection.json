@@ -177,7 +177,7 @@
 	"variable": [
 		{
 			"key": "BASE_URL",
-			"value": "http://localhost:8082"
+			"value": "http://localhost:8003"
 		}
 	]
 }
