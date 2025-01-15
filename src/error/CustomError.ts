@@ -1,78 +1,67 @@
+import ErrorDto from "src/dto/error/ErrorDto";
+
 class CustomError {
 	private readonly errorType: string;
-	private readonly className: string;
-	private readonly methodName: string;
-	private readonly error: any;
-	private readonly message?: string;
+	private readonly statusCode: number;
+	private readonly stackTrace: string;
+	private readonly message: string;
+	private readonly externalMessage: string;
 
-	private constructor(
-		errorType: string,
-		className: string,
-		methodName: string,
-		error?: Error,
-		message?: string
-	) {
+	private constructor(errorType: string, statusCode: number, message: string, externalMessage: string) {
 		this.errorType = errorType;
-		this.className = className;
-		this.methodName = methodName;
-		this.error = error;
+		this.statusCode = statusCode;
+		this.stackTrace = new Error().stack;
 		this.message = message;
+		this.externalMessage = externalMessage;
 	}
 
 	public static builder() {
 		return new this.Builder();
 	}
 
-	private getErrorMessage(): string {
-		let errorMessage = `${this.errorType} -> ${this.className}.${this.methodName}: `;
+	public getBody(): ErrorDto {
+		const errorBody: any = {
+			errorType: this.errorType,
+			statusCode: this.statusCode,
+			stackTrace: this.stackTrace,
+			message: this.message,
+			externalMessage: this.externalMessage,
+		};
 
-		if (this.error?.response)
-			errorMessage +=
-				"Response:\n" +
-				JSON.stringify(this.error.response.data, null, 2);
-		else if (this.error?.code) errorMessage += this.error.code;
-
-		if (this.message) errorMessage += this.message;
-
-		return errorMessage;
+		return errorBody;
 	}
 
-	public throwError() {
-		const errorMessage = this.getErrorMessage();
-		console.error(errorMessage);
-		throw new Error(errorMessage);
+	public getStatusCode(): number {
+		return this.statusCode;
 	}
 
-	public logToTerminal() {
-		const errorMessage = this.getErrorMessage();
-		console.error(errorMessage);
+	public getMessage(): object {
+		return { message: this.message };
+	}
+
+	public log() {
+		console.error("[ERROR]");
+		console.error(this.getBody());
+	}
+
+	public throwError(): CustomError {
+		throw this;
 	}
 
 	// nested builder class
 	private static Builder = class {
-		private errorType: string | undefined;
-		private className: string | undefined;
-		private methodName: string | undefined;
-		private error: Error | undefined;
-		private message: string | undefined;
+		private errorType: string;
+		private statusCode: number;
+		private message: string;
+		private externalMessage: string;
 
 		public setErrorType(errorType: string): this {
 			this.errorType = errorType;
 			return this;
 		}
 
-		public setClassName(className: string): this {
-			this.className = className;
-			return this;
-		}
-
-		public setMethodName(methodName: string): this {
-			this.methodName = methodName;
-			return this;
-		}
-
-		public setError(error: Error): this {
-			this.error = error;
+		public setStatusCode(statusCode: number): this {
+			this.statusCode = statusCode;
 			return this;
 		}
 
@@ -81,18 +70,13 @@ class CustomError {
 			return this;
 		}
 
-		public build(): CustomError {
-			if (!this.errorType) throw new Error("errorType is required");
-			if (!this.className) throw new Error("className is required");
-			if (!this.methodName) throw new Error("methodName is required");
+		public setExternalMessage(externalMessage: string): this {
+			this.externalMessage = externalMessage;
+			return this;
+		}
 
-			return new CustomError(
-				this.errorType,
-				this.className,
-				this.methodName,
-				this.error,
-				this.message
-			);
+		public build(): CustomError {
+			return new CustomError(this.errorType, this.statusCode, this.message, this.externalMessage);
 		}
 	};
 }
