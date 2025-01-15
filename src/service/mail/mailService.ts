@@ -11,12 +11,6 @@ let transporter: nodemailer.Transporter | null = null;
 if (
 	[Config.email.from, Config.email.pass, Config.email.service].every(Boolean)
 ) {
-	console.log("Email Configuration:", {
-		service: Config.email.service,
-		user: Config.email.from,
-		pass: Config.email.pass ? "****" : "(missing)",
-	});
-
 	transporter = nodemailer.createTransport({
 		service: Config.email.service,
 		auth: {
