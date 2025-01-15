@@ -1,4 +1,5 @@
 import express, { Router } from "express";
+import path from "path";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import PhotoFacade from "src/facade/photo/photoFacade";
 import MulterUtil from "src/util/multerUtil";
@@ -24,8 +25,9 @@ class PhotoEndpoint {
 			await this.photoFacade.listPhotos(_req, res);
 		});
 
-		// Serve static watermarked photos
-		this.router.use("/photos", express.static(WATERMARK_PHOTO_DIR));
+		this.router.get("/photos/:photoId", async (req, res) => {
+			await this.photoFacade.getPhoto(req, res);
+		});
 	}
 
 	public getRouter(): Router {

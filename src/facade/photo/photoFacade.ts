@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as path from "path";
 import Config from "src/config/Config";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
+import GetPhotoRequestDto from "src/dto/error/GetPhotoRequestDto";
 import UploadPhotoDto from "src/dto/photo/UploadPhotoDto";
 import CustomError from "src/error/CustomError";
 import PhotoService from "src/service/photo/photoService";
@@ -16,7 +17,7 @@ class PhotoFacade {
 		this.photoService = new PhotoService();
 	}
 
-	public async uploadPhoto(req: Request, res: Response): Promise<Response> {
+	public async uploadPhoto(req: Request, res: Response): Promise<void> {
 		let uploadPhotoDto: UploadPhotoDto;
 
 		// get valid body from request
@@ -25,7 +26,8 @@ class PhotoFacade {
 		} catch (error: any) {
 			if (error instanceof CustomError) {
 				if (Config.explicitErrorLog) error.log();
-				return res.status(error.getStatusCode()).send(error.getMessage());
+				res.status(error.getStatusCode()).send(error.getMessage());
+				return;
 			}
 		}
 
@@ -35,21 +37,52 @@ class PhotoFacade {
 		} catch (error: any) {
 			if (error instanceof CustomError) {
 				if (Config.explicitErrorLog) error.log();
-				return res.status(error.getStatusCode()).send(error.getMessage());
+				res.status(error.getStatusCode()).send(error.getMessage());
+				return;
 			}
 		}
 
-		return res.status(204).send();
+		res.status(204).send();
+		return;
 	}
 
-	public async listPhotos(_req: Request, res: Response): Promise<Response> {
+	public async listPhotos(_req: Request, res: Response): Promise<void> {
 		try {
 			const photoNames = await this.photoService.listPhotos();
-			return res.status(200).send(photoNames);
+			res.status(200).send(photoNames);
+			return;
 		} catch (error: any) {
 			if (error instanceof CustomError) {
 				if (Config.explicitErrorLog) error.log();
-				return res.status(error.getStatusCode()).send(error.getMessage());
+				res.status(error.getStatusCode()).send(error.getMessage());
+				return;
+			}
+		}
+	}
+
+	public async getPhoto(req: Request, res: Response): Promise<void> {
+		let getPhotoRequestDto: GetPhotoRequestDto;
+
+		// get valid body from request
+		try {
+			getPhotoRequestDto = await this.photoValidation.getPhotoRequest(req);
+		} catch (error: any) {
+			if (error instanceof CustomError) {
+				if (Config.explicitErrorLog) error.log();
+				res.status(error.getStatusCode()).send(error.getMessage());
+				return;
+			}
+		}
+
+		try {
+			const photoPath = await this.photoService.getPhotoPath(getPhotoRequestDto.photoId);
+			res.sendFile(photoPath);
+			return;
+		} catch (error: any) {
+			if (error instanceof CustomError) {
+				if (Config.explicitErrorLog) error.log();
+				res.status(error.getStatusCode()).send(error.getMessage());
+				return;
 			}
 		}
 	}

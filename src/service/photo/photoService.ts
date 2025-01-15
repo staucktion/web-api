@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import path from "path";
 import sharp from "sharp";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import CustomError from "src/error/CustomError";
@@ -70,12 +71,20 @@ class PhotoService {
 		}
 	}
 
-	public async listPhotos(): Promise<String[]> {
+	public async listPhotos(): Promise<string[]> {
 		try {
 			const photoFiles = fs.readdirSync(WATERMARK_PHOTO_DIR).filter((file) => isAcceptablePhotoExtension(file));
 			return photoFiles;
 		} catch (error: any) {
 			CustomError.builder().setMessage("Error reading photo files").setExternalMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
+		}
+	}
+
+	public async getPhotoPath(photoId: string): Promise<string> {
+		try {
+			return path.resolve(WATERMARK_PHOTO_DIR, photoId);
+		} catch (error: any) {
+			CustomError.builder().setMessage("Error reading photo file").setExternalMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
 		}
 	}
 }
