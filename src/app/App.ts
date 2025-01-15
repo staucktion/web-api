@@ -16,8 +16,8 @@ class App {
 	}
 
 	private initializeMiddlewares(): void {
-		// If you want to log incoming requests
-		if (Config.log) this.app.use(Logger.logRequest);
+		// log incoming request
+		if (Config.requestLog) this.app.use(Logger.logRequest);
 
 		// 2) Enable CORS *before* routes
 		this.app.use(
@@ -40,9 +40,9 @@ class App {
 		const port = Config.port;
 		this.app.listen(port, () => {
 			console.log("🚀🚀🚀");
-			console.log(
-				`API and Frontend launched on: http://localhost:${port}`
-			);
+			console.log(`🚀 API launched on: http://localhost:${port}`);
+			console.log(`🚀 Mode: ${Config.mode}`);
+			console.log(`🚀 Request Log: ${Config.requestLog}`);
 			console.log("🚀🚀🚀");
 		});
 	}
