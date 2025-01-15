@@ -1,0 +1,10 @@
+./.git
+./.vscode
+./node_modules
+./.dockerignore
+./.editorconfig
+./.env.dev.example
+./.env.prod.example
+./.gitignore
+./Dockerfile
+./README.md
