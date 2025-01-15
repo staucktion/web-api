@@ -16,21 +16,16 @@ class App {
 	}
 
 	private initializeMiddlewares(): void {
-		// log incoming request
+		// allow cors CORS (Cross-Origin Resource Sharing)
+		this.app.use(cors());
+
+		// log incoming requests
 		if (Config.requestLog) this.app.use(Logger.logRequest);
 
-		// 2) Enable CORS *before* routes
-		this.app.use(
-			cors({
-				origin: "http://localhost:3000", // your React dev server
-				credentials: true, // if you need cookies/auth
-			})
-		);
-
-		// 3) Parse JSON request body
+		// parse JSON request body
 		this.app.use(express.json());
 	}
-
+	
 	private initializeRoutes(): void {
 		// setup routes
 		this.router.setupRoute(this.app);
