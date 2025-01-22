@@ -54,11 +54,14 @@ class MailService {
 				mailOptions.text += "\n\nThe image you purchased is attached.";
 			}
 
-			transporter.sendMail(mailOptions, (error, info) => {
-				if (error) throw error;
+			await new Promise<void>((resolve, reject) => {
+				transporter.sendMail(mailOptions, (error, info) => {
+					if (error) reject(error);
+					else resolve();
+				});
 			});
 		} catch (error: any) {
-			CustomError.builder().setMessage("Cannot send email.").setExternalMessage(error.message).setErrorType("Email Error").setStatusCode(500).build().throwError();
+			CustomError.builder().setMessage("Cannot send email.").setDetailedMessage(error.message).setErrorType("Email Error").setStatusCode(500).build().throwError();
 		}
 	}
 }

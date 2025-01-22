@@ -67,7 +67,7 @@ class PhotoService {
 			// Overlay the watermark on the image
 			await image.composite([{ input: svgBuffer, top: 0, left: 0 }]).toFile(outputPath);
 		} catch (error: any) {
-			CustomError.builder().setMessage("cannot watermark photo").setExternalMessage(error.message).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
+			CustomError.builder().setMessage("cannot watermark photo").setDetailedMessage(error.message).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
 		}
 	}
 
@@ -76,7 +76,7 @@ class PhotoService {
 			const photoFiles = fs.readdirSync(WATERMARK_PHOTO_DIR).filter((file) => isAcceptablePhotoExtension(file));
 			return photoFiles;
 		} catch (error: any) {
-			CustomError.builder().setMessage("Error reading photo files").setExternalMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
+			CustomError.builder().setMessage("Error reading photo files").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
 		}
 	}
 
@@ -86,7 +86,7 @@ class PhotoService {
 			if (!fs.existsSync(resolvedPath)) throw new Error();
 			return resolvedPath;
 		} catch (error: any) {
-			CustomError.builder().setMessage("Error reading photo file").setExternalMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
+			CustomError.builder().setMessage("Error reading photo file").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
 		}
 	}
 }

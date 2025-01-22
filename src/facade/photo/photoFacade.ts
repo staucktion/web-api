@@ -24,22 +24,16 @@ class PhotoFacade {
 		try {
 			uploadPhotoDto = await this.photoValidation.uploadPhotoRequest(req);
 		} catch (error: any) {
-			if (error instanceof CustomError) {
-				if (Config.explicitErrorLog) error.log();
-				res.status(error.getStatusCode()).send(error.getMessage());
-				return;
-			}
+			CustomError.handleError(res, error);
+			return;
 		}
 
 		// add watermark to the uploaded photo
 		try {
 			await this.photoService.addTextWatermark(`${uploadPhotoDto.destination}${uploadPhotoDto.filename}`, path.join(WATERMARK_PHOTO_DIR, uploadPhotoDto.filename), Config.watermark.text);
 		} catch (error: any) {
-			if (error instanceof CustomError) {
-				if (Config.explicitErrorLog) error.log();
-				res.status(error.getStatusCode()).send(error.getMessage());
-				return;
-			}
+			CustomError.handleError(res, error);
+			return;
 		}
 
 		res.status(204).send();
@@ -52,11 +46,8 @@ class PhotoFacade {
 			res.status(200).send(photoNames);
 			return;
 		} catch (error: any) {
-			if (error instanceof CustomError) {
-				if (Config.explicitErrorLog) error.log();
-				res.status(error.getStatusCode()).send(error.getMessage());
-				return;
-			}
+			CustomError.handleError(res, error);
+			return;
 		}
 	}
 
@@ -67,11 +58,8 @@ class PhotoFacade {
 		try {
 			getPhotoRequestDto = await this.photoValidation.getPhotoRequest(req);
 		} catch (error: any) {
-			if (error instanceof CustomError) {
-				if (Config.explicitErrorLog) error.log();
-				res.status(error.getStatusCode()).send(error.getMessage());
-				return;
-			}
+			CustomError.handleError(res, error);
+			return;
 		}
 
 		try {
@@ -79,11 +67,8 @@ class PhotoFacade {
 			res.sendFile(photoPath);
 			return;
 		} catch (error: any) {
-			if (error instanceof CustomError) {
-				if (Config.explicitErrorLog) error.log();
-				res.status(error.getStatusCode()).send(error.getMessage());
-				return;
-			}
+			CustomError.handleError(res, error);
+			return;
 		}
 	}
 }

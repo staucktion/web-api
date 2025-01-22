@@ -27,7 +27,7 @@ class PhotoValidation {
 			ValidationUtil.checkRequiredFields(requiredFields, uploadPhotoDto);
 		} catch (error: any) {
 			if (error instanceof CustomError)
-				CustomError.builder().setMessage(`Request body is invalid. ${error.getBody().externalMessage}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
+				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		return uploadPhotoDto;
@@ -48,7 +48,7 @@ class PhotoValidation {
 			ValidationUtil.checkRequiredFields(requiredFields, req.params);
 		} catch (error: any) {
 			if (error instanceof CustomError)
-				CustomError.builder().setMessage(`Request body is invalid. ${error.getBody().externalMessage}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
+				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		const getPhotoRequestDto: GetPhotoRequestDto = { photoId: req.params.photoId };

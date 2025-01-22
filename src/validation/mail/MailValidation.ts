@@ -1,7 +1,6 @@
 import { Request } from "express";
 import EmailDto from "src/dto/email/EmailDto";
 import CustomError from "src/error/CustomError";
-import { MailAction } from "src/types/mailTypes";
 import { isValidMailAction } from "src/util/mailUtil";
 import ValidationUtil from "src/util/ValidationUtil";
 
@@ -24,7 +23,7 @@ class MailValidation {
 			ValidationUtil.checkRequiredFields(requiredFields, emailDto);
 		} catch (error: any) {
 			if (error instanceof CustomError)
-				CustomError.builder().setMessage(`Request body is invalid. ${error.getBody().externalMessage}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
+				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		// validate email
