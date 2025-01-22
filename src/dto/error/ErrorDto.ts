@@ -3,5 +3,5 @@ export default interface ErrorDto {
 	stackTrace: string;
 	message: string;
 	statusCode: number;
-	externalMessage: string;
+	detailedMessage: string;
 }

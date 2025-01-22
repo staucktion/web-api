@@ -1,3 +1,5 @@
+import { Response } from "express";
+import Config from "src/config/Config";
 import ErrorDto from "src/dto/error/ErrorDto";
 
 class CustomError {
@@ -5,14 +7,14 @@ class CustomError {
 	private readonly statusCode: number;
 	private readonly stackTrace: string;
 	private readonly message: string;
-	private readonly externalMessage: string;
+	private readonly detailedMessage: string;
 
-	private constructor(errorType: string, statusCode: number, message: string, externalMessage: string) {
+	private constructor(errorType: string, statusCode: number, message: string, detailedMessage: string) {
 		this.errorType = errorType;
 		this.statusCode = statusCode;
 		this.stackTrace = new Error().stack;
 		this.message = message;
-		this.externalMessage = externalMessage;
+		this.detailedMessage = detailedMessage;
 	}
 
 	public static builder() {
@@ -20,22 +22,28 @@ class CustomError {
 	}
 
 	public getBody(): ErrorDto {
-		const errorBody: any = {
+		return {
 			errorType: this.errorType,
 			statusCode: this.statusCode,
 			stackTrace: this.stackTrace,
 			message: this.message,
-			externalMessage: this.externalMessage,
+			detailedMessage: this.detailedMessage,
 		};
+	}
 
-		return errorBody;
+	public getErrorType(): string {
+		return this.errorType;
+	}
+
+	public getDetailedMessage(): string {
+		return this.detailedMessage;
 	}
 
 	public getStatusCode(): number {
 		return this.statusCode;
 	}
 
-	public getMessage(): object {
+	public getResponseMessage(): object {
 		return { message: this.message };
 	}
 
@@ -48,12 +56,18 @@ class CustomError {
 		throw this;
 	}
 
+	public static handleError(res: Response, error: any): void {
+		const isCustomError = error instanceof CustomError;
+		if (isCustomError && Config.explicitErrorLog) error.log();
+		res.status(isCustomError ? error.getStatusCode() : 500).send(isCustomError ? error.getResponseMessage() : "no message");
+	}
+
 	// nested builder class
 	private static Builder = class {
 		private errorType: string;
 		private statusCode: number;
 		private message: string;
-		private externalMessage: string;
+		private detailedMessage: string;
 
 		public setErrorType(errorType: string): this {
 			this.errorType = errorType;
@@ -70,13 +84,13 @@ class CustomError {
 			return this;
 		}
 
-		public setExternalMessage(externalMessage: string): this {
-			this.externalMessage = externalMessage;
+		public setDetailedMessage(detailedMessage: string): this {
+			this.detailedMessage = detailedMessage;
 			return this;
 		}
 
 		public build(): CustomError {
-			return new CustomError(this.errorType, this.statusCode, this.message, this.externalMessage);
+			return new CustomError(this.errorType, this.statusCode, this.message, this.detailedMessage);
 		}
 	};
 }
