@@ -2,22 +2,22 @@ import dotenv from "dotenv";
 dotenv.config();
 
 class EnvVariables {
-	static port = process.env.PORT || 8082;
-	static mode = process.env.MODE || "dev";
-	static requestLog = process.env.REQUEST_LOG === "true";
-	static explicitErrorLog = process.env.EXPLICIT_ERROR_LOG === "true";
-	static multerFileSize = Number(process.env.MULTER_FILE_SIZE || 100000000);
+	static port: number = parseInt(process.env.PORT);
+	static mode: string = process.env.MODE;
+	static requestLog: boolean = Boolean(process.env.REQUEST_LOG);
+	static explicitErrorLog: boolean = Boolean(process.env.REQUEST_LOG);
+	static multerFileSize = parseInt(process.env.MULTER_FILE_SIZE);
 
 	static watermark = {
-		fontSize: Number(process.env.WATERMARK_FONT_SIZE || 10),
-		transparency: Number(process.env.WATERMARK_TRANSPARENCY || 0.8),
-		text: process.env.WATERMARK_TEXT || "STAUCKTION",
+		fontSize: parseFloat(process.env.WATERMARK_FONT_SIZE),
+		transparency: parseFloat(process.env.WATERMARK_TRANSPARENCY),
+		text: process.env.WATERMARK_TEXT,
 	};
 
 	static email = {
-		from: process.env.EMAIL_FROM || "",
-		pass: process.env.EMAIL_PASS || "",
-		service: process.env.EMAIL_SERVICE || "",
+		from: process.env.EMAIL_FROM,
+		pass: process.env.EMAIL_PASS,
+		service: process.env.EMAIL_SERVICE,
 	};
 }
 
