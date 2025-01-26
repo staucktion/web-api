@@ -5,7 +5,13 @@ class Logger {
 
 	public static logRequest(req: Request, res: Response, next: NextFunction): void {
 		Logger.requestCount++;
-		console.log(`[Info] Request #${Logger.requestCount} -> ${req.ip} - ${req.method} - ${req.originalUrl}`);
+
+		const requestNumber = `#${Logger.requestCount}`.padEnd(4);
+		const ip = req.ip.padEnd(15);
+		const method = req.method.padEnd(7);
+		const url = req.originalUrl;
+
+		console.log(`[Info] Request ${requestNumber} -> ${ip} - ${method} - ${url}`);
 		next();
 	}
 }
