@@ -6,7 +6,7 @@
 	"main": "-",
 	"type": "module",
 	"scripts": {
-		"prod": "dotenv -e .env.prod tsx index.ts",
+		"prod": "dotenv -e .env.prod -- tsx index.ts",
 		"dev": "dotenv -e .env.dev -- nodemon --exec tsx index.ts",
 		"clear-uploads": "tsx scripts/clearUploads.ts"
 	},
