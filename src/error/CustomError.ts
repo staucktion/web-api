@@ -58,8 +58,11 @@ class CustomError {
 
 	public static handleError(res: Response, error: any): void {
 		const isCustomError = error instanceof CustomError;
-		if (isCustomError && Config.explicitErrorLog) error.log();
-		res.status(isCustomError ? error.getStatusCode() : 500).send(isCustomError ? error.getResponseMessage() : "no message");
+		if (Config.explicitErrorLog)
+			if (isCustomError) error.log();
+			else console.error("[ERROR] ", error);
+
+		res.status(isCustomError ? error.getStatusCode() : 500).send(isCustomError ? error.getResponseMessage() : { message: "no message" });
 	}
 
 	// nested builder class
