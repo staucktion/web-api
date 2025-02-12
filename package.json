@@ -1,7 +1,7 @@
 {
-	"name": "second-increment-backend",
-	"version": "1.0.0",
-	"description": "watermarking",
+	"name": "web-api",
+	"version": "v1.1.0-SNAPSHOT",
+	"description": "web-api",
 	"author": "-",
 	"main": "-",
 	"type": "module",
