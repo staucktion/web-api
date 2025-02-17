@@ -14,6 +14,10 @@ class MailFacade {
 	}
 
 	public async sendMail(req: Request, res: Response): Promise<Response> {
+		if (!req.user) {
+			return res.status(401).send({ message: "Access Denied! No token provided." });
+		}
+
 		let emailDto: EmailDto;
 
 		// get valid body from request
@@ -25,7 +29,7 @@ class MailFacade {
 		}
 
 		try {
-			await this.mailService.sendMail(emailDto.photoName, emailDto.action, emailDto.email);
+			await this.mailService.sendMail(emailDto.photoName, emailDto.action, req.user.email);
 		} catch (error: any) {
 			CustomError.handleError(res, error);
 			return;

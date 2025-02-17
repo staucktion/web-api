@@ -1,5 +1,6 @@
 import cors from "cors";
 import express, { Application } from "express";
+import cookieParser from "cookie-parser";
 import Config from "src/config/Config";
 import Logger from "src/log/Logger";
 import Router from "src/router/Router";
@@ -17,13 +18,21 @@ class App {
 
 	private initializeMiddlewares(): void {
 		// allow cors CORS (Cross-Origin Resource Sharing)
-		this.app.use(cors());
+		this.app.use(
+			cors({
+				origin: Config.appUrl,
+				credentials: true,
+			})
+		);
 
 		// log incoming requests
 		if (Config.requestLog) this.app.use(Logger.logRequest);
 
 		// parse JSON request body
 		this.app.use(express.json());
+
+		// parse cookies
+		this.app.use(cookieParser());
 	}
 
 	private initializeRoutes(): void {
