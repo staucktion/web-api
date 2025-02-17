@@ -3,4 +3,4 @@ dist
 ./database
 .env.dev
 .env.prod
-staucktion-temp-db.json
+database/staucktion-temp-db.json

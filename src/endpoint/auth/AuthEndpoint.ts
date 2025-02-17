@@ -26,7 +26,8 @@ class AuthEndpoint {
 					{
 						clientID: Config.googleOAuth.clientID,
 						clientSecret: Config.googleOAuth.clientSecret,
-						callbackURL: "/auth/google/callback",
+						// Check if the appUrl doesn't end with a number, if it does, it's a port number so we don't need to add /web-api
+						callbackURL: `${isNaN(+Config.appUrl.split("").pop()) ? "/web-api" : ""}/auth/google/callback`,
 						passReqToCallback: true,
 					},
 					function (req, _accessToken, _refreshToken, _params, profile, done) {
