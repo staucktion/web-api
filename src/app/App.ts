@@ -18,7 +18,12 @@ class App {
 
 	private initializeMiddlewares(): void {
 		// allow cors CORS (Cross-Origin Resource Sharing)
-		this.app.use(cors());
+		this.app.use(
+			cors({
+				origin: Config.appUrl,
+				credentials: true,
+			})
+		);
 
 		// log incoming requests
 		if (Config.requestLog) this.app.use(Logger.logRequest);
