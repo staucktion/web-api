@@ -19,9 +19,9 @@ class AuthService {
 		return jwt.sign({ gmail_id }, Config.jwt.secret, { expiresIn: Config.jwt.expiresIn });
 	}
 
-	verifyJWT = (token: string) => {
+	verifyJWT = (token: string): { gmail_id: string } | null => {
 		try {
-			return jwt.verify(token, Config.jwt.secret);
+			return jwt.verify(token, Config.jwt.secret) as { gmail_id: string };
 		} catch (error) {
 			return null;
 		}

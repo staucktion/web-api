@@ -97,6 +97,8 @@ class AuthEndpoint {
 		}
 
 		this.router.post("/auth/logout", this.authFacade.handleLogout);
+
+		this.router.post("/auth/info", this.authFacade.handleUserInfo);
 	}
 
 	public getRouter(): Router {

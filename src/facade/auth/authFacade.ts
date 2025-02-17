@@ -43,15 +43,38 @@ class AuthFacade {
 		}
 	};
 
-	public async handleLogout(_req: Request, res: Response): Promise<void> {
+	handleLogout = async (_req: Request, res: Response): Promise<void> => {
 		res.clearCookie("token");
 		redirectWithHost(res, "/");
-	}
+	};
 
-	public async handleAuthError(error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction): Promise<void> {
+	handleAuthError = async (error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction): Promise<void> => {
 		console.error("An error occurred while logging in: " + error.message);
 		redirectWithHost(res, `/?error=${encodeURIComponent("An error occurred while logging in. Please try again!")}`);
-	}
+	};
+
+	handleUserInfo = async (req: Request, res: Response): Promise<void> => {
+		const token = req.cookies?.token;
+
+		if (!token) {
+			res.status(200).json({ user: null });
+			return;
+		}
+
+		try {
+			const tokenContent = this.authService.verifyJWT(token);
+
+			if (tokenContent) {
+				const user = await this.authService.getUser({ gmail_id: tokenContent.gmail_id });
+				res.status(200).json({ user });
+			} else {
+				res.clearCookie("token");
+				res.status(200).json({ user: null });
+			}
+		} catch (error) {
+			res.status(403).json({ message: "Invalid token" });
+		}
+	};
 }
 
 export default AuthFacade;
