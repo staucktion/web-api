@@ -125,7 +125,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"your-email@example.com\",\r\n    \"photoName\": \"2024-12-29-04-39-911.jpg\",\r\n    \"action\": \"Approve Purchase\"\r\n}",
+							"raw": "{\r\n    \"photoName\": \"2024-12-29-04-39-911.jpg\",\r\n    \"action\": \"Approve Purchase\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
