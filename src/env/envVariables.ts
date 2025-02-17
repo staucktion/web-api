@@ -19,6 +19,18 @@ class EnvVariables {
 		pass: process.env.EMAIL_PASS,
 		service: process.env.EMAIL_SERVICE,
 	};
+
+	static appUrl = process.env.VITE_APP_URL;
+
+	static jwt = {
+		secret: process.env.JWT_SECRET,
+		expiresIn: process.env.JWT_EXPIRES_IN as `${number}${"s" | "m" | "h" | "d"}`,
+	};
+
+	static googleOAuth = {
+		clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
+		clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+	};
 }
 
 export default EnvVariables;

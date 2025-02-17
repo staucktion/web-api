@@ -1,5 +1,6 @@
 import cors from "cors";
 import express, { Application } from "express";
+import cookieParser from "cookie-parser";
 import Config from "src/config/Config";
 import Logger from "src/log/Logger";
 import Router from "src/router/Router";
@@ -24,6 +25,9 @@ class App {
 
 		// parse JSON request body
 		this.app.use(express.json());
+
+		// parse cookies
+		this.app.use(cookieParser());
 	}
 
 	private initializeRoutes(): void {
