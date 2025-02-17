@@ -7,7 +7,7 @@
 	"type": "module",
 	"scripts": {
 		"prod": "dotenv -e .env.prod -- tsx index.ts",
-		"dev": "dotenv -e .env.dev -- nodemon --exec tsx index.ts",
+		"dev": "dotenv -e .env.dev -- nodemon --ignore 'staucktion-temp-db.json' --exec tsx index.ts",
 		"clear-uploads": "tsx scripts/clearUploads.ts"
 	},
 	"keywords": [],
@@ -24,6 +24,7 @@
 		"passport": "^0.7.0",
 		"passport-google-oauth2": "^0.2.0",
 		"sharp": "^0.33.5",
+		"simple-json-db": "^2.0.0",
 		"tsx": "^4.19.2",
 		"web-vitals": "^4.2.4"
 	},

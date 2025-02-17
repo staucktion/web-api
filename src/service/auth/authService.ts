@@ -1,17 +1,15 @@
 import UserDto from "src/dto/auth/UserDto";
 import jwt from "jsonwebtoken";
 import Config from "src/config/Config";
+import { db } from "src/database";
 
 class AuthService {
-	/** gmail_id -> User */
-	private users: Map<string, UserDto> = new Map();
-
 	async getUser({ gmail_id }: { gmail_id: string }): Promise<UserDto | undefined> {
-		return this.users.get(gmail_id);
+		return await db.get(`/users/${gmail_id}`);
 	}
 
 	async createUser(user: UserDto): Promise<UserDto> {
-		this.users.set(user.gmail_id, user);
+		await db.set(`/users/${user.gmail_id}`, user);
 		return user;
 	}
 
