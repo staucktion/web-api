@@ -11,6 +11,12 @@ class Config {
 	static watermark = { ...EnvVariables.watermark };
 
 	static email = { ...EnvVariables.email };
+
+	static appUrl = EnvVariables.appUrl;
+
+	static jwt = { ...EnvVariables.jwt };
+
+	static googleOAuth = { ...EnvVariables.googleOAuth };
 }
 
 export default Config;
