@@ -1,4 +1,4 @@
-# Web API [v1.0.0]
+# Web API [v1.1.0]
 
 ### E-Mail System Setup
 
