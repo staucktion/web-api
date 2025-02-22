@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as path from "path";
 import Config from "src/config/Config";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
+import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import GetPhotoRequestDto from "src/dto/error/GetPhotoRequestDto";
 import UploadPhotoDto from "src/dto/photo/UploadPhotoDto";
 import CustomError from "src/error/CustomError";
@@ -36,8 +37,15 @@ class PhotoFacade {
 			return;
 		}
 
-		res.status(204).send();
-		return;
+		// save to database
+		try {
+			const baseResponseDto: BaseResponseDto = await this.photoService.uploadPhotoDb(uploadPhotoDto.filename);
+			res.status(200).json(baseResponseDto);
+			return;
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
 	}
 
 	public async listPhotos(_req: Request, res: Response): Promise<void> {

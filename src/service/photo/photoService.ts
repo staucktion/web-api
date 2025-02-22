@@ -1,11 +1,20 @@
+import { PrismaClient } from "@prisma/client";
 import * as fs from "fs";
 import path from "path";
 import sharp from "sharp";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
+import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import CustomError from "src/error/CustomError";
 import { isAcceptablePhotoExtension } from "src/util/photoUtil";
+import PrismaUtil from "src/util/PrismaUtil";
 
 class PhotoService {
+	private prisma: PrismaClient;
+
+	constructor() {
+		this.prisma = PrismaUtil.getPrismaClient();
+	}
+
 	public async addTextWatermark(inputPath: string, outputPath: string, watermarkText: string): Promise<void> {
 		try {
 			// Read image metadata
@@ -68,6 +77,35 @@ class PhotoService {
 			await image.composite([{ input: svgBuffer, top: 0, left: 0 }]).toFile(outputPath);
 		} catch (error: any) {
 			CustomError.builder().setMessage("cannot watermark photo").setDetailedMessage(error.message).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
+		}
+	}
+
+	public async uploadPhotoDb(fileName): Promise<BaseResponseDto> {
+		try {
+			// todo user id
+			// todo location id
+			// todo category id
+			// todo device info
+			const instance = await this.prisma.photo.create({
+				data: {
+					file_path: fileName,
+					user_id: 1,
+					auction_id: null,
+					location_id: 1,
+					category_id: 1,
+					title: fileName,
+					device_info: "deviceInfo",
+					vote_count: 0,
+					is_deleted: false,
+					created_at: new Date(),
+					updated_at: new Date(),
+					status_id: 1,
+				},
+			});
+
+			return { id: Number(instance.id) };
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
 
