@@ -50,6 +50,7 @@ CREATE TABLE "location" (
 -- CreateTable
 CREATE TABLE "photo" (
     "id" BIGSERIAL NOT NULL,
+    "file_path" VARCHAR(100),
     "title" VARCHAR(100),
     "user_id" BIGSERIAL NOT NULL,
     "auction_id" BIGINT,
