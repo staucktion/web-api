@@ -18,8 +18,8 @@ model auction {
   updated_at  DateTime @db.Timestamp(6)
   category    category @relation(fields: [category_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
   status      status   @relation(fields: [status_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
-  bid_list         bid[]
-  photo_list       photo[]
+  bid_list    bid[]
+  photo_list  photo[]
 }
 
 model bid {
@@ -42,22 +42,23 @@ model category {
   is_deleted   Boolean
   created_at   DateTime  @db.Timestamp(6)
   updated_at   DateTime  @db.Timestamp(6)
-  auction_list      auction[]
+  auction_list auction[]
   location     location  @relation(fields: [location_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
   status       status    @relation(fields: [status_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
-  photo_list        photo[]
+  photo_list   photo[]
 }
 
 model location {
-  id        BigInt     @id @default(autoincrement())
-  latitude  String     @db.VarChar(100)
-  longitude String     @db.VarChar(100)
-  category_list  category[]
-  photo_list     photo[]
+  id            BigInt     @id @default(autoincrement())
+  latitude      String     @db.VarChar(100)
+  longitude     String     @db.VarChar(100)
+  category_list category[]
+  photo_list    photo[]
 }
 
 model photo {
   id          BigInt   @id @default(autoincrement())
+  file_path   String?  @db.VarChar(100)
   title       String?  @db.VarChar(100)
   user_id     BigInt   @default(autoincrement())
   auction_id  BigInt?
@@ -77,8 +78,8 @@ model photo {
 }
 
 model status {
-  id       Int        @id @default(autoincrement())
-  status   String     @db.VarChar(100)
+  id            Int        @id @default(autoincrement())
+  status        String     @db.VarChar(100)
   auction_list  auction[]
   category_list category[]
   photo_list    photo[]
@@ -97,14 +98,14 @@ model user {
   is_deleted Boolean
   created_at DateTime   @db.Timestamp(6)
   updated_at DateTime   @db.Timestamp(6)
-  bid_list        bid[]
-  photo_list      photo[]
+  bid_list   bid[]
+  photo_list photo[]
   user_role  user_role? @relation(fields: [role_id], references: [id], onUpdate: NoAction)
   status     status?    @relation(fields: [status_id], references: [id], onUpdate: NoAction)
 }
 
 model user_role {
-  id   BigInt @id @default(autoincrement())
-  role String @unique @db.VarChar(100)
+  id        BigInt @id @default(autoincrement())
+  role      String @unique @db.VarChar(100)
   user_list user[]
 }
