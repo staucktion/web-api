@@ -50,8 +50,8 @@ class PhotoFacade {
 
 	public async listPhotos(_req: Request, res: Response): Promise<void> {
 		try {
-			const photoNames = await this.photoService.listPhotos();
-			res.status(200).send(photoNames);
+			const instanceList = await this.photoService.listPhotos();
+			res.status(200).json(instanceList);
 			return;
 		} catch (error: any) {
 			CustomError.handleError(res, error);

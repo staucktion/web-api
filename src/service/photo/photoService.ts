@@ -4,6 +4,7 @@ import path from "path";
 import sharp from "sharp";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
+import ReadAllPhotoResponseDto from "src/dto/photo/readAllPhotoResponseDto";
 import CustomError from "src/error/CustomError";
 import { isAcceptablePhotoExtension } from "src/util/photoUtil";
 import PrismaUtil from "src/util/PrismaUtil";
@@ -109,12 +110,32 @@ class PhotoService {
 		}
 	}
 
-	public async listPhotos(): Promise<string[]> {
+	public async listPhotos(): Promise<ReadAllPhotoResponseDto[]> {
 		try {
-			const photoFiles = fs.readdirSync(WATERMARK_PHOTO_DIR).filter((file) => isAcceptablePhotoExtension(file));
-			return photoFiles;
+			const instanceList = await this.prisma.photo.findMany({
+				where: {
+					is_deleted: false,
+				},
+			});
+
+			const mappedInstanceList: ReadAllPhotoResponseDto[] = instanceList.map((photo) => ({
+				id: Number(photo.id),
+				file_path: photo.file_path,
+				title: photo.title,
+				device_info: photo.device_info,
+				vote_count: photo.vote_count,
+				user_id: Number(photo.user_id),
+				auction_id: photo.auction_id ? Number(photo.auction_id) : null,
+				location_id: Number(photo.location_id),
+				category_id: Number(photo.category_id),
+				status_id: photo.status_id,
+				created_at: photo.created_at,
+				updated_at: photo.updated_at,
+			}));
+
+			return mappedInstanceList;
 		} catch (error: any) {
-			CustomError.builder().setMessage("Error reading photo files").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
 
