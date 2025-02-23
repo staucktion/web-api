@@ -100,13 +100,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL}}/photos/2025-01-15-21-30-814.jpg",
+							"raw": "{{BASE_URL}}/photos/1",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"photos",
-								"2025-01-15-21-30-814.jpg"
+								"1"
 							]
 						},
 						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
@@ -173,7 +173,7 @@
 	"variable": [
 		{
 			"key": "BASE_URL",
-			"value": "http://localhost:8003"
+			"value": "https://st.local.net/web-api"
 		}
 	]
 }

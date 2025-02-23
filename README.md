@@ -4,7 +4,7 @@ For email configuration to work, you need to provide the needed parameters. If y
 
 ### Configure env variables
 
--   Rename `.env.dev.example` as `.env.dev` with proper configuration.
+-   Rename `.env.dev.code.example` or `.env.dev.docker.example` as `.env.dev` with proper configuration. (If you launch from docker copy .docker.example, if you launch from development environment VS Code etc..., copy .code.example)
 
 -   Rename `.env.prod.example` as `.env.prod` with proper configuration.
 

@@ -1,3 +1,3 @@
 export default interface GetPhotoRequestDto {
-	photoId: string;
+	photoId: number;
 }

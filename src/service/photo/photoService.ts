@@ -1,11 +1,21 @@
+import { PrismaClient } from "@prisma/client";
 import * as fs from "fs";
 import path from "path";
 import sharp from "sharp";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
+import BaseResponseDto from "src/dto/base/BaseResponseDto";
+import ReadAllPhotoResponseDto from "src/dto/photo/readAllPhotoResponseDto";
 import CustomError from "src/error/CustomError";
 import { isAcceptablePhotoExtension } from "src/util/photoUtil";
+import PrismaUtil from "src/util/PrismaUtil";
 
 class PhotoService {
+	private prisma: PrismaClient;
+
+	constructor() {
+		this.prisma = PrismaUtil.getPrismaClient();
+	}
+
 	public async addTextWatermark(inputPath: string, outputPath: string, watermarkText: string): Promise<void> {
 		try {
 			// Read image metadata
@@ -71,18 +81,77 @@ class PhotoService {
 		}
 	}
 
-	public async listPhotos(): Promise<string[]> {
+	public async uploadPhotoDb(fileName): Promise<BaseResponseDto> {
 		try {
-			const photoFiles = fs.readdirSync(WATERMARK_PHOTO_DIR).filter((file) => isAcceptablePhotoExtension(file));
-			return photoFiles;
+			// todo user id
+			// todo location id
+			// todo category id
+			// todo device info
+			const instance = await this.prisma.photo.create({
+				data: {
+					file_path: fileName,
+					user_id: 1,
+					auction_id: null,
+					location_id: 1,
+					category_id: 1,
+					title: fileName,
+					device_info: "deviceInfo",
+					vote_count: 0,
+					is_deleted: false,
+					created_at: new Date(),
+					updated_at: new Date(),
+					status_id: 1,
+				},
+			});
+
+			return { id: Number(instance.id) };
 		} catch (error: any) {
-			CustomError.builder().setMessage("Error reading photo files").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
 
-	public async getPhotoPath(photoId: string): Promise<string> {
+	public async listPhotos(): Promise<ReadAllPhotoResponseDto[]> {
 		try {
-			const resolvedPath = path.resolve(WATERMARK_PHOTO_DIR, photoId);
+			const instanceList = await this.prisma.photo.findMany({
+				where: {
+					is_deleted: false,
+				},
+			});
+
+			const mappedInstanceList: ReadAllPhotoResponseDto[] = instanceList.map((photo) => ({
+				id: Number(photo.id),
+				file_path: photo.file_path,
+				title: photo.title,
+				device_info: photo.device_info,
+				vote_count: photo.vote_count,
+				user_id: Number(photo.user_id),
+				auction_id: photo.auction_id ? Number(photo.auction_id) : null,
+				location_id: Number(photo.location_id),
+				category_id: Number(photo.category_id),
+				status_id: photo.status_id,
+				created_at: photo.created_at,
+				updated_at: photo.updated_at,
+			}));
+
+			return mappedInstanceList;
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
+
+	public async getPhotoPath(photoId: number): Promise<string> {
+		try {
+			const instance = await this.prisma.photo.findUnique({
+				where: {
+					id: photoId,
+					is_deleted: false,
+				},
+				select: {
+					file_path: true,
+				},
+			});
+
+			const resolvedPath = path.resolve(WATERMARK_PHOTO_DIR, instance.file_path);
 			if (!fs.existsSync(resolvedPath)) throw new Error();
 			return resolvedPath;
 		} catch (error: any) {
