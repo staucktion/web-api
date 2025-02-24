@@ -29,7 +29,7 @@ class MailFacade {
 		}
 
 		try {
-			await this.mailService.sendMail(emailDto.photoName, emailDto.action, req.user.email);
+			await this.mailService.sendMail(emailDto.photoId, emailDto.action, req.user.email);
 		} catch (error: any) {
 			CustomError.handleError(res, error);
 			return;
