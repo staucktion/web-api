@@ -15,6 +15,7 @@ class AuthService {
 		const user = await this.prisma.user.findFirst({
 			where: {
 				gmail_id,
+				is_deleted: false,
 			},
 		});
 
