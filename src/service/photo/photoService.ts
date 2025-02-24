@@ -4,9 +4,8 @@ import path from "path";
 import sharp from "sharp";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
-import ReadAllPhotoResponseDto from "src/dto/photo/readAllPhotoResponseDto";
+import ReadAllPhotoResponseDto from "src/dto/photo/ReadAllPhotoResponseDto";
 import CustomError from "src/error/CustomError";
-import { isAcceptablePhotoExtension } from "src/util/photoUtil";
 import PrismaUtil from "src/util/PrismaUtil";
 
 class PhotoService {
