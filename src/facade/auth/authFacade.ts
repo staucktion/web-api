@@ -3,6 +3,7 @@ import { authCookieOptions } from "src/constants/authConstants";
 import UserDto from "src/dto/auth/UserDto";
 import AuthService from "src/service/auth/authService";
 import { redirectWithHost } from "src/util/authUtil";
+import jsonStringifyBigint from "src/util/jsonStringifyBigint";
 
 class AuthFacade {
 	private authService: AuthService;
@@ -66,7 +67,7 @@ class AuthFacade {
 
 			if (tokenContent) {
 				const user = await this.authService.getUser({ gmail_id: tokenContent.gmail_id });
-				res.status(200).json({ user });
+				res.status(200).send(jsonStringifyBigint({ user }));
 			} else {
 				res.clearCookie("token");
 				res.status(200).json({ user: null });
