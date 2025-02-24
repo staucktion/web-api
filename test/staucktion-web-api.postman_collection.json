@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "5f2339e4-b497-41cb-b7d5-c31e1cdd1217",
+		"_postman_id": "0a64a8a3-758d-44c5-a70e-d8c8b1e583b3",
 		"name": "staucktion-web-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26266539"
+		"_exporter_id": "5601458"
 	},
 	"item": [
 		{
@@ -125,7 +125,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"photoName\": \"2024-12-29-04-39-911.jpg\",\r\n    \"action\": \"Approve Purchase\"\r\n}",
+							"raw": "{\r\n    \"photoId\": 1,\r\n    \"action\": \"Approve Purchase\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -155,7 +155,12 @@
 				"type": "text/javascript",
 				"packages": {},
 				"exec": [
-					""
+					"const AUTH_TOKEN = pm.collectionVariables.get(\"AUTH_TOKEN\");",
+					"",
+					"pm.request.headers.add({",
+					"    key: 'Cookie',",
+					"    value: `token=${AUTH_TOKEN}`",
+					"});"
 				]
 			}
 		},
@@ -174,6 +179,11 @@
 		{
 			"key": "BASE_URL",
 			"value": "https://st.local.net/web-api"
+		},
+		{
+			"key": "AUTH_TOKEN",
+			"value": "",
+			"type": "default"
 		}
 	]
 }
