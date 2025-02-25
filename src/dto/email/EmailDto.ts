@@ -1,6 +1,6 @@
 import { MailAction } from "src/types/mailTypes";
 
 export default interface EmailDto {
-	photoName: string;
+	photoId: number;
 	action: MailAction;
 }

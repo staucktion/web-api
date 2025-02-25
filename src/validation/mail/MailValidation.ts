@@ -7,7 +7,7 @@ import ValidationUtil from "src/util/ValidationUtil";
 class MailValidation {
 	public async sendMailRequest(req: Request): Promise<EmailDto> {
 		const emailDto = req.body;
-		const requiredFields: string[] = ["photoName", "action"];
+		const requiredFields: string[] = ["photoId", "action"];
 
 		// validate request body
 		try {
