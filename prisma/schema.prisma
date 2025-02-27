@@ -88,13 +88,13 @@ model status {
 
 model user {
   id         BigInt     @id @default(autoincrement())
-  gmail_id   BigInt?
+  gmail_id   String?    @db.VarChar(100)
   username   String     @db.VarChar(100)
   email      String     @db.VarChar(100)
   password   String     @db.VarChar(255)
   first_name String     @db.VarChar(100)
   last_name  String     @db.VarChar(100)
-  role_id    BigInt?    @default(autoincrement())
+  role_id    BigInt?
   status_id  Int?
   is_deleted Boolean
   created_at DateTime   @db.Timestamp(6)

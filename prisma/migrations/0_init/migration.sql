@@ -77,13 +77,13 @@ CREATE TABLE "status" (
 -- CreateTable
 CREATE TABLE "user" (
     "id" BIGSERIAL NOT NULL,
-    "gmail_id" BIGINT,
+    "gmail_id" VARCHAR(100),
     "username" VARCHAR(100) NOT NULL,
     "email" VARCHAR(100) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     "first_name" VARCHAR(100) NOT NULL,
     "last_name" VARCHAR(100) NOT NULL,
-    "role_id" BIGSERIAL,
+    "role_id" BIGINT,
     "status_id" INTEGER,
     "is_deleted" BOOLEAN NOT NULL,
     "created_at" TIMESTAMP(6) NOT NULL,
