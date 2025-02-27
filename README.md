@@ -33,16 +33,13 @@ npm run dev
 ### Updating Prisma
 
 -   Make changes on db.
+-   Use git bash as terminal (do not use powershell as creating file in different format).
 
 ```
-npx prisma db pull
 rm ./prisma/migrations/0_init/migration.sql
+npx prisma db pull
 npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0_init/migration.sql
-```
-
--   If it is creating `./prisma/migrations/0_init/migration.sql` script with encoding `UTF-16 LE` in vs code change it to `UTF-8`
-
-```
 npx prisma migrate resolve --applied 0_init
 npx prisma generate
+npm run dev
 ```
