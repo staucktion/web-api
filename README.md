@@ -35,9 +35,18 @@ npm run dev
 -   Make changes on db.
 -   Use git bash as terminal (do not use powershell as creating file in different format).
 
+## From The Beginning
+```
+rm -r ./prisma
+npx prisma init
+npx prisma db pull
+```
+
+## If Want to Keep Schema
 ```
 rm ./prisma/migrations/0_init/migration.sql
 npx prisma db pull
+mkdir -p ./prisma/migrations/0_init
 npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0_init/migration.sql
 npx prisma migrate resolve --applied 0_init
 npx prisma generate

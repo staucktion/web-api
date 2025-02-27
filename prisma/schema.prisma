@@ -60,10 +60,10 @@ model photo {
   id          BigInt    @id @default(autoincrement())
   file_path   String?   @db.VarChar(100)
   title       String?   @db.VarChar(100)
-  user_id     BigInt?   @default(autoincrement())
+  user_id     BigInt?
   auction_id  BigInt?
-  location_id BigInt?   @default(autoincrement())
-  category_id BigInt?   @default(autoincrement())
+  location_id BigInt?
+  category_id BigInt?
   status_id   Int?
   device_info String    @db.VarChar(255)
   vote_count  Int
