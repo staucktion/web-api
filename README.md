@@ -24,9 +24,25 @@ npm run dev
 
 ### Production mode
 
-- Refer system startup commands for production launch. Check [`docker-config`](https://github.com/staucktion/docker-config) repository.
-
+-   Refer system startup commands for production launch. Check [`docker-config`](https://github.com/staucktion/docker-config) repository.
 
 ### Test endpoint
 
 /test directory includes postman endpoint test
+
+### Updating Prisma
+
+-   Make changes on db.
+
+```
+npx prisma db pull
+rm ./prisma/migrations/0_init/migration.sql
+npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0_init/migration.sql
+```
+
+-   If it is creating `./prisma/migrations/0_init/migration.sql` script with encoding `UTF-16 LE` in vs code change it to `UTF-8`
+
+```
+npx prisma migrate resolve --applied 0_init
+npx prisma generate
+```
