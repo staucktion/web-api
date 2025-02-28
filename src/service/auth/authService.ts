@@ -25,8 +25,8 @@ class AuthService {
 	async createUser(user: UserDto): Promise<UserDto> {
 		const usernameSplit = user.username.split(" ");
 
-		console.log("got user");
-		console.table(user);
+		// console.log("got user");
+		// console.table(user);
 		// TODO: Delete the password field if we decide to go with OAuth only
 		await this.prisma.user.create({
 			data: {
