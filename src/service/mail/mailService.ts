@@ -5,6 +5,8 @@ import { MailAction } from "src/types/mailTypes";
 import * as path from "path";
 import * as fs from "fs";
 import { ORIGINAL_PHOTO_DIR } from "src/constants/photoConstants";
+import { PrismaClient } from "@prisma/client";
+import PrismaUtil from "src/util/PrismaUtil";
 
 let transporter: nodemailer.Transporter | null = null;
 
@@ -21,9 +23,24 @@ if ([Config.email.from, Config.email.pass, Config.email.service].every(Boolean))
 }
 
 class MailService {
-	public async sendMail(photoName: string, action: MailAction, receiverEmail: string): Promise<void> {
+	private prisma: PrismaClient;
+
+	constructor() {
+		this.prisma = PrismaUtil.getPrismaClient();
+	}
+
+	public async sendMail(photoId: number, action: MailAction, receiverEmail: string): Promise<void> {
 		if (!transporter) CustomError.builder().setMessage("Transporter not reachable.").setErrorType("Email Error").setStatusCode(500).build().throwError();
 
+		const photoDto = await this.prisma.photo.findUnique({
+			where: {
+				id: photoId,
+			},
+		});
+
+		if (!photoDto) CustomError.builder().setMessage("Photo not found.").setErrorType("Database Error").setStatusCode(404).build().throwError();
+
+		const photoName = photoDto.file_path;
 		const photoPath = path.join(ORIGINAL_PHOTO_DIR, photoName);
 		const photoExists = fs.existsSync(photoPath);
 
@@ -59,6 +76,15 @@ class MailService {
 					if (error) reject(error);
 					else resolve();
 				});
+			});
+
+			await this.prisma.photo.update({
+				where: {
+					id: photoDto.id,
+				},
+				data: {
+					is_deleted: true,
+				},
 			});
 		} catch (error: any) {
 			CustomError.builder().setMessage("Cannot send email.").setDetailedMessage(error.message).setErrorType("Email Error").setStatusCode(500).build().throwError();

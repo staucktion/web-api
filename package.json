@@ -1,18 +1,19 @@
 {
 	"name": "web-api",
-	"version": "v1.1.0",
+	"version": "v1.2.0",
 	"description": "web-api",
 	"author": "-",
 	"main": "-",
 	"type": "module",
 	"scripts": {
 		"prod": "dotenv -e .env.prod -- tsx index.ts",
-		"dev": "dotenv -e .env.dev -- nodemon --ignore 'database/staucktion-temp-db.json' --exec tsx index.ts",
+		"dev": "dotenv -e .env.dev -- nodemon --exec tsx index.ts",
 		"clear-uploads": "tsx scripts/clearUploads.ts"
 	},
 	"keywords": [],
 	"license": "ISC",
 	"dependencies": {
+		"@prisma/client": "^6.4.1",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
 		"dotenv": "^16.3.1",
@@ -38,6 +39,7 @@
 		"@types/multer": "^1.4.11",
 		"@types/node": "^20.10.1",
 		"@types/nodemailer": "^6.4.17",
-		"nodemon": "^3.1.9"
+		"nodemon": "^3.1.9",
+		"prisma": "^6.4.1"
 	}
 }
