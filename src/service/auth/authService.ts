@@ -22,13 +22,11 @@ class AuthService {
 		return user;
 	}
 
-	async createUser(user: UserDto): Promise<UserDto> {
+	async createUser(user: Omit<UserDto, "id">): Promise<UserDto> {
 		const usernameSplit = user.username.split(" ");
 
-		// console.log("got user");
-		// console.table(user);
 		// TODO: Delete the password field if we decide to go with OAuth only
-		await this.prisma.user.create({
+		const createdUser = await this.prisma.user.create({
 			data: {
 				...user,
 				password: "disabled-oauth",
@@ -42,7 +40,7 @@ class AuthService {
 			},
 		});
 
-		return user;
+		return createdUser;
 	}
 
 	generateJWT(gmail_id: string): string {

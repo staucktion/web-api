@@ -6,7 +6,8 @@ import AuthFacade from "src/facade/auth/authFacade";
 import * as crypto from "crypto";
 import { authCookieOptions } from "src/constants/authConstants";
 import { CombinedState } from "src/types/authTypes";
-
+import GoogleProfileDto from "src/dto/auth/GoogleProfileDto";
+import FormattedGoogleProfileDto from "src/dto/auth/FormattedGoogleProfileDto";
 class AuthEndpoint {
 	private authFacade: AuthFacade;
 	private router: Router;
@@ -30,7 +31,7 @@ class AuthEndpoint {
 						callbackURL: `${isNaN(+Config.appUrl.split("").pop()) ? "/web-api" : ""}/auth/google/callback`,
 						passReqToCallback: true,
 					},
-					function (req, _accessToken, _refreshToken, _params, profile, done) {
+					function (req, _accessToken, _refreshToken, _params, profile: GoogleProfileDto, done) {
 						const rawState = req.query.state as string | undefined;
 						if (!rawState) {
 							done(new Error("No state provided"), null);
@@ -53,10 +54,12 @@ class AuthEndpoint {
 						}
 
 						done(null, {
+							gmail_id: profile.id,
 							email: profile.email,
 							username: profile.displayName,
-							gmail_id: profile.id,
-						});
+							profile_picture: profile.picture,
+							name: profile.name,
+						} satisfies FormattedGoogleProfileDto);
 					}
 				)
 			);

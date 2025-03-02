@@ -1,6 +1,9 @@
 export default interface UserDto {
+	id: number | bigint;
+	gmail_id: string;
 	email: string;
 	username: string;
-	gmail_id: string;
-	id: number;
+	profile_picture: string;
+	first_name: string;
+	last_name: string;
 }
