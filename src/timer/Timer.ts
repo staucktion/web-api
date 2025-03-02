@@ -39,6 +39,11 @@ export class Timer {
 	}
 
 	private async cronJob() {
-		await this.timerFacade.cronJob();
+		try {
+			await this.timerFacade.cronJob();
+		} catch (error: any) {
+			console.error("Cron Error");
+			console.error(error);
+		}
 	}
 }
