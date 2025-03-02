@@ -16,12 +16,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/health",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"health"
-							]
+							"host": ["{{BASE_URL}}"],
+							"path": ["health"]
 						}
 					},
 					"response": []
@@ -33,13 +29,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/health/info",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"health",
-								"info"
-							]
+							"host": ["{{BASE_URL}}"],
+							"path": ["health", "info"]
 						}
 					},
 					"response": []
@@ -67,12 +58,8 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/photos",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos"
-							]
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos"]
 						}
 					},
 					"response": []
@@ -84,12 +71,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/photos",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos"
-							]
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos"]
 						}
 					},
 					"response": []
@@ -101,13 +84,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/photos/1",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos",
-								"1"
-							]
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "1"]
 						},
 						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
 					},
@@ -134,12 +112,219 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/mail/send",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"mail",
-								"send"
+							"host": ["{{BASE_URL}}"],
+							"path": ["mail", "send"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "location",
+			"item": [
+				{
+					"name": "Get All Locations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Location By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Location",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/locations",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Location",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Location",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "category",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/categories",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/categories/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sample Category\",\r\n    \"address\": \"123 Main St\",\r\n    \"valid_radius\": 5.0,\r\n    \"location_id\": 1,\r\n    \"status_id\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/categories",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Updated Category\",\r\n    \"address\": \"456 Main St\",\r\n    \"valid_radius\": 10.0,\r\n    \"location_id\": 1,\r\n    \"status_id\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/categories/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/categories/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Categories By Location ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1/categories",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1", "categories"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Categories By Coordinates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/categories/search/by-coordinates?latitude=40.7128&longitude=-74.0060",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", "search", "by-coordinates"],
+							"query": [
+								{
+									"key": "latitude",
+									"value": "40.7128"
+								},
+								{
+									"key": "longitude",
+									"value": "-74.0060"
+								}
 							]
 						}
 					},
@@ -154,14 +339,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
-				"exec": [
-					"const AUTH_TOKEN = pm.collectionVariables.get(\"AUTH_TOKEN\");",
-					"",
-					"pm.request.headers.add({",
-					"    key: 'Cookie',",
-					"    value: `token=${AUTH_TOKEN}`",
-					"});"
-				]
+				"exec": ["const AUTH_TOKEN = pm.collectionVariables.get(\"AUTH_TOKEN\");", "", "pm.request.headers.add({", "    key: 'Cookie',", "    value: `token=${AUTH_TOKEN}`", "});"]
 			}
 		},
 		{
@@ -169,9 +347,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
-				"exec": [
-					""
-				]
+				"exec": [""]
 			}
 		}
 	],
