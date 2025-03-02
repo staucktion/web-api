@@ -3,6 +3,7 @@ import * as fs from "fs";
 import path from "path";
 import sharp from "sharp";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
+import UserDto from "src/dto/auth/UserDto";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import ReadAllPhotoResponseDto from "src/dto/photo/ReadAllPhotoResponseDto";
 import CustomError from "src/error/CustomError";
@@ -80,7 +81,7 @@ class PhotoService {
 		}
 	}
 
-	public async uploadPhotoDb(fileName): Promise<BaseResponseDto> {
+	public async uploadPhotoDb(user: UserDto, fileName: string): Promise<BaseResponseDto> {
 		try {
 			// todo user id
 			// todo location id
@@ -89,7 +90,7 @@ class PhotoService {
 			const instance = await this.prisma.photo.create({
 				data: {
 					file_path: fileName,
-					user_id: 1,
+					user_id: user.id,
 					auction_id: null,
 					location_id: 1,
 					category_id: 1,

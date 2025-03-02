@@ -39,7 +39,7 @@ class PhotoFacade {
 
 		// save to database
 		try {
-			const baseResponseDto: BaseResponseDto = await this.photoService.uploadPhotoDb(uploadPhotoDto.filename);
+			const baseResponseDto: BaseResponseDto = await this.photoService.uploadPhotoDb(req.user, uploadPhotoDto.filename);
 			res.status(200).json(baseResponseDto);
 			return;
 		} catch (error: any) {
