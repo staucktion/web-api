@@ -1,12 +1,15 @@
 import cron from "node-cron";
+import TimerFacade from "src/facade/timer/TimerFacade";
 import TimerService from "src/service/timer/TimerService";
 
 export class Timer {
 	private task: cron.ScheduledTask | null = null;
 	private timerService: TimerService;
+	private timerFacade: TimerFacade;
 
 	constructor() {
 		this.timerService = new TimerService();
+		this.timerFacade = new TimerFacade();
 	}
 
 	public async start() {
@@ -36,6 +39,6 @@ export class Timer {
 	}
 
 	private async cronJob() {
-		await this.timerService.cronJob();
+		await this.timerFacade.cronJob();
 	}
 }

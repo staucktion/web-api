@@ -11,11 +11,6 @@ class TimerService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
-	public async cronJob() {
-		console.log("[INFO] 🕑 Job is running at:", new Date().toISOString());
-		this.saveLastTriggerTimeToDb();
-	}
-
 	public async getCronInformation(): Promise<CronDto> {
 		try {
 			const instance = await this.prisma.cron.findFirst();
