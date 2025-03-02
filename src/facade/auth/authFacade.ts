@@ -73,7 +73,8 @@ class AuthFacade {
 				res.status(200).json({ user: null });
 			}
 		} catch (error) {
-			res.status(403).json({ message: "Invalid token" });
+			res.clearCookie("token");
+			res.status(403).json({ message: "Invalid token. You have been logged out." });
 		}
 	};
 }
