@@ -19,7 +19,7 @@ class CategoryService {
 				include: {
 					location: true,
 					status: true,
-					auction_list: true,
+					auction_list: { where: { is_deleted: false } },
 					photo_list: true,
 				},
 			});
