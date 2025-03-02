@@ -64,3 +64,11 @@ class App {
 }
 
 export default App;
+
+process.on("unhandledRejection", (reason, p) => {
+	console.log("Unhandled Rejection at: Promise", p, "reason:", reason);
+});
+
+process.on("uncaughtException", (error) => {
+	console.log("Uncaught Exception:", error);
+});
