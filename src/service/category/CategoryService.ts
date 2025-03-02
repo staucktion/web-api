@@ -12,7 +12,7 @@ class CategoryService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
-	public async listAllCategories(): Promise<any[]> {
+	public async listAllCategories(): Promise<CategoryDto[]> {
 		try {
 			const instanceList = await this.prisma.category.findMany({
 				where: { is_deleted: false },
