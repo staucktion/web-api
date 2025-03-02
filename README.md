@@ -30,9 +30,42 @@ npm run dev
 
 <br/>
 
+### API Authentication
+
+Many endpoints in the API require authentication. Authentication is implemented using JSON Web Tokens (JWT).
+
+-   Authenticated endpoints require a valid JWT token provided in a cookie named `token`
+-   The following endpoints require authentication:
+    -   POST `/mail/send` - Sending emails
+    -   POST `/locations` - Creating locations
+    -   PUT `/locations/:id` - Updating locations
+    -   DELETE `/locations/:id` - Deleting locations
+    -   POST `/categories` - Creating categories
+    -   PUT `/categories/:id` - Updating categories
+    -   DELETE `/categories/:id` - Deleting categories
+
+#### How to Get Your Authentication Token
+
+To obtain your authentication token from an existing authenticated session:
+
+1. Log in to the application in your browser
+2. Open Developer Tools (F12 or Right Click → Inspect)
+3. Navigate to the "Application" tab
+4. Select "Cookies" in the left sidebar
+5. Find the appropriate domain in the list
+6. Look for a cookie named "token"
+7. Copy the value of this cookie to use in your API requests
+
+<br/>
+
 ### Test endpoint
 
-/test directory includes postman endpoint test
+/test directory includes postman endpoint test. The Postman collection has been updated to indicate which endpoints require authentication.
+
+To use authenticated endpoints in Postman:
+
+1. Set the AUTH_TOKEN variable in the collection with your JWT token (see instructions above on how to get your token)
+2. The token will be automatically included in the request header
 
 <br/>
 
