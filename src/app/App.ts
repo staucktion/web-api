@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import Config from "src/config/Config";
 import Logger from "src/log/Logger";
 import Router from "src/router/Router";
+import { Timer } from "src/timer/Timer";
 
 class App {
 	private app: Application;
@@ -14,6 +15,7 @@ class App {
 		this.router = new Router();
 		this.initializeMiddlewares();
 		this.initializeRoutes();
+		Timer.start(); 
 	}
 
 	private initializeMiddlewares(): void {
