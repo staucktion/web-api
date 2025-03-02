@@ -9,7 +9,7 @@ class CategoryService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
-	async getCategoryById(id: bigint): Promise<CategoryDto | null> {
+	async getCategoryById(id: bigint | number): Promise<CategoryDto | null> {
 		const category = await this.prisma.category.findUnique({
 			where: {
 				id,

@@ -12,8 +12,8 @@ declare module "express" {
 
 class PhotoValidation {
 	public async uploadPhotoRequest(req: Request): Promise<UploadPhotoDto> {
-		const uploadPhotoDto: UploadPhotoDto = req.file;
-		const requiredFields: string[] = ["destination", "filename"];
+		const uploadPhotoDto: UploadPhotoDto = { ...req.file, categoryId: req.body.categoryId };
+		const requiredFields: string[] = ["destination", "filename", "categoryId"];
 
 		// validate request body
 		try {
@@ -29,6 +29,9 @@ class PhotoValidation {
 			if (error instanceof CustomError)
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
+
+		const categoryId = Number(uploadPhotoDto.categoryId);
+		if (isNaN(categoryId)) CustomError.builder().setMessage("Category ID is invalid.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 
 		return uploadPhotoDto;
 	}
@@ -51,7 +54,10 @@ class PhotoValidation {
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
-		const getPhotoRequestDto: GetPhotoRequestDto = { photoId: req.params.photoId };
+		const photoId = Number(req.params.photoId);
+		if (isNaN(photoId)) CustomError.builder().setMessage("Photo ID is invalid.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+
+		const getPhotoRequestDto: GetPhotoRequestDto = { photoId };
 		return getPhotoRequestDto;
 	}
 }

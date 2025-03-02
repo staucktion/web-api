@@ -54,6 +54,10 @@
 									"description": "Select a file from your local environment here",
 									"type": "file",
 									"src": []
+								},
+								{
+									"key": "categoryId",
+									"value": "1"
 								}
 							]
 						},

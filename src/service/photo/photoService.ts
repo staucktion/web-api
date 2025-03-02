@@ -80,19 +80,16 @@ class PhotoService {
 		}
 	}
 
-	public async uploadPhotoDb(fileName): Promise<BaseResponseDto> {
+	public async uploadPhotoDb(fileName: string, userId: number, locationId: bigint | number, categoryId: bigint | number): Promise<BaseResponseDto> {
 		try {
-			// todo user id
-			// todo location id
-			// todo category id
 			// todo device info
 			const instance = await this.prisma.photo.create({
 				data: {
 					file_path: fileName,
-					user_id: 1,
+					user_id: userId,
 					auction_id: null,
-					location_id: 1,
-					category_id: 1,
+					location_id: locationId,
+					category_id: categoryId,
 					title: fileName,
 					device_info: "deviceInfo",
 					vote_count: 0,
