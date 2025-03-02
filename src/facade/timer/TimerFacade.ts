@@ -17,7 +17,7 @@ class TimerFacade {
 		const categoryList = await this.categoryService.listAllCategories();
 
 		categoryList.forEach((category) => {
-			// todo add if auction exist and statuses of all is not available to start new one.
+			// todo add if auction exist and statuses of all is available to start new one.
 			if (category.auction_list?.length === 0) {
 				console.warn("no auctions");
 			}
