@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import CronDto from "src/dto/cron/CronDto";
 import CustomError from "src/error/CustomError";
+import DateUtil from "src/util/dateUtil";
 import PrismaUtil from "src/util/PrismaUtil";
 
 class TimerService {
@@ -53,6 +54,22 @@ class TimerService {
 			return cronExpression;
 		} catch (error: any) {
 			CustomError.builder().setErrorType("Cron Expression Read Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
+
+	public async saveLastTriggerTimeToDb(): Promise<void> {
+		try {
+			const currentTime = DateUtil.getNowWithoutMs();
+
+			const updatedCron = await this.prisma.cron.updateMany({
+				data: { last_trigger_time: currentTime },
+			});
+
+			if (updatedCron.count === 0) {
+				throw CustomError.builder().setErrorType("Cron Write Error").setStatusCode(404).setMessage("Cannot update cron last_triggered_time").build();
+			}
+		} catch (error: any) {
+			throw CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build();
 		}
 	}
 }

@@ -37,5 +37,6 @@ export class Timer {
 
 	private cronJob() {
 		console.log("[INFO] Job is running at:", new Date().toISOString());
+		this.timerService.saveLastTriggerTimeToDb();
 	}
 }
