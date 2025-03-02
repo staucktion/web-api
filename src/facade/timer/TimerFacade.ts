@@ -20,11 +20,19 @@ class TimerFacade {
 		const categoryList = await this.categoryService.listAllCategories();
 
 		categoryList.forEach((category) => {
-			// todo add if category is valid.
 			// todo add if auction exist and statuses of all is available to start new one.
-			if (category.auction_list?.length === 0) {
-				this.auctionService.listAllAuctions();
-				console.warn("no auctions");
+
+			console.log(category);
+
+			if (category.status?.status === "approve") {
+				if (category.auction_list?.length === 0) {
+					this.auctionService.listAllAuctions();
+					console.warn("auction is needed to create");
+				} else {
+					console.log("other stage rather than create auction");
+				}
+			} else {
+				// console.log("category status is not approved");
 			}
 		});
 	}

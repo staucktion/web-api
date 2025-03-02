@@ -6,7 +6,7 @@ export default interface CategoryDto extends BaseResponseDto {
 	address: string;
 	valid_radius: number;
 	location: LocationDto;
-	status: string;
+	status: any;
 	auction_list: any[];
 	photo_list: any[];
 }

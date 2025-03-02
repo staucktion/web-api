@@ -33,7 +33,7 @@ class CategoryService {
 					address: tmpInstance.address,
 					valid_radius: tmpInstance.valid_radius,
 					location: tmpInstance.location,
-					status: tmpInstance.status.status,
+					status: tmpInstance.status,
 					auction_list: tmpInstance.auction_list,
 					photo_list: tmpInstance.photo_list,
 				};
