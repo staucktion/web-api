@@ -1,31 +1,41 @@
 import cron from "node-cron";
+import TimerService from "src/service/timer/TimerService";
 
 export class Timer {
-  private static task: cron.ScheduledTask | null = null;
-  private static readonly cronExpression: string = "*/5 * * * * *";
+	private task: cron.ScheduledTask | null = null;
+	private timerService: TimerService;
 
-  static start() {
-    if (this.task) {
-      console.log("Timer is already running.");
-      return;
-    }
-    this.task = cron.schedule(this.cronExpression, () => this.cronJob(), {
-      scheduled: true,
-      timezone: "UTC",
-    });
+	constructor() {
+		this.timerService = new TimerService();
+	}
 
-    console.log(`Timer started with cron expression: ${this.cronExpression}`);
-  }
+	public async start() {
+		if (this.task) {
+			console.log("Timer is already running.");
+			return;
+		}
 
-  static stop() {
-    if (this.task) {
-      this.task.stop();
-      this.task = null;
-      console.log("Timer stopped.");
-    }
-  }
+		const cronExpression = await this.timerService.getCronExpression();
 
-  private static cronJob() {
-    console.log("Job is running at:", new Date().toISOString());
-  }
+		this.task = cron.schedule(cronExpression, () => this.cronJob(), {
+			scheduled: true,
+			timezone: "UTC",
+		});
+
+		console.info(`🕑🕑🕑`);
+		console.info(`🕑 Timer started with cron expression: ${cronExpression}`);
+		console.info(`🕑🕑🕑`);
+	}
+
+	public stop() {
+		if (this.task) {
+			this.task.stop();
+			this.task = null;
+			console.log("Timer stopped.");
+		}
+	}
+
+	private cronJob() {
+		console.log("[INFO] Job is running at:", new Date().toISOString());
+	}
 }

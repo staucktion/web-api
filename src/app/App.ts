@@ -9,13 +9,15 @@ import { Timer } from "src/timer/Timer";
 class App {
 	private app: Application;
 	private router: Router;
+	private timer: Timer;
 
 	constructor() {
 		this.app = express();
 		this.router = new Router();
 		this.initializeMiddlewares();
 		this.initializeRoutes();
-		Timer.start(); 
+		this.timer = new Timer();
+		this.timer.start();
 	}
 
 	private initializeMiddlewares(): void {

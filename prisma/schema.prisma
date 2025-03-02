@@ -110,3 +110,10 @@ model user_role {
   role      String @unique @db.VarChar(100)
   user_list user[]
 }
+
+model cron {
+  id                BigInt    @id @default(autoincrement())
+  unit              String    @db.Char(1)
+  interval          Int
+  last_trigger_time DateTime? @db.Timestamp(6)
+}

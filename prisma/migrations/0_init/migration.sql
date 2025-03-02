@@ -100,6 +100,16 @@ CREATE TABLE "user_role" (
     CONSTRAINT "user_role_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "cron" (
+    "id" BIGSERIAL NOT NULL,
+    "unit" CHAR(1) NOT NULL,
+    "interval" INTEGER NOT NULL,
+    "last_trigger_time" TIMESTAMP(6),
+
+    CONSTRAINT "cron_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "bid_provision_id_on_bank_key" ON "bid"("provision_id_on_bank");
 
