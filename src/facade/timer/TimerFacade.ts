@@ -22,12 +22,13 @@ class TimerFacade {
 		categoryList.forEach((category) => {
 			if (category.status?.status === "approve") {
 				// console.log("category");
-				// console.log(category);
-
-				if (!category.auction_list?.length || category.auction_list.some((auction) => auction.status?.status !== "finish")) {
+				// console.log(JSON.stringify(category, null, 2));
+				if (
+					(!category.auction_list?.length || category.auction_list.some((auction) => auction.status?.status !== "finish")) &&
+					category.photo_list?.some((photo) => photo.status?.status === "approve")
+				) {
 					
-					console.log("Auction is needed to create for category:", category.name);
-					this.auctionService.listAllAuctions();
+					// console.log("Auction is needed to create for category:", category.id);
 				} else {
 					console.log("other stage rather than create auction");
 				}
