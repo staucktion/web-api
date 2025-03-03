@@ -47,6 +47,9 @@ class TimerService {
 				case "h":
 					cronExpression = `0 */${cronDto.interval} * * *`; // Every X hours
 					break;
+				case "w":
+					cronExpression = `0 0 * * ${cronDto.interval}`; // Every X weeks (0-6, where 0 = Sunday)
+					break;
 				default:
 					throw CustomError.builder().setErrorType("Invalid Cron Unit").setStatusCode(400).setMessage(`Invalid unit '${cronDto.unit}'. Expected 's', 'm', or 'h'.`).build();
 			}
