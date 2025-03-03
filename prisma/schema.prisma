@@ -99,6 +99,8 @@ model user {
   is_deleted Boolean
   created_at DateTime   @db.Timestamp(6)
   updated_at DateTime   @db.Timestamp(6)
+  tc_identity_no  String?    @db.VarChar(11)
+  profile_picture String?
   bid_list   bid[]
   photo_list photo[]
   user_role  user_role? @relation(fields: [role_id], references: [id], onUpdate: NoAction)

@@ -1,32 +1,46 @@
 import express, { Router } from "express";
-import path from "path";
-import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import PhotoFacade from "src/facade/photo/photoFacade";
 import MulterUtil from "src/util/multerUtil";
+import { AuthMiddleware } from "src/middleware/authMiddleware";
 
 class PhotoEndpoint {
 	private photoFacade: PhotoFacade;
 	private router: Router;
 	private multerUtil: MulterUtil;
+	private authMiddleware: AuthMiddleware;
 
 	constructor() {
 		this.photoFacade = new PhotoFacade();
 		this.router = express.Router();
 		this.multerUtil = new MulterUtil();
+		this.authMiddleware = new AuthMiddleware();
 		this.initializeRoutes();
 	}
 
 	private initializeRoutes(): void {
-		this.router.post("/photos", this.multerUtil.getUploader().single("photo"), async (req, res) => {
-			await this.photoFacade.uploadPhoto(req, res);
+		// Upload a photo (authenticated)
+		this.router.post("/photos", this.authMiddleware.authenticateJWT, this.multerUtil.getUploader().single("photo"), (req, res) => {
+			this.photoFacade.uploadPhoto(req, res);
 		});
 
-		this.router.get("/photos", async (_req, res) => {
-			await this.photoFacade.listPhotos(_req, res);
+		// Get all approved photos (public)
+		this.router.get("/photos", (req, res) => {
+			this.photoFacade.listPhotos(req, res);
 		});
 
-		this.router.get("/photos/:photoId", async (req, res) => {
-			await this.photoFacade.getPhoto(req, res);
+		// Get waiting photos (authenticated)
+		this.router.get("/photos/waiting", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.listWaitingPhotos(req, res);
+		});
+
+		// Approve/reject a photo (authenticated)
+		this.router.put("/photos/:photoId/status", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.approveRejectPhoto(req, res);
+		});
+
+		// Get a specific photo (public)
+		this.router.get("/photos/:photoId", (req, res) => {
+			this.photoFacade.getPhoto(req, res);
 		});
 	}
 

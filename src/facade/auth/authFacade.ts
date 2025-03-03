@@ -3,7 +3,8 @@ import { authCookieOptions } from "src/constants/authConstants";
 import UserDto from "src/dto/auth/UserDto";
 import AuthService from "src/service/auth/authService";
 import { redirectWithHost } from "src/util/authUtil";
-import jsonStringifyBigint from "src/util/jsonStringifyBigint";
+import sendJsonBigint from "src/util/sendJsonBigint";
+import FormattedGoogleProfileDto from "src/dto/auth/FormattedGoogleProfileDto";
 
 class AuthFacade {
 	private authService: AuthService;
@@ -14,26 +15,29 @@ class AuthFacade {
 
 	handleSuccessfulGoogleCallback = async (req: Request, res: Response): Promise<void> => {
 		const reqN = req as unknown as express.RequestHandler & {
-			passportUser: Pick<UserDto, "email" | "username" | "gmail_id">;
+			passportUser: FormattedGoogleProfileDto;
 		};
-		const profData = reqN.passportUser;
+		const gmailProfileData = reqN.passportUser;
 
 		let user: UserDto | undefined;
-		const email = profData.email.toLowerCase();
+		const email = gmailProfileData.email.toLowerCase();
 		try {
 			user = await this.authService.getUser({
-				gmail_id: profData.gmail_id,
+				gmail_id: gmailProfileData.gmail_id,
 			});
 
 			if (!user) {
 				user = await this.authService.createUser({
 					email,
-					gmail_id: profData.gmail_id,
-					username: profData.username,
+					gmail_id: gmailProfileData.gmail_id,
+					username: gmailProfileData.username,
+					profile_picture: gmailProfileData.profile_picture,
+					first_name: gmailProfileData.name.givenName,
+					last_name: gmailProfileData.name.familyName,
 				});
 			}
 
-			const token = this.authService.generateJWT(profData.gmail_id);
+			const token = this.authService.generateJWT(gmailProfileData.gmail_id);
 			res.cookie("token", token, authCookieOptions);
 
 			redirectWithHost(res, "/");
@@ -67,13 +71,14 @@ class AuthFacade {
 
 			if (tokenContent) {
 				const user = await this.authService.getUser({ gmail_id: tokenContent.gmail_id });
-				res.status(200).send(jsonStringifyBigint({ user }));
+				sendJsonBigint(res, { user });
 			} else {
 				res.clearCookie("token");
 				res.status(200).json({ user: null });
 			}
 		} catch (error) {
-			res.status(403).json({ message: "Invalid token" });
+			res.clearCookie("token");
+			res.status(403).json({ message: "Invalid token. You have been logged out." });
 		}
 	};
 }

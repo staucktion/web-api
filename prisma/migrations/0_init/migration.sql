@@ -88,6 +88,8 @@ CREATE TABLE "user" (
     "is_deleted" BOOLEAN NOT NULL,
     "created_at" TIMESTAMP(6) NOT NULL,
     "updated_at" TIMESTAMP(6) NOT NULL,
+    "tc_identity_no" VARCHAR(11),
+    "profile_picture" TEXT,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
