@@ -1,16 +1,19 @@
 import AuctionService from "src/service/auction/AuctionService";
 import CategoryService from "src/service/category/CategoryService";
+import StatusService from "src/service/status/StatusService";
 import TimerService from "src/service/timer/TimerService";
 
 class TimerFacade {
 	private timerService: TimerService;
 	private categoryService: CategoryService;
 	private auctionService: AuctionService;
+	private statusService: StatusService;
 
 	constructor() {
 		this.timerService = new TimerService();
 		this.categoryService = new CategoryService();
 		this.auctionService = new AuctionService();
+		this.statusService = new StatusService();
 	}
 
 	public async cronJob() {
@@ -34,10 +37,23 @@ class TimerFacade {
 					await this.auctionService.insertNewAuction(category.id);
 				}
 
-				//
+				// change auction status from 'vote' to 'auction'
 				else if (category.auction_list?.some((auction) => auction.status?.status === "vote")) {
 					console.log("change 'vote' status to 'auction'");
-					// await this.auctionService.UpdateAuction(category);
+
+					const auctionStatus = await this.statusService.getStatusFromName("auction");
+
+					for (const auction of category.auction_list) {
+						// console.log("auction");
+						// console.log(JSON.stringify(auction, null, 2));
+
+						if (auction.status?.status === "vote") {
+							console.log(`Auction status change from 'vote' to 'auction'.`);
+
+							const dataToUpdateAuction = { ...auction, status_id: auctionStatus.id };
+							await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
+						}
+					}
 				}
 
 				// other stage
