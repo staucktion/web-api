@@ -31,12 +31,13 @@ class TimerFacade {
 					category.photo_list?.some((photo) => photo.status?.status === "approve")
 				) {
 					console.log("auction is needed to create");
-					await this.auctionService.insertNewAuction(category);
+					await this.auctionService.insertNewAuction(category.id);
 				}
 
-				// moving vote status to auction
+				//
 				else if (category.auction_list?.some((auction) => auction.status?.status === "vote")) {
-					console.log("'vote' statusu olan  'acution' statusune geçmeli");
+					console.log("change 'vote' status to 'auction'");
+					// await this.auctionService.UpdateAuction(category);
 				}
 
 				// other stage
