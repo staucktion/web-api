@@ -5,6 +5,8 @@ const handlePrismaType = (obj: any): any => {
 		return Number(obj);
 	} else if (obj instanceof Decimal) {
 		return obj.toNumber();
+	} else if (obj instanceof Date) {
+		return obj.toISOString();
 	} else if (Array.isArray(obj)) {
 		return obj.map(handlePrismaType);
 	} else if (typeof obj === "object" && obj !== null) {

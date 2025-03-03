@@ -11,7 +11,7 @@ class DateUtil {
 	}
 
 	public static getNowWithoutMs(): Date {
-		return new Date(new Date().toISOString().split(".")[0]);
+		return new Date(new Date().toISOString().replace(/\.\d{3}Z$/, "Z"));
 	}
 }
 
