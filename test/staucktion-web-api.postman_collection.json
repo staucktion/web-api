@@ -95,6 +95,98 @@
 						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
 					},
 					"response": []
+				},
+				{
+					"name": "Get Waiting Photos (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/waiting",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "waiting"]
+						},
+						"description": "Retrieves a list of photos in WAIT state. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Photo (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"approve\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", ":photoId", "status"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1",
+									"description": "ID of the photo to approve"
+								}
+							]
+						},
+						"description": "Approves a photo, changing its status from WAIT to APPROVED. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Photo (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"reject\",\n  \"reason\": \"Inappropriate content\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", ":photoId", "status"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1",
+									"description": "ID of the photo to reject"
+								}
+							]
+						},
+						"description": "Rejects a photo, changing its status from WAIT to REJECTED. Requires a reason for rejection. Requires authentication. Only accessible to admins."
+					},
+					"response": []
 				}
 			]
 		},
@@ -332,6 +424,98 @@
 								}
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Waiting Categories (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/categories/waiting",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", "waiting"]
+						},
+						"description": "Retrieves a list of categories in WAIT state. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Category (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"approve\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/categories/:id/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", ":id", "status"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID of the category to approve"
+								}
+							]
+						},
+						"description": "Approves a category, changing its status from WAIT to APPROVED. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Category (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"reject\",\n  \"reason\": \"Inappropriate content\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/categories/:id/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", ":id", "status"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID of the category to reject"
+								}
+							]
+						},
+						"description": "Rejects a category, changing its status from WAIT to REJECTED. Requires a reason for rejection. Requires authentication. Only accessible to admins."
 					},
 					"response": []
 				}

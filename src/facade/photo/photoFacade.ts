@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as path from "path";
 import Config from "src/config/Config";
-import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
+import { WATERMARK_PHOTO_DIR, ORIGINAL_PHOTO_DIR } from "src/constants/photoConstants";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import CategoryDto from "src/dto/category/CategoryDto";
 import LocationDto from "src/dto/location/LocationDto";
@@ -12,6 +12,8 @@ import CategoryService from "src/service/category/categoryService";
 import LocationService from "src/service/location/locationService";
 import PhotoService from "src/service/photo/photoService";
 import PhotoValidation from "src/validation/photo/PhotoValidation";
+import { StatusEnum } from "src/types/statusEnum";
+import sendJsonBigint from "src/util/sendJsonBigint";
 
 class PhotoFacade {
 	private photoService: PhotoService;
@@ -27,9 +29,21 @@ class PhotoFacade {
 	}
 
 	public async uploadPhoto(req: Request, res: Response): Promise<void> {
-		const user = req.user;
-		if (!user) {
-			CustomError.handleError(res, CustomError.builder().setErrorType("Unauthorized").setStatusCode(401).setMessage("Unauthorized").build());
+		// check if user authenticated
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		// check if file uploaded
+		if (!req.file) {
+			CustomError.handleError(res, CustomError.builder().setMessage("There is no file in the request").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
+		// check if category id provided
+		if (!req.body.categoryId) {
+			CustomError.handleError(res, CustomError.builder().setMessage("categoryId must be provided").setErrorType("Bad Request").setStatusCode(400).build());
 			return;
 		}
 
@@ -43,6 +57,7 @@ class PhotoFacade {
 			return;
 		}
 
+		// get category
 		let category: CategoryDto;
 		try {
 			category = await this.categoryService.getCategoryById(uploadPhotoDto.categoryId);
@@ -67,10 +82,11 @@ class PhotoFacade {
 			return;
 		}
 
-		// save to database
+		// save to database with WAIT status
 		try {
-			const baseResponseDto: BaseResponseDto = await this.photoService.uploadPhotoDb(uploadPhotoDto.filename, user.id, location.id, category.id);
-			res.status(200).json(baseResponseDto);
+			const baseResponseDto: BaseResponseDto = await this.photoService.uploadPhotoDb(uploadPhotoDto.filename, req.user.id, location.id, category.id, StatusEnum.WAIT);
+
+			sendJsonBigint(res, baseResponseDto, 200);
 			return;
 		} catch (error: any) {
 			CustomError.handleError(res, error);
@@ -80,9 +96,52 @@ class PhotoFacade {
 
 	public async listPhotos(_req: Request, res: Response): Promise<void> {
 		try {
-			const instanceList = await this.photoService.listPhotos();
-			res.status(200).json(instanceList);
+			// Only show APPROVED photos in the general list
+			const instanceList = await this.photoService.listPhotosByStatus(StatusEnum.APPROVE);
+			sendJsonBigint(res, instanceList, 200);
 			return;
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
+	public async listWaitingPhotos(_req: Request, res: Response): Promise<void> {
+		try {
+			const waitingPhotos = await this.photoService.listPhotosByStatus(StatusEnum.WAIT);
+			sendJsonBigint(res, waitingPhotos, 200);
+			return;
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
+	public async approveRejectPhoto(req: Request, res: Response): Promise<void> {
+		// Check authentication
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		try {
+			// Validate request
+			const { photoId, action, reason } = await this.photoValidation.validateApproveRejectRequest(req);
+
+			// Determine new status based on action
+			const newStatus = action === "approve" ? StatusEnum.APPROVE : StatusEnum.REJECT;
+
+			// Update photo status
+			const updatedPhoto = await this.photoService.updatePhotoStatus(photoId, newStatus, reason);
+
+			sendJsonBigint(
+				res,
+				{
+					message: `Photo has been ${action === "approve" ? "approved" : "rejected"} successfully`,
+					photo: updatedPhoto,
+				},
+				200
+			);
 		} catch (error: any) {
 			CustomError.handleError(res, error);
 			return;

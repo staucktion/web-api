@@ -60,6 +60,36 @@ class PhotoValidation {
 		const getPhotoRequestDto: GetPhotoRequestDto = { photoId };
 		return getPhotoRequestDto;
 	}
+
+	public async validateApproveRejectRequest(req: Request): Promise<{ photoId: number; action: string; reason?: string }> {
+		// Extract photoId from URL params
+		const photoId = parseInt(req.params.photoId);
+		if (isNaN(photoId)) {
+			CustomError.builder().setErrorType("Bad Request").setStatusCode(400).setMessage("Photo ID must be a valid number").build().throwError();
+		}
+
+		// Validate the request body
+		if (!req.body) {
+			CustomError.builder().setErrorType("Bad Request").setStatusCode(400).setMessage("Request body is required").build().throwError();
+		}
+
+		// Validate action
+		const { action, reason } = req.body;
+		if (!action) {
+			CustomError.builder().setErrorType("Bad Request").setStatusCode(400).setMessage("Action is required").build().throwError();
+		}
+
+		if (action !== "approve" && action !== "reject") {
+			CustomError.builder().setErrorType("Bad Request").setStatusCode(400).setMessage("Action must be either 'approve' or 'reject'").build().throwError();
+		}
+
+		// If action is reject, reason is required
+		if (action === "reject" && !reason) {
+			CustomError.builder().setErrorType("Bad Request").setStatusCode(400).setMessage("Reason is required when rejecting a photo").build().throwError();
+		}
+
+		return { photoId, action, reason };
+	}
 }
 
 export default PhotoValidation;

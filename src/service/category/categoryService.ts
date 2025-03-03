@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
+import CustomError from "src/error/CustomError";
 import CategoryDto from "src/dto/category/CategoryDto";
+import { StatusEnum } from "src/types/statusEnum";
 import PrismaUtil from "src/util/PrismaUtil";
 
 class CategoryService {
@@ -38,6 +40,21 @@ class CategoryService {
 		return categories;
 	}
 
+	async getAllCategoriesByStatus(statusId: StatusEnum): Promise<CategoryDto[]> {
+		try {
+			const categories = await this.prisma.category.findMany({
+				where: {
+					is_deleted: false,
+					status_id: Number(statusId),
+				},
+			});
+
+			return categories;
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot get categories by status").build().throwError();
+		}
+	}
+
 	async createCategory(category: CategoryDto): Promise<CategoryDto> {
 		const now = new Date();
 
@@ -61,15 +78,11 @@ class CategoryService {
 		return newCategory;
 	}
 
-	async updateCategory(id: bigint, category: CategoryDto): Promise<CategoryDto | null> {
+	async updateCategory(id: bigint | number, fieldsToUpdate: Partial<CategoryDto>): Promise<CategoryDto | null> {
 		const updatedCategory = await this.prisma.category.update({
 			where: { id },
 			data: {
-				name: category.name,
-				status_id: category.status_id,
-				address: category.address,
-				location_id: category.location_id,
-				valid_radius: category.valid_radius,
+				...fieldsToUpdate,
 				updated_at: new Date(),
 			},
 			include: {
@@ -81,7 +94,36 @@ class CategoryService {
 		return updatedCategory;
 	}
 
-	async deleteCategory(id: bigint): Promise<boolean> {
+	async updateCategoryStatus(id: bigint, newStatus: StatusEnum, reason?: string): Promise<CategoryDto> {
+		try {
+			// Check if category exists
+			const existingCategory = await this.prisma.category.findUnique({
+				where: { id },
+			});
+
+			if (!existingCategory || existingCategory.is_deleted) {
+				CustomError.builder().setErrorType("Not Found").setStatusCode(404).setMessage("Category not found").build().throwError();
+			}
+
+			// Update category status
+			const updatedCategory = await this.prisma.category.update({
+				where: { id },
+				data: {
+					status_id: Number(newStatus),
+					updated_at: new Date(),
+					// Note: In the future, we'll store the reason in the database as well
+				},
+			});
+
+			return updatedCategory;
+		} catch (error: any) {
+			if (error instanceof CustomError) throw error;
+
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update category status").build().throwError();
+		}
+	}
+
+	async deleteCategory(id: bigint | number): Promise<boolean> {
 		try {
 			// Soft delete - we set is_deleted to true rather than removing the record
 			await this.prisma.category.update({
@@ -113,11 +155,28 @@ class CategoryService {
 		return categories;
 	}
 
-	async getCategoriesByCoordinates(latitude: string, longitude: string): Promise<CategoryDto[]> {
+	async getCategoriesByLocationIdAndStatus(locationId: bigint | number, statusId: StatusEnum): Promise<CategoryDto[]> {
+		try {
+			const categories = await this.prisma.category.findMany({
+				where: {
+					location_id: Number(locationId),
+					status_id: Number(statusId),
+					is_deleted: false,
+				},
+			});
+
+			return categories;
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot get categories by location and status").build().throwError();
+		}
+	}
+
+	async getCategoriesByCoordinatesAndStatus(userLat: number, userLng: number, statusId: StatusEnum): Promise<CategoryDto[]> {
 		// Get all active categories with their locations
 		const categories = await this.prisma.category.findMany({
 			where: {
 				is_deleted: false,
+				status_id: Number(statusId),
 			},
 			include: {
 				location: true,
@@ -131,8 +190,6 @@ class CategoryService {
 
 			const categoryLat = parseFloat(category.location.latitude);
 			const categoryLng = parseFloat(category.location.longitude);
-			const userLat = parseFloat(latitude);
-			const userLng = parseFloat(longitude);
 			const radiusKm = parseFloat(category.valid_radius.toString());
 
 			// Calculate distance using Haversine formula

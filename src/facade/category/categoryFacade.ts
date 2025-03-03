@@ -2,150 +2,152 @@ import { Request, Response } from "express";
 import CategoryDto from "src/dto/category/CategoryDto";
 import CategoryService from "src/service/category/categoryService";
 import sendJsonBigint from "src/util/sendJsonBigint";
+import CustomError from "src/error/CustomError";
+import CreateCategoryDto from "src/dto/category/CreateCategoryDto";
+import UpdateCategoryDto from "src/dto/category/UpdateCategoryDto";
+import CategoryValidation from "src/validation/category/CategoryValidation";
+import { StatusEnum } from "src/types/statusEnum";
 
 class CategoryFacade {
 	private categoryService: CategoryService;
+	private categoryValidation: CategoryValidation;
 
 	constructor() {
 		this.categoryService = new CategoryService();
+		this.categoryValidation = new CategoryValidation();
 	}
 
-	handleGetAllCategories = async (_req: Request, res: Response): Promise<void> => {
+	public handleGetAllCategories = async (_req: Request, res: Response): Promise<void> => {
 		try {
-			const categories = await this.categoryService.getAllCategories();
-			sendJsonBigint(res, { categories });
+			// Only show APPROVED categories in the general list
+			const categories = await this.categoryService.getAllCategoriesByStatus(StatusEnum.APPROVE);
+			sendJsonBigint(res, categories, 200);
 		} catch (error) {
-			console.error("Error fetching categories:", error);
-			res.status(500).json({ message: "Failed to fetch categories" });
+			CustomError.handleError(res, error);
 		}
 	};
 
-	handleGetCategoryById = async (req: Request, res: Response): Promise<void> => {
+	public handleGetWaitingCategories = async (_req: Request, res: Response): Promise<void> => {
 		try {
-			const id = BigInt(req.params.id);
-			const category = await this.categoryService.getCategoryById(id);
-
-			if (!category) {
-				res.status(404).json({ message: "Category not found" });
-				return;
-			}
-
-			sendJsonBigint(res, { category });
+			const waitingCategories = await this.categoryService.getAllCategoriesByStatus(StatusEnum.WAIT);
+			sendJsonBigint(res, waitingCategories, 200);
 		} catch (error) {
-			console.error("Error fetching category:", error);
-			res.status(500).json({ message: "Failed to fetch category" });
+			CustomError.handleError(res, error);
 		}
 	};
 
-	handleCreateCategory = async (req: Request, res: Response): Promise<void> => {
+	public handleApproveRejectCategory = async (req: Request, res: Response): Promise<void> => {
+		// Check authentication
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
 		try {
-			const categoryData: CategoryDto = req.body;
+			// Validate request
+			const { categoryId, action, reason } = await this.categoryValidation.validateApproveRejectRequest(req);
 
-			if (!categoryData.name || !categoryData.address || categoryData.valid_radius === undefined) {
-				res.status(400).json({ message: "Name, address, and valid_radius are required" });
-				return;
-			}
+			// Determine new status based on action
+			const newStatus = action === "approve" ? StatusEnum.APPROVE : StatusEnum.REJECT;
 
-			const newCategory = await this.categoryService.createCategory(categoryData);
-			sendJsonBigint(res, { category: newCategory }, 201);
+			// Update category status
+			const updatedCategory = await this.categoryService.updateCategoryStatus(categoryId, newStatus, reason);
+
+			sendJsonBigint(
+				res,
+				{
+					message: `Category has been ${action === "approve" ? "approved" : "rejected"} successfully`,
+					category: updatedCategory,
+				},
+				200
+			);
 		} catch (error) {
-			console.error("Error creating category:", error);
-			res.status(500).json({ message: "Failed to create category" });
+			CustomError.handleError(res, error);
 		}
 	};
 
-	handleUpdateCategory = async (req: Request, res: Response): Promise<void> => {
+	public handleGetCategoryById = async (req: Request, res: Response): Promise<void> => {
 		try {
-			const id = BigInt(req.params.id);
-			const categoryData: CategoryDto = req.body;
-
-			if (!categoryData.name || !categoryData.address || categoryData.valid_radius === undefined) {
-				res.status(400).json({ message: "Name, address, and valid_radius are required" });
-				return;
-			}
-
-			const updatedCategory = await this.categoryService.updateCategory(id, categoryData);
-
-			if (!updatedCategory) {
-				res.status(404).json({ message: "Category not found" });
-				return;
-			}
-
-			sendJsonBigint(res, { category: updatedCategory });
+			const categoryId = parseInt(req.params.id);
+			const category = await this.categoryService.getCategoryById(categoryId);
+			sendJsonBigint(res, category, 200);
 		} catch (error) {
-			console.error("Error updating category:", error);
-			res.status(500).json({ message: "Failed to update category" });
+			CustomError.handleError(res, error);
 		}
 	};
 
-	handleDeleteCategory = async (req: Request, res: Response): Promise<void> => {
+	public handleCreateCategory = async (req: Request, res: Response): Promise<void> => {
+		// Check if user is authenticated
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
 		try {
-			const id = BigInt(req.params.id);
-			const success = await this.categoryService.deleteCategory(id);
+			// Validate and create category DTO
+			const createCategoryDto: CreateCategoryDto = await this.categoryValidation.validateCreateCategoryRequest(req);
 
-			if (!success) {
-				res.status(404).json({ message: "Category not found or could not be deleted" });
-				return;
-			}
-
-			res.status(200).json({ message: "Category deleted successfully" });
+			// Create category
+			const createdCategory = await this.categoryService.createCategory(createCategoryDto);
+			sendJsonBigint(res, createdCategory, 201);
 		} catch (error) {
-			console.error("Error deleting category:", error);
-			res.status(500).json({ message: "Failed to delete category" });
+			CustomError.handleError(res, error);
 		}
 	};
 
-	handleGetCategoriesByLocationId = async (req: Request, res: Response): Promise<void> => {
-		try {
-			const locationId = BigInt(req.params.locationId);
-			const categories = await this.categoryService.getCategoriesByLocationId(locationId);
+	public handleUpdateCategory = async (req: Request, res: Response): Promise<void> => {
+		// Check if user is authenticated
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
 
-			sendJsonBigint(res, { categories });
+		try {
+			const categoryId = parseInt(req.params.id);
+			const updateCategoryDto: UpdateCategoryDto = await this.categoryValidation.validateUpdateCategoryRequest(req);
+			const updatedCategory = await this.categoryService.updateCategory(categoryId, updateCategoryDto);
+			sendJsonBigint(res, updatedCategory, 200);
 		} catch (error) {
-			console.error("Error fetching categories by location:", error);
-			res.status(500).json({ message: "Failed to fetch categories by location" });
+			CustomError.handleError(res, error);
 		}
 	};
 
-	handleGetCategoriesByCoordinates = async (req: Request, res: Response): Promise<void> => {
+	public handleDeleteCategory = async (req: Request, res: Response): Promise<void> => {
+		// Check if user is authenticated
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
 		try {
-			const { latitude, longitude } = req.query;
-
-			if (!latitude || !longitude) {
-				res.status(400).json({ message: "Latitude and longitude are required query parameters" });
-				return;
-			}
-
-			if (typeof latitude !== "string" || typeof longitude !== "string") {
-				res.status(400).json({ message: "Latitude and longitude must be string values" });
-				return;
-			}
-
-			// Validate latitude and longitude formats
-			const latFloat = parseFloat(latitude);
-			const lngFloat = parseFloat(longitude);
-
-			if (isNaN(latFloat) || isNaN(lngFloat)) {
-				res.status(400).json({ message: "Invalid latitude or longitude format" });
-				return;
-			}
-
-			// Validate latitude and longitude ranges
-			if (latFloat < -90 || latFloat > 90) {
-				res.status(400).json({ message: "Latitude must be between -90 and 90 degrees" });
-				return;
-			}
-
-			if (lngFloat < -180 || lngFloat > 180) {
-				res.status(400).json({ message: "Longitude must be between -180 and 180 degrees" });
-				return;
-			}
-
-			const categories = await this.categoryService.getCategoriesByCoordinates(latitude, longitude);
-			sendJsonBigint(res, { categories, matchCount: categories.length });
+			const categoryId = parseInt(req.params.id);
+			await this.categoryService.deleteCategory(categoryId);
+			res.json({ message: "Category deleted successfully" });
 		} catch (error) {
-			console.error("Error fetching categories by coordinates:", error);
-			res.status(500).json({ message: "Failed to fetch categories by coordinates" });
+			CustomError.handleError(res, error);
+		}
+	};
+
+	public handleGetCategoriesByLocationId = async (req: Request, res: Response): Promise<void> => {
+		try {
+			const locationId = parseInt(req.params.locationId);
+			// Only show APPROVED categories for this location
+			const categories = await this.categoryService.getCategoriesByLocationIdAndStatus(locationId, StatusEnum.APPROVE);
+			sendJsonBigint(res, categories, 200);
+		} catch (error) {
+			CustomError.handleError(res, error);
+		}
+	};
+
+	public handleGetCategoriesByCoordinates = async (req: Request, res: Response): Promise<void> => {
+		try {
+			const validatedCoordinates = this.categoryValidation.validateCoordinates(req);
+
+			// Only show APPROVED categories for this coordinate search
+			const categories = await this.categoryService.getCategoriesByCoordinatesAndStatus(validatedCoordinates.latitude, validatedCoordinates.longitude, StatusEnum.APPROVE);
+			sendJsonBigint(res, categories, 200);
+		} catch (error) {
+			CustomError.handleError(res, error);
 		}
 	};
 }
