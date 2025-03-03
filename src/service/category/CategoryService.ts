@@ -14,7 +14,7 @@ class CategoryService {
 
 	public async listAllCategories(): Promise<CategoryDto[]> {
 		try {
-			const instanceList = await this.prisma.category.findMany({
+			const instanceListTmp = await this.prisma.category.findMany({
 				where: { is_deleted: false },
 				include: {
 					location: true,
@@ -24,22 +24,7 @@ class CategoryService {
 				},
 			});
 
-			const mappedInstanceList: CategoryDto[] = instanceList.map((instance) => {
-				const tmpInstance = handlePrismaType(instance);
-
-				return {
-					id: tmpInstance.id,
-					name: tmpInstance.name,
-					address: tmpInstance.address,
-					valid_radius: tmpInstance.valid_radius,
-					location: tmpInstance.location,
-					status: tmpInstance.status,
-					auction_list: tmpInstance.auction_list,
-					photo_list: tmpInstance.photo_list,
-				};
-			});
-
-			return mappedInstanceList;
+			return handlePrismaType(instanceListTmp).map(({ location_id, status_id, ...rest }) => rest);
 		} catch (error: any) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
