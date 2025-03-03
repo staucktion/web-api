@@ -22,7 +22,7 @@ class AuthService {
 		return user;
 	}
 
-	async createUser(user: Omit<UserDto, "id">): Promise<UserDto> {
+	async createUser(user: Pick<UserDto, "email" | "gmail_id" | "username" | "profile_picture" | "first_name" | "last_name">): Promise<UserDto> {
 		const usernameSplit = user.username.split(" ");
 
 		// TODO: Delete the password field if we decide to go with OAuth only
