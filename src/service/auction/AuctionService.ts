@@ -46,6 +46,7 @@ class AuctionService {
 				where: { id },
 				data: {
 					...cleanData,
+					updated_at: DateUtil.getNowWithoutMs(),
 					status: {
 						connect: { id: status_id },
 					},
