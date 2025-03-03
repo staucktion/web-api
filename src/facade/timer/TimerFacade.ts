@@ -20,6 +20,7 @@ class TimerFacade {
 		const categoryList = await this.categoryService.listAllCategories();
 
 		for (const category of categoryList) {
+			console.log(JSON.stringify(category, null, 2));
 			if (category.status?.status === "approve") {
 				// console.log("category");
 				// console.log(JSON.stringify(category, null, 2));
@@ -29,18 +30,27 @@ class TimerFacade {
 					(!category.auction_list?.length || category.auction_list.every((auction) => auction.status?.status === "finish")) &&
 					category.photo_list?.some((photo) => photo.status?.status === "approve")
 				) {
-					console.log("auction is needed to create for category:", category.id);
+					console.log("auction is needed to create");
 					await this.auctionService.insertNewAuction(category);
 				}
 
 				// moving vote status to auction
-				else if (!category.auction_list?.length && category.auction_list.some((auction) => auction.status?.status === "vote")) {
+				else if (category.auction_list?.some((auction) => auction.status?.status === "vote")) {
 					console.log("'vote' statusu olan  'acution' statusune geçmeli");
+				}
+
+				// other stage
+				else {
+					console.log("do nothing");
 				}
 			} else {
 				// console.log("category status is not approved");
 			}
+
+			console.log("\n\n");
 		}
+
+		console.log("[INFO] 🕑 End of Job");
 	}
 }
 
