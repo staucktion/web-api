@@ -19,7 +19,7 @@ class PhotoEndpoint {
 
 	private initializeRoutes(): void {
 		// Upload a photo (authenticated)
-		this.router.post("/photos", this.authMiddleware.authenticateJWT, this.multerUtil.getUploader().single("file"), (req, res) => {
+		this.router.post("/photos", this.authMiddleware.authenticateJWT, this.multerUtil.getUploader().single("photo"), (req, res) => {
 			this.photoFacade.uploadPhoto(req, res);
 		});
 
