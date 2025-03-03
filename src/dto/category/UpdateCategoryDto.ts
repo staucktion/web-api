@@ -1,6 +1,3 @@
-/**
- * Data transfer object for updating an existing category
- */
 interface UpdateCategoryDto {
 	id: bigint;
 	name?: string;

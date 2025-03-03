@@ -1,6 +1,3 @@
-/**
- * Data transfer object for creating a new category
- */
 interface CreateCategoryDto {
 	name: string;
 	location_id: bigint;
