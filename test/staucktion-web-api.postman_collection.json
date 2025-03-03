@@ -336,6 +336,68 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Update User Profile (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "first_name",
+									"value": "John",
+									"type": "text",
+									"description": "First name (optional)"
+								},
+								{
+									"key": "last_name",
+									"value": "Doe",
+									"type": "text",
+									"description": "Last name (optional)"
+								},
+								{
+									"key": "tc_identity_no",
+									"value": "12345678901",
+									"type": "text",
+									"description": "TC Identity Number - must be 11 digits (optional)"
+								},
+								{
+									"key": "profile_picture",
+									"type": "file",
+									"description": "Profile picture image (optional)",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/users/profile",
+							"host": ["{{BASE_URL}}"],
+							"path": ["users", "profile"]
+						},
+						"description": "Update the current authenticated user's profile. At least one field must be provided. Profile picture must be an image file (JPEG, PNG, or GIF). TC Identity Number must be 11 digits.\n\nProfile pictures can be accessed directly via the Get Profile Picture request."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile Picture",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/profile-pictures/profile-1740951748152-122771749.jpeg",
+							"host": ["{{BASE_URL}}"],
+							"path": ["profile-pictures", "profile-1740951748152-122771749.jpeg"]
+						},
+						"description": "Access a user's profile picture directly using the filename. This endpoint doesn't require authentication and can be used in frontend applications for displaying profile pictures.\n\nThe example uses a placeholder filename - replace with an actual filename as needed."
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
