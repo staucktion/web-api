@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import Config from "src/config/Config";
 import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
@@ -12,17 +13,16 @@ class AuctionService {
 	}
 
 	public async insertNewAuction(category: any): Promise<any> {
-		console.log("category");
-		console.log(JSON.stringify(category, null, 2));
+		// console.log("category");
+		// console.log(JSON.stringify(category, null, 2));
 		try {
 			// todo insert status dynamically with name not id
-			// todo set finish time according to cron database data.
 			const newAuctionTemp = await this.prisma.auction.create({
 				data: {
 					category_id: category.id,
 					status_id: 5,
 					start_time: DateUtil.getNowWithoutMs(),
-					finish_time: new Date(),
+					finish_time: new Date(DateUtil.getNowWithoutMs().getTime() + Config.cronInterval),
 					is_deleted: false,
 					created_at: DateUtil.getNowWithoutMs(),
 					updated_at: DateUtil.getNowWithoutMs(),

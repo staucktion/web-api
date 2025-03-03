@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import Config from "src/config/Config";
 import CronDto from "src/dto/cron/CronDto";
 import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
@@ -32,11 +33,27 @@ class TimerService {
 		}
 	}
 
+	private convertCronToMilliseconds(cronDto: CronDto): number {
+		switch (cronDto.unit) {
+			case "s":
+				return cronDto.interval * 1000;
+			case "m":
+				return cronDto.interval * 60 * 1000;
+			case "h":
+				return cronDto.interval * 60 * 60 * 1000;
+			case "w":
+				return cronDto.interval * 7 * 24 * 60 * 60 * 1000;
+			default:
+				throw new Error(`Invalid unit: ${cronDto.unit}`);
+		}
+	}
+
 	public async getCronExpression(): Promise<string> {
 		try {
 			const cronDto: CronDto = await this.getCronInformation();
-
+			Config.cronInterval = this.convertCronToMilliseconds(cronDto);
 			let cronExpression: string;
+
 			switch (cronDto.unit) {
 				case "s":
 					cronExpression = `*/${cronDto.interval} * * * * *`; // Every X seconds

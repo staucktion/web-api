@@ -17,6 +17,8 @@ class Config {
 	static jwt = { ...EnvVariables.jwt };
 
 	static googleOAuth = { ...EnvVariables.googleOAuth };
+
+	static cronInterval = null;
 }
 
 export default Config;
