@@ -29,8 +29,6 @@ class AuctionService {
 				},
 			});
 
-			console.log("New auction inserted: ", JSON.stringify(handlePrismaType(newAuctionTemp), null, 2));
-
 			return handlePrismaType(newAuctionTemp);
 		} catch (error: any) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();

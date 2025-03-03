@@ -23,14 +23,19 @@ class TimerFacade {
 			if (category.status?.status === "approve") {
 				// console.log("category");
 				// console.log(JSON.stringify(category, null, 2));
+
+				// creating new auction with vote status
 				if (
-					(!category.auction_list?.length || category.auction_list.some((auction) => auction.status?.status !== "finish")) &&
+					(!category.auction_list?.length || category.auction_list.every((auction) => auction.status?.status === "finish")) &&
 					category.photo_list?.some((photo) => photo.status?.status === "approve")
 				) {
-					// console.log("auction is needed to create for category:", category.id);
+					console.log("auction is needed to create for category:", category.id);
 					await this.auctionService.insertNewAuction(category);
-				} else {
-					console.log("other stage rather than create auction");
+				}
+
+				// moving vote status to auction
+				else if (!category.auction_list?.length && category.auction_list.some((auction) => auction.status?.status === "vote")) {
+					console.log("'vote' statusu olan  'acution' statusune geçmeli");
 				}
 			} else {
 				// console.log("category status is not approved");
