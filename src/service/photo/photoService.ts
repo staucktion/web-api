@@ -7,6 +7,8 @@ import UserDto from "src/dto/auth/UserDto";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import ReadAllPhotoResponseDto from "src/dto/photo/ReadAllPhotoResponseDto";
 import CustomError from "src/error/CustomError";
+import DateUtil from "src/util/dateUtil";
+import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 
 class PhotoService {
@@ -101,7 +103,7 @@ class PhotoService {
 					created_at: new Date(),
 					updated_at: new Date(),
 					status_id: 1,
-  					is_auctionable: false,
+					is_auctionable: false,
 				},
 			});
 
@@ -130,6 +132,7 @@ class PhotoService {
 				location_id: Number(photo.location_id),
 				category_id: Number(photo.category_id),
 				status_id: photo.status_id,
+				is_auctionable: photo.is_auctionable,
 				created_at: photo.created_at,
 				updated_at: photo.updated_at,
 			}));
@@ -157,6 +160,29 @@ class PhotoService {
 			return resolvedPath;
 		} catch (error: any) {
 			CustomError.builder().setMessage("Error reading photo file").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
+		}
+	}
+
+	public async updatePhoto(id: number, updateInstanceData: any): Promise<ReadAllPhotoResponseDto[]> {
+		try {
+			const { user_id, auction_id, category_id, location_id, status_id, ...cleanData } = updateInstanceData;
+
+			const updatedInstance = await this.prisma.photo.update({
+				where: { id },
+				data: {
+					...cleanData,
+					updated_at: DateUtil.getNowWithoutMs(),
+					user: { connect: { id: user_id } },
+					status: { connect: { id: status_id } },
+					auction: { connect: { id: auction_id } },
+					category: { connect: { id: category_id } },
+					location: { connect: { id: location_id } },
+				},
+			});
+
+			return handlePrismaType(updatedInstance);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
 }
