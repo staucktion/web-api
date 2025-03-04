@@ -57,24 +57,25 @@ model location {
 }
 
 model photo {
-  id          BigInt    @id @default(autoincrement())
-  file_path   String?   @db.VarChar(100)
-  title       String?   @db.VarChar(100)
-  user_id     BigInt?
-  auction_id  BigInt?
-  location_id BigInt?
-  category_id BigInt?
-  status_id   Int?
-  device_info String    @db.VarChar(255)
-  vote_count  Int
-  is_deleted  Boolean
-  created_at  DateTime  @db.Timestamp(6)
-  updated_at  DateTime  @db.Timestamp(6)
-  auction     auction?  @relation(fields: [auction_id], references: [id], onUpdate: NoAction)
-  category    category? @relation(fields: [category_id], references: [id], onUpdate: NoAction)
-  location    location? @relation(fields: [location_id], references: [id], onUpdate: NoAction)
-  status      status?   @relation(fields: [status_id], references: [id], onUpdate: NoAction)
-  user        user?     @relation(fields: [user_id], references: [id], onUpdate: NoAction)
+  id             BigInt    @id @default(autoincrement())
+  file_path      String?   @db.VarChar(100)
+  title          String?   @db.VarChar(100)
+  user_id        BigInt?
+  auction_id     BigInt?
+  location_id    BigInt?
+  category_id    BigInt?
+  status_id      Int?
+  is_auctionable Boolean
+  device_info    String    @db.VarChar(255)
+  vote_count     Int
+  is_deleted     Boolean
+  created_at     DateTime  @db.Timestamp(6)
+  updated_at     DateTime  @db.Timestamp(6)
+  auction        auction?  @relation(fields: [auction_id], references: [id], onUpdate: NoAction)
+  category       category? @relation(fields: [category_id], references: [id], onUpdate: NoAction)
+  location       location? @relation(fields: [location_id], references: [id], onUpdate: NoAction)
+  status         status?   @relation(fields: [status_id], references: [id], onUpdate: NoAction)
+  user           user?     @relation(fields: [user_id], references: [id], onUpdate: NoAction)
 }
 
 model status {

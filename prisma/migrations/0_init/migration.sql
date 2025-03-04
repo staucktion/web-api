@@ -57,6 +57,7 @@ CREATE TABLE "photo" (
     "location_id" BIGINT,
     "category_id" BIGINT,
     "status_id" INTEGER,
+    "is_auctionable" BOOLEAN NOT NULL,
     "device_info" VARCHAR(255) NOT NULL,
     "vote_count" INTEGER NOT NULL,
     "is_deleted" BOOLEAN NOT NULL,

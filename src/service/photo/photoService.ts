@@ -101,6 +101,7 @@ class PhotoService {
 					created_at: new Date(),
 					updated_at: new Date(),
 					status_id: 1,
+  					is_auctionable: false,
 				},
 			});
 
