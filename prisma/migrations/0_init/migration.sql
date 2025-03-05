@@ -13,17 +13,6 @@ CREATE TABLE "auction" (
 );
 
 -- CreateTable
-CREATE TABLE "bid" (
-    "id" BIGSERIAL NOT NULL,
-    "auction_id" BIGINT,
-    "user_id" BIGINT,
-    "amount" DECIMAL(15,2) NOT NULL,
-    "provision_id_on_bank" BIGINT,
-
-    CONSTRAINT "bid_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "category" (
     "id" BIGSERIAL NOT NULL,
     "name" VARCHAR(100) NOT NULL,
@@ -111,8 +100,19 @@ CREATE TABLE "cron" (
     CONSTRAINT "cron_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "bid_provision_id_on_bank_key" ON "bid"("provision_id_on_bank");
+-- CreateTable
+CREATE TABLE "auction_photo" (
+    "id" BIGSERIAL NOT NULL,
+    "photo_id" BIGINT,
+    "status_id" INTEGER NOT NULL,
+    "amount_to_pay" DECIMAL(10,2),
+    "current_winner_order" INTEGER,
+    "winner_user_id_1" BIGINT,
+    "winner_user_id_2" BIGINT,
+    "winner_user_id_3" BIGINT,
+
+    CONSTRAINT "auction_photo_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
@@ -125,12 +125,6 @@ ALTER TABLE "auction" ADD CONSTRAINT "auction_category_id_fkey" FOREIGN KEY ("ca
 
 -- AddForeignKey
 ALTER TABLE "auction" ADD CONSTRAINT "auction_status_id_fkey" FOREIGN KEY ("status_id") REFERENCES "status"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "bid" ADD CONSTRAINT "bid_auction_id_fkey" FOREIGN KEY ("auction_id") REFERENCES "auction"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "bid" ADD CONSTRAINT "bid_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "category" ADD CONSTRAINT "category_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "location"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
@@ -158,4 +152,19 @@ ALTER TABLE "user" ADD CONSTRAINT "user_role_id_fkey" FOREIGN KEY ("role_id") RE
 
 -- AddForeignKey
 ALTER TABLE "user" ADD CONSTRAINT "user_status_id_fkey" FOREIGN KEY ("status_id") REFERENCES "status"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "auction_photo" ADD CONSTRAINT "auction_photo_photo_id_fkey" FOREIGN KEY ("photo_id") REFERENCES "photo"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "auction_photo" ADD CONSTRAINT "auction_photo_status_id_fkey" FOREIGN KEY ("status_id") REFERENCES "status"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "auction_photo" ADD CONSTRAINT "auction_photo_winner_user_id_1_fkey" FOREIGN KEY ("winner_user_id_1") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "auction_photo" ADD CONSTRAINT "auction_photo_winner_user_id_2_fkey" FOREIGN KEY ("winner_user_id_2") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "auction_photo" ADD CONSTRAINT "auction_photo_winner_user_id_3_fkey" FOREIGN KEY ("winner_user_id_3") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
 
