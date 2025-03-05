@@ -8,17 +8,18 @@ datasource db {
 }
 
 model auction {
-  id          BigInt    @id @default(autoincrement())
-  category_id BigInt?
-  status_id   Int?
-  start_time  DateTime  @db.Timestamp(6)
-  finish_time DateTime  @db.Timestamp(6)
-  is_deleted  Boolean
-  created_at  DateTime  @db.Timestamp(6)
-  updated_at  DateTime  @db.Timestamp(6)
-  category    category? @relation(fields: [category_id], references: [id], onUpdate: NoAction)
-  status      status?   @relation(fields: [status_id], references: [id], onUpdate: NoAction)
-  photo_list  photo[]
+  id                 BigInt          @id @default(autoincrement())
+  category_id        BigInt?
+  status_id          Int?
+  start_time         DateTime        @db.Timestamp(6)
+  finish_time        DateTime        @db.Timestamp(6)
+  is_deleted         Boolean
+  created_at         DateTime        @db.Timestamp(6)
+  updated_at         DateTime        @db.Timestamp(6)
+  category           category?       @relation(fields: [category_id], references: [id], onUpdate: NoAction)
+  status             status?         @relation(fields: [status_id], references: [id], onUpdate: NoAction)
+  auction_photo_list auction_photo[]
+  photo_list         photo[]
 }
 
 model category {
@@ -116,6 +117,7 @@ model cron {
 model auction_photo {
   id                   BigInt   @id @default(autoincrement())
   photo_id             BigInt?
+  auction_id           BigInt?
   status_id            Int
   last_bid_amount      Decimal? @db.Decimal(10, 2)
   current_winner_order Int?
@@ -124,6 +126,7 @@ model auction_photo {
   winner_user_id_3     BigInt?
   created_at           DateTime @db.Timestamp(6)
   updated_at           DateTime @db.Timestamp(6)
+  auction              auction? @relation(fields: [auction_id], references: [id], onUpdate: NoAction)
   photo                photo?   @relation(fields: [photo_id], references: [id], onUpdate: NoAction)
   status               status   @relation(fields: [status_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
   winner_user_1        user?    @relation("auction_photo_winner_user_id_1Touser", fields: [winner_user_id_1], references: [id], onUpdate: NoAction)

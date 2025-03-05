@@ -1,4 +1,5 @@
 import AuctionService from "src/service/auction/AuctionService";
+import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
 import CategoryService from "src/service/category/CategoryService";
 import PhotoService from "src/service/photo/photoService";
 import StatusService from "src/service/status/StatusService";
@@ -10,6 +11,7 @@ class TimerFacade {
 	private auctionService: AuctionService;
 	private statusService: StatusService;
 	private photoService: PhotoService;
+	private auctionPhotoService: AuctionPhotoService;
 
 	constructor() {
 		this.timerService = new TimerService();
@@ -17,6 +19,7 @@ class TimerFacade {
 		this.auctionService = new AuctionService();
 		this.statusService = new StatusService();
 		this.photoService = new PhotoService();
+		this.auctionPhotoService = new AuctionPhotoService();
 	}
 
 	public async cronJob() {
@@ -73,6 +76,7 @@ class TimerFacade {
 
 									const dataToUpdatePhoto = { ...photo, status_id: auctionStatus.id };
 									await this.photoService.updatePhoto(photo.id, dataToUpdatePhoto);
+									await this.auctionPhotoService.insertNewPhotoAuction(auction.id, photo.id, auctionStatus.id);
 								} else {
 									// console.log(`photo will not be auctioned: `, photo);
 

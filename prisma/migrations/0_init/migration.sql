@@ -104,6 +104,7 @@ CREATE TABLE "cron" (
 CREATE TABLE "auction_photo" (
     "id" BIGSERIAL NOT NULL,
     "photo_id" BIGINT,
+    "auction_id" BIGINT,
     "status_id" INTEGER NOT NULL,
     "last_bid_amount" DECIMAL(10,2),
     "current_winner_order" INTEGER,
@@ -165,6 +166,9 @@ ALTER TABLE "user" ADD CONSTRAINT "user_role_id_fkey" FOREIGN KEY ("role_id") RE
 
 -- AddForeignKey
 ALTER TABLE "user" ADD CONSTRAINT "user_status_id_fkey" FOREIGN KEY ("status_id") REFERENCES "status"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "auction_photo" ADD CONSTRAINT "auction_photo_auction_id_fkey" FOREIGN KEY ("auction_id") REFERENCES "auction"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "auction_photo" ADD CONSTRAINT "auction_photo_photo_id_fkey" FOREIGN KEY ("photo_id") REFERENCES "photo"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
