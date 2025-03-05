@@ -105,13 +105,26 @@ CREATE TABLE "auction_photo" (
     "id" BIGSERIAL NOT NULL,
     "photo_id" BIGINT,
     "status_id" INTEGER NOT NULL,
-    "amount_to_pay" DECIMAL(10,2),
+    "last_bid_amount" DECIMAL(10,2),
     "current_winner_order" INTEGER,
     "winner_user_id_1" BIGINT,
     "winner_user_id_2" BIGINT,
     "winner_user_id_3" BIGINT,
+    "created_at" TIMESTAMP(6) NOT NULL,
+    "updated_at" TIMESTAMP(6) NOT NULL,
 
     CONSTRAINT "auction_photo_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "bid" (
+    "id" BIGSERIAL NOT NULL,
+    "bid_amount" DECIMAL(10,2) NOT NULL,
+    "user_id" BIGINT,
+    "auction_photo_id" BIGINT,
+    "created_at" TIMESTAMP(6) NOT NULL,
+
+    CONSTRAINT "bid_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -167,4 +180,10 @@ ALTER TABLE "auction_photo" ADD CONSTRAINT "auction_photo_winner_user_id_2_fkey"
 
 -- AddForeignKey
 ALTER TABLE "auction_photo" ADD CONSTRAINT "auction_photo_winner_user_id_3_fkey" FOREIGN KEY ("winner_user_id_3") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "bid" ADD CONSTRAINT "bid_auction_photo_id_fkey" FOREIGN KEY ("auction_photo_id") REFERENCES "auction_photo"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "bid" ADD CONSTRAINT "bid_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
 

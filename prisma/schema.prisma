@@ -94,6 +94,7 @@ model user {
   auction_photo_winner_user_1_list auction_photo[] @relation("auction_photo_winner_user_id_1Touser")
   auction_photo_winner_user_2_list auction_photo[] @relation("auction_photo_winner_user_id_2Touser")
   auction_photo_winner_user_3_list auction_photo[] @relation("auction_photo_winner_user_id_3Touser")
+  bid_list                         bid[]
   photo_list                       photo[]
   user_role                        user_role?      @relation(fields: [role_id], references: [id], onUpdate: NoAction)
   status                           status?         @relation(fields: [status_id], references: [id], onUpdate: NoAction)
@@ -116,14 +117,27 @@ model auction_photo {
   id                   BigInt   @id @default(autoincrement())
   photo_id             BigInt?
   status_id            Int
-  amount_to_pay        Decimal? @db.Decimal(10, 2)
+  last_bid_amount      Decimal? @db.Decimal(10, 2)
   current_winner_order Int?
   winner_user_id_1     BigInt?
   winner_user_id_2     BigInt?
   winner_user_id_3     BigInt?
+  created_at           DateTime @db.Timestamp(6)
+  updated_at           DateTime @db.Timestamp(6)
   photo                photo?   @relation(fields: [photo_id], references: [id], onUpdate: NoAction)
   status               status   @relation(fields: [status_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
   winner_user_1        user?    @relation("auction_photo_winner_user_id_1Touser", fields: [winner_user_id_1], references: [id], onUpdate: NoAction)
   winner_user_2        user?    @relation("auction_photo_winner_user_id_2Touser", fields: [winner_user_id_2], references: [id], onUpdate: NoAction)
   winner_user_3        user?    @relation("auction_photo_winner_user_id_3Touser", fields: [winner_user_id_3], references: [id], onUpdate: NoAction)
+  bid_list             bid[]
+}
+
+model bid {
+  id               BigInt         @id @default(autoincrement())
+  bid_amount       Decimal        @db.Decimal(10, 2)
+  user_id          BigInt?
+  auction_photo_id BigInt?
+  created_at       DateTime       @db.Timestamp(6)
+  auction_photo    auction_photo? @relation(fields: [auction_photo_id], references: [id], onUpdate: NoAction)
+  user             user?          @relation(fields: [user_id], references: [id], onUpdate: NoAction)
 }
