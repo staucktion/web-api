@@ -107,6 +107,8 @@ CREATE TABLE "auction_photo" (
     "auction_id" BIGINT,
     "status_id" INTEGER NOT NULL,
     "last_bid_amount" DECIMAL(10,2),
+    "start_time" TIMESTAMP(6) NOT NULL,
+    "finish_time" TIMESTAMP(6) NOT NULL,
     "current_winner_order" INTEGER,
     "winner_user_id_1" BIGINT,
     "winner_user_id_2" BIGINT,

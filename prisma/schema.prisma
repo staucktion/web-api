@@ -120,6 +120,8 @@ model auction_photo {
   auction_id           BigInt?
   status_id            Int
   last_bid_amount      Decimal? @db.Decimal(10, 2)
+  start_time           DateTime @db.Timestamp(6)
+  finish_time          DateTime @db.Timestamp(6)
   current_winner_order Int?
   winner_user_id_1     BigInt?
   winner_user_id_2     BigInt?
