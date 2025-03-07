@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import Config from "src/config/Config";
 import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
@@ -18,6 +19,8 @@ class AuctionPhotoService {
 					auction_id: auctionId,
 					photo_id: photoId,
 					status_id: statusId,
+					start_time: DateUtil.getNowWithoutMs(),
+					finish_time: new Date(DateUtil.getNowWithoutMs().getTime() + Config.cronInterval),
 					created_at: DateUtil.getNowWithoutMs(),
 					updated_at: DateUtil.getNowWithoutMs(),
 				},

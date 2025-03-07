@@ -78,7 +78,7 @@ class TimerFacade {
 									await this.photoService.updatePhoto(photo.id, dataToUpdatePhoto);
 									await this.auctionPhotoService.insertNewPhotoAuction(auction.id, photo.id, auctionStatus.id);
 								} else {
-									// console.log(`photo will not be auctioned: `, photo);
+									// console.log(`photo will NOT be auctioned: `, photo);
 
 									const dataToUpdatePhoto = { ...photo, status_id: purchasableStatus.id };
 									await this.photoService.updatePhoto(photo.id, dataToUpdatePhoto);
