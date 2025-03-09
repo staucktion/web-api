@@ -5,6 +5,7 @@ import CategoryService from "src/service/category/categoryService";
 import PhotoService from "src/service/photo/photoService";
 import StatusService from "src/service/status/StatusService";
 import TimerService from "src/service/timer/TimerService";
+import UserService from "src/service/user/userService";
 
 class TimerFacade {
 	private timerService: TimerService;
@@ -14,6 +15,7 @@ class TimerFacade {
 	private photoService: PhotoService;
 	private auctionPhotoService: AuctionPhotoService;
 	private bidService: BidService;
+	private userService: UserService;
 
 	constructor() {
 		this.timerService = new TimerService();
@@ -23,6 +25,7 @@ class TimerFacade {
 		this.photoService = new PhotoService();
 		this.auctionPhotoService = new AuctionPhotoService();
 		this.bidService = new BidService();
+		this.userService = new UserService();
 	}
 
 	public async cronJob() {
@@ -36,17 +39,14 @@ class TimerFacade {
 		const auctionStatus = await this.statusService.getStatusFromName("auction");
 		const purchasableStatus = await this.statusService.getStatusFromName("purchasable");
 		const finishStatus = await this.statusService.getStatusFromName("finish");
+		const bannedStatus = await this.statusService.getStatusFromName("banned");
 
 		for (const category of categoryList) {
-			// console.log(JSON.stringify(category, null, 2));
-
 			if (category.status?.status === "approve") {
-				// console.log("category");
-				// console.log(JSON.stringify(category, null, 2));
-
 				// creating new auction with vote status
 				if (
 					(!category.auction_list?.length || category.auction_list.every((auction) => auction.status?.status === "finish")) &&
+					category.photo_list?.some((photo) => photo.state?.state === "approve") &&
 					category.photo_list?.some((photo) => photo.is_auctionable === true)
 				) {
 					console.log("auction decision: create new auction");
@@ -93,20 +93,14 @@ class TimerFacade {
 					}
 				}
 
-				// change auction status from 'auction' to 'finish'
+				// change auction status from 'auction' to 'finish' or 'wait_purchase_after_auction'
 				else if (category.auction_list?.some((auction) => auction.status?.status === "auction")) {
 					for (const auction of category.auction_list) {
-						// console.log("auction");
-						// console.log(JSON.stringify(auction, null, 2));
-
 						if (auction.status?.status === "auction") {
 							// get auction photo
 							const auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByAuctionId(auction.id);
 
 							if (auctionPhoto?.status?.status === "auction") {
-								// console.log("auctionPhoto");
-								// console.log(JSON.stringify(auctionPhoto, null, 2));
-
 								// get bid list
 								const bidlist = await this.bidService.getBidsByAuctionPhotoId(auctionPhoto.id);
 
@@ -162,12 +156,47 @@ class TimerFacade {
 					}
 				}
 
+				// change auction status from 'wait_purchase_after_auction' to 'wait_purchase_after_auction' or 'finish'
+				else if (category.auction_list?.some((auction) => auction.status?.status === "wait_purchase_after_auction")) {
+					for (const auction of category.auction_list) {
+						if (auction.status?.status === "wait_purchase_after_auction") {
+							// get auction photo
+							const auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByAuctionId(auction.id);
+
+							// if current order is user 1 set status banned
+							if (auctionPhoto.current_winner_order === 1) {
+								const dataToUpdateUser = { status_id: bannedStatus.id };
+								await this.userService.updateUser(auctionPhoto.winner_user_1.id, dataToUpdateUser);
+							}
+
+							// if next winner not exists set status to finish
+							if (!auctionPhoto[`winner_user_id_${auctionPhoto.current_winner_order + 1}`]) {
+								console.log("auction decision: change 'wait_purchase_after_auction' to 'finish'");
+
+								const dataToUpdateAuctionPhoto = { ...auctionPhoto, status_id: finishStatus.id };
+								await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, dataToUpdateAuctionPhoto);
+
+								const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: finishStatus.id };
+								await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
+
+								const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
+								await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
+							}
+
+							// if next winner exists
+							else {
+								console.log(`auction decision: stay 'wait_purchase_after_auction' and wait for next winner : ${auctionPhoto.current_winner_order + 1}`);
+								const dataToUpdateAuctionPhoto = { ...auctionPhoto, current_winner_order: auctionPhoto.current_winner_order + 1 };
+								await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, dataToUpdateAuctionPhoto);
+							}
+						}
+					}
+				}
+
 				// other stage
 				else {
 					console.log("do nothing");
 				}
-			} else {
-				// console.log("category status is not approved");
 			}
 
 			console.log("\n");
