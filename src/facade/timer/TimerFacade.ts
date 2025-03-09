@@ -120,6 +120,9 @@ class TimerFacade {
 								if (bidlist.length === 0) {
 									const updateDataAuctionPhoto = { ...auctionPhoto, status_id: finishStatus.id };
 									await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateDataAuctionPhoto);
+
+									const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: finishStatus.id };
+									await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
 								} else {
 									let updateData = { ...auctionPhoto, status_id: waitPurchaseStatus.id, current_winner_order: 1 };
 
