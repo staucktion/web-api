@@ -54,6 +54,27 @@ class AuctionPhotoService {
 		}
 	}
 
+	public async getAuctionPhotoByAuctionId(auctionId: number): Promise<any> {
+		try {
+			const auctionPhoto = await this.prisma.auction_photo.findFirst({
+				where: { auction_id: auctionId },
+				include: {
+					auction: true,
+					photo: true,
+					status: true,
+					winner_user_1: true,
+					winner_user_2: true,
+					winner_user_3: true,
+					bid_list: true,
+				},
+			});
+
+			return handlePrismaType(auctionPhoto);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
+
 	public async updateAuctionPhoto(id: number, updateData: any): Promise<any> {
 		try {
 			const { photo_id, auction_id, status_id, winner_user_id_1, winner_user_id_2, winner_user_id_3, bid_list, ...cleanData } = updateData;

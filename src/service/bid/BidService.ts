@@ -19,6 +19,23 @@ class BidService {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
+
+	public async getBidsByAuctionPhotoId(auctionPhotoId: number): Promise<any> {
+		try {
+			const instanceList = await this.prisma.bid.findMany({
+				where: {
+					auction_photo_id: auctionPhotoId,
+				},
+				include: {
+					user: true,
+				},
+			});
+
+			return handlePrismaType(instanceList);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
 }
 
 export default BidService;
