@@ -31,6 +31,27 @@ class AuctionPhotoService {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
+
+	public async getAuctionPhotoByPhotoId(photoId: number): Promise<any> {
+		try {
+			const auctionPhoto = await this.prisma.auction_photo.findFirst({
+				where: { photo_id: photoId },
+				include: {
+					auction: true,
+					photo: true,
+					status: true,
+					winner_user_1: true,
+					winner_user_2: true,
+					winner_user_3: true,
+					bid_list: true,
+				},
+			});
+
+			return handlePrismaType(auctionPhoto);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
 }
 
 export default AuctionPhotoService;

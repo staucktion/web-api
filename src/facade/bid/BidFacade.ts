@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import BidDto from "src/dto/bid/BidDto";
 import CustomError from "src/error/CustomError";
+import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
 import BankService from "src/service/bank/BankService";
 import BidService from "src/service/bid/BidService";
 import StatusService from "src/service/status/StatusService";
@@ -16,6 +17,7 @@ class BidFacade {
 	private baseValidation: BaseValidation;
 	private statusService: StatusService;
 	private userService: UserService;
+	private auctionPhotoService: AuctionPhotoService;
 
 	constructor() {
 		this.bankService = new BankService();
@@ -23,12 +25,14 @@ class BidFacade {
 		this.bidValidation = new BidValidation();
 		this.baseValidation = new BaseValidation();
 		this.userService = new UserService();
+		this.auctionPhotoService = new AuctionPhotoService();
 	}
 
 	public async bid(req: Request, res: Response): Promise<void> {
 		let bidDto: BidDto;
 		let photoId: number;
 		let user;
+		let auctionPhoto;
 
 		// get valid body from request
 		try {
@@ -57,6 +61,26 @@ class BidFacade {
 		// expect user status to be active
 		if (user.status?.status !== "active") {
 			res.status(400).json({ message: "need account activation with provision validation" });
+			return;
+		}
+
+		// get auction photo
+		try {
+			auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByPhotoId(photoId);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// expect there is a acution for that photo and status is 'auction'
+		if (!(auctionPhoto?.status?.status === "auction")) {
+			res.status(400).json({ message: `photo with id ${photoId} is not on auction` });
+			return;
+		}
+
+		// expect requested photo is not belong to user who make request
+		if (user.id === auctionPhoto.photo.user_id) {
+			res.status(400).json({ message: `photo with id ${photoId} is belong to you` });
 			return;
 		}
 
