@@ -1,12 +1,52 @@
 {
 	"info": {
-		"_postman_id": "c755b85a-5c50-4da9-84a7-147c8c75765b",
+		"_postman_id": "77027d74-5fea-415b-aec5-d6813def18c4",
 		"name": "staucktion-web-api",
 		"description": "### Authentication\nMany endpoints require authentication via JWT token.\n\n#### How to Get Your Authentication Token:\n1. Log in to the application in your browser\n2. Open Developer Tools (F12 or Right Click → Inspect)\n3. Navigate to the \"Application\" tab\n4. Select \"Cookies\" in the left sidebar\n5. Find the appropriate domain in the list\n6. Look for a cookie named \"token\"\n7. Copy the value of this cookie\n\n#### How to Authenticate in Postman:\n1. Set the AUTH_TOKEN variable in the collection with your JWT token\n2. The token will be automatically included in the request header",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "26266539"
 	},
 	"item": [
+		{
+			"name": "health",
+			"item": [
+				{
+					"name": "Check API Health Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/health",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get API Health Information",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/health/info",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"health",
+								"info"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "auth",
 			"item": [
@@ -103,371 +143,6 @@
 									"key": "photoId",
 									"value": "3"
 								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "health",
-			"item": [
-				{
-					"name": "Check API Health Status",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/health",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"health"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get API Health Information",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/health/info",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"health",
-								"info"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "photo",
-			"item": [
-				{
-					"name": "Upload New Photo",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "photo",
-									"description": "Select a file from your local environment here",
-									"type": "file",
-									"src": []
-								},
-								{
-									"key": "categoryId",
-									"value": "1"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/photos",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Photos",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/photos",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Photo By ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/photos/1",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos",
-								"1"
-							]
-						},
-						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
-					},
-					"response": []
-				},
-				{
-					"name": "Get Waiting Photos (Requires Auth)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{JWT_TOKEN}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{BASE_URL}}/photos/waiting",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos",
-								"waiting"
-							]
-						},
-						"description": "Retrieves a list of photos in WAIT state. Requires authentication. Only accessible to admins."
-					},
-					"response": []
-				},
-				{
-					"name": "Approve Photo (Requires Auth)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{JWT_TOKEN}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"action\": \"approve\"\n}"
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/photos/:photoId/status",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos",
-								":photoId",
-								"status"
-							],
-							"variable": [
-								{
-									"key": "photoId",
-									"value": "1",
-									"description": "ID of the photo to approve"
-								}
-							]
-						},
-						"description": "Approves a photo, changing its status from WAIT to APPROVED. Requires authentication. Only accessible to admins."
-					},
-					"response": []
-				},
-				{
-					"name": "Reject Photo (Requires Auth)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{JWT_TOKEN}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"action\": \"reject\",\n  \"reason\": \"Inappropriate content\"\n}"
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/photos/:photoId/status",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos",
-								":photoId",
-								"status"
-							],
-							"variable": [
-								{
-									"key": "photoId",
-									"value": "1",
-									"description": "ID of the photo to reject"
-								}
-							]
-						},
-						"description": "Rejects a photo, changing its status from WAIT to REJECTED. Requires a reason for rejection. Requires authentication. Only accessible to admins."
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "mail",
-			"item": [
-				{
-					"name": "Send Email (Requires Auth)",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"photoId\": 1,\r\n    \"action\": \"Approve Purchase\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/mail/send",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"mail",
-								"send"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "location",
-			"item": [
-				{
-					"name": "Get All Locations",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/locations",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"locations"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Location By ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/locations/1",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"locations",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Location (Requires Auth)",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/locations",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"locations"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Location (Requires Auth)",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/locations/1",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"locations",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Location (Requires Auth)",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/locations/1",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"locations",
-								"1"
 							]
 						}
 					},
@@ -738,6 +413,331 @@
 							]
 						},
 						"description": "Rejects a category, changing its status from WAIT to REJECTED. Requires a reason for rejection. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "location",
+			"item": [
+				{
+					"name": "Get All Locations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Location By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Location (Requires Auth)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/locations",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Location (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Location (Requires Auth)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "mail",
+			"item": [
+				{
+					"name": "Send Email (Requires Auth)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"photoId\": 1,\r\n    \"action\": \"Approve Purchase\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/mail/send",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"mail",
+								"send"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "photo",
+			"item": [
+				{
+					"name": "Upload New Photo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "photo",
+									"description": "Select a file from your local environment here",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "categoryId",
+									"value": "1"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Photos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Photo By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/1",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos",
+								"1"
+							]
+						},
+						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Waiting Photos (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/waiting",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos",
+								"waiting"
+							]
+						},
+						"description": "Retrieves a list of photos in WAIT state. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Photo (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"approve\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId/status",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos",
+								":photoId",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1",
+									"description": "ID of the photo to approve"
+								}
+							]
+						},
+						"description": "Approves a photo, changing its status from WAIT to APPROVED. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Photo (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"reject\",\n  \"reason\": \"Inappropriate content\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId/status",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos",
+								":photoId",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1",
+									"description": "ID of the photo to reject"
+								}
+							]
+						},
+						"description": "Rejects a photo, changing its status from WAIT to REJECTED. Requires a reason for rejection. Requires authentication. Only accessible to admins."
 					},
 					"response": []
 				}
