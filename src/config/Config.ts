@@ -7,6 +7,8 @@ class Config {
 	static requestLog = EnvVariables.requestLog;
 	static explicitErrorLog = EnvVariables.explicitErrorLog;
 	static multerFileSize = EnvVariables.multerFileSize;
+	static bankUrl = EnvVariables.bankUrl;
+	static provisionAmount  = EnvVariables.provisionAmount;
 
 	static watermark = { ...EnvVariables.watermark };
 
