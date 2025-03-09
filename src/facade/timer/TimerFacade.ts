@@ -103,8 +103,8 @@ class TimerFacade {
 
 						if (auction.status?.status === "auction") {
 							// update auction status to finish
-							// const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
-							// await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
+							const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
+							await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
 
 							// get auction photo
 							const auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByAuctionId(auction.id);
@@ -144,7 +144,17 @@ class TimerFacade {
 
 									// update table
 									await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateData);
+
+									const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: waitPurchaseStatus.id };
+									await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
 								}
+							}
+
+							// filter 'purchasable' photos and make their status 'finish'
+							const filteredPhotos = auction.photo_list.filter((photo) => photo.status_id === 7);
+							for (const photo of filteredPhotos) {
+								const dataToUpdatePhoto = { ...photo, status_id: finishStatus.id };
+								await this.photoService.updatePhoto(photo.id, dataToUpdatePhoto);
 							}
 						}
 					}
