@@ -1,5 +1,6 @@
 import AuctionService from "src/service/auction/AuctionService";
 import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
+import BidService from "src/service/bid/BidService";
 import CategoryService from "src/service/category/categoryService";
 import PhotoService from "src/service/photo/photoService";
 import StatusService from "src/service/status/StatusService";
@@ -12,6 +13,7 @@ class TimerFacade {
 	private statusService: StatusService;
 	private photoService: PhotoService;
 	private auctionPhotoService: AuctionPhotoService;
+	private bidService: BidService;
 
 	constructor() {
 		this.timerService = new TimerService();
@@ -20,6 +22,7 @@ class TimerFacade {
 		this.statusService = new StatusService();
 		this.photoService = new PhotoService();
 		this.auctionPhotoService = new AuctionPhotoService();
+		this.bidService = new BidService();
 	}
 
 	public async cronJob() {
@@ -28,9 +31,11 @@ class TimerFacade {
 
 		const categoryList: any = await this.categoryService.getAllCategories();
 
-		const auctionStatus = await this.statusService.getStatusFromName("auction");
+		const waitPurchaseStatus = await this.statusService.getStatusFromName("wait_purchase_after_auction");
 		const voteStatus = await this.statusService.getStatusFromName("vote");
+		const auctionStatus = await this.statusService.getStatusFromName("auction");
 		const purchasableStatus = await this.statusService.getStatusFromName("purchasable");
+		const finishStatus = await this.statusService.getStatusFromName("finish");
 
 		for (const category of categoryList) {
 			// console.log(JSON.stringify(category, null, 2));
@@ -88,6 +93,60 @@ class TimerFacade {
 					}
 				}
 
+				// change auction status from 'auction' to 'finish'
+				else if (category.auction_list?.some((auction) => auction.status?.status === "auction")) {
+					console.log("auction decision: change 'auction' status to 'finish'");
+
+					for (const auction of category.auction_list) {
+						// console.log("auction");
+						// console.log(JSON.stringify(auction, null, 2));
+
+						if (auction.status?.status === "auction") {
+							// update auction status to finish
+							// const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
+							// await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
+
+							// get auction photo
+							const auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByAuctionId(auction.id);
+
+							if (auctionPhoto?.status?.status === "auction") {
+								// console.log("auctionPhoto");
+								// console.log(JSON.stringify(auctionPhoto, null, 2));
+
+								// get bid list
+								const bidlist = await this.bidService.getBidsByAuctionPhotoId(auctionPhoto.id);
+
+								// if there is no bid make status finish
+								if (bidlist.length === 0) {
+									const updateDataAuctionPhoto = { ...auctionPhoto, status_id: finishStatus.id };
+									await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateDataAuctionPhoto);
+								} else {
+									let updateData = { ...auctionPhoto, status_id: waitPurchaseStatus.id, current_winner_order: 1 };
+
+									// sort bidlist according to bid amount
+									bidlist.sort((a, b) => b.bid_amount - a.bid_amount);
+
+									// prepare winner list
+									const winnerList = [];
+									let i = 0;
+									while (i < bidlist.length && winnerList.length < 3) {
+										if (!winnerList.includes(bidlist[i].user.id)) winnerList.push(bidlist[i].user.id);
+										i++;
+									}
+
+									// prepare update data
+									for (let i = 0; i < winnerList.length; i++) {
+										updateData = { ...updateData, [`winner_user_id_${i + 1}`]: winnerList[i] };
+									}
+
+									// update table
+									await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateData);
+								}
+							}
+						}
+					}
+				}
+
 				// other stage
 				else {
 					console.log("do nothing");
@@ -96,7 +155,7 @@ class TimerFacade {
 				// console.log("category status is not approved");
 			}
 
-			console.log("\n\n");
+			console.log("\n");
 		}
 
 		console.log("[INFO] 🕑 End of Job");
