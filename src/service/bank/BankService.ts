@@ -12,7 +12,7 @@ class BankService {
 		this.statusService = new StatusService();
 	}
 
-	public async addProvision(data: any): Promise<boolean> {
+	public async addProvision(data: CardDto): Promise<boolean> {
 		try {
 			await axios.put(`${Config.bankUrl}/provisions/add`, data, {
 				headers: {
@@ -35,7 +35,7 @@ class BankService {
 		}
 	}
 
-	public async removeProvision(data: any): Promise<boolean> {
+	public async removeProvision(data: CardDto): Promise<boolean> {
 		try {
 			const response = await axios.put(`${Config.bankUrl}/provisions/remove`, data, {
 				headers: {
