@@ -22,6 +22,7 @@ class BankFacade {
 
 	public async approveUser(req: Request, res: Response): Promise<void> {
 		let cardDto: CardDto;
+		let banUser: boolean = false;
 
 		// get valid body from request
 		try {
@@ -35,9 +36,21 @@ class BankFacade {
 		try {
 			await this.bankService.addProvision({ ...cardDto, provision: Config.provisionAmount });
 		} catch (error: any) {
-			CustomError.handleError(res, error);
-			return;
+			if (error.message === "Cannot perform bank api operation. Balance is not sufficient for provision.") banUser = true;
 		}
+
+		// ban user
+		if (banUser)
+			try {
+				const bannedStatus = await this.statusService.getStatusFromName("banned");
+				const dataToUpdateUser = { status_id: bannedStatus.id };
+				await this.userService.updateUser(req.user.id, dataToUpdateUser);
+				res.status(400).json({ message: "provision is not enough, user banned." });
+				return;
+			} catch (error: any) {
+				CustomError.handleError(res, error);
+				return;
+			}
 
 		// remove provision
 		try {

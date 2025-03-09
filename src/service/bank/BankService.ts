@@ -25,7 +25,6 @@ class BankService {
 
 			return true;
 		} catch (error: any) {
-			console.log(error);
 			CustomError.builder()
 				.setErrorType("Bank Error")
 				.setStatusCode(400)
