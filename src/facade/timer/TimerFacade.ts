@@ -95,17 +95,11 @@ class TimerFacade {
 
 				// change auction status from 'auction' to 'finish'
 				else if (category.auction_list?.some((auction) => auction.status?.status === "auction")) {
-					console.log("auction decision: change 'auction' status to 'finish'");
-
 					for (const auction of category.auction_list) {
 						// console.log("auction");
 						// console.log(JSON.stringify(auction, null, 2));
 
 						if (auction.status?.status === "auction") {
-							// update auction status to finish
-							const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
-							await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
-
 							// get auction photo
 							const auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByAuctionId(auction.id);
 
@@ -118,12 +112,17 @@ class TimerFacade {
 
 								// if there is no bid make status finish
 								if (bidlist.length === 0) {
+									console.log("auction decision: change 'auction' status to 'finish'");
 									const updateDataAuctionPhoto = { ...auctionPhoto, status_id: finishStatus.id };
 									await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateDataAuctionPhoto);
 
 									const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: finishStatus.id };
 									await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
+
+									const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
+									await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
 								} else {
+									console.log("auction decision: change 'auction' status to 'wait_purchase_after_auction'");
 									let updateData = { ...auctionPhoto, status_id: waitPurchaseStatus.id, current_winner_order: 1 };
 
 									// sort bidlist according to bid amount
@@ -147,6 +146,9 @@ class TimerFacade {
 
 									const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: waitPurchaseStatus.id };
 									await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
+
+									const dataToUpdateAuction = { ...auction, status_id: waitPurchaseStatus.id };
+									await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
 								}
 							}
 
