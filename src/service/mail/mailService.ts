@@ -10,11 +10,13 @@ import PrismaUtil from "src/util/PrismaUtil";
 
 let transporter: nodemailer.Transporter | null = null;
 
-if ([Config.email.from, Config.email.pass, Config.email.service].every(Boolean)) {
+if ([Config.email.from, Config.email.user, Config.email.pass, Config.email.smtp].every(Boolean)) {
 	transporter = nodemailer.createTransport({
-		service: Config.email.service,
+		host: Config.email.smtp,
+		port: 465,
+		secure: true,
 		auth: {
-			user: Config.email.from,
+			user: Config.email.user,
 			pass: Config.email.pass,
 		},
 	});
