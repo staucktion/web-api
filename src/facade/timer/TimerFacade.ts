@@ -195,14 +195,10 @@ class TimerFacade {
 
 				// other stage
 				else {
-					console.log("do nothing");
+					console.log("auction decision: do nothing");
 				}
 			}
-
-			console.log("\n");
 		}
-
-		console.log("[INFO] 🕑 End of Job");
 	}
 }
 
