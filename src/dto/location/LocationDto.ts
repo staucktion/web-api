@@ -1,6 +1,7 @@
-import BaseResponseDto from "../base/BaseResponseDto";
-
-export default interface LocationDto extends BaseResponseDto {
+interface LocationDto {
+	id?: bigint;
 	latitude: string;
 	longitude: string;
 }
+
+export default LocationDto;

@@ -3,43 +3,35 @@
 		"_postman_id": "0a64a8a3-758d-44c5-a70e-d8c8b1e583b3",
 		"name": "staucktion-web-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "5601458"
+		"_exporter_id": "5601458",
+		"description": "### Authentication\nMany endpoints require authentication via JWT token.\n\n#### How to Get Your Authentication Token:\n1. Log in to the application in your browser\n2. Open Developer Tools (F12 or Right Click → Inspect)\n3. Navigate to the \"Application\" tab\n4. Select \"Cookies\" in the left sidebar\n5. Find the appropriate domain in the list\n6. Look for a cookie named \"token\"\n7. Copy the value of this cookie\n\n#### How to Authenticate in Postman:\n1. Set the AUTH_TOKEN variable in the collection with your JWT token\n2. The token will be automatically included in the request header"
 	},
 	"item": [
 		{
 			"name": "health",
 			"item": [
 				{
-					"name": "health",
+					"name": "Check API Health Status",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/health",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"health"
-							]
+							"host": ["{{BASE_URL}}"],
+							"path": ["health"]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "health/info",
+					"name": "Get API Health Information",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/health/info",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"health",
-								"info"
-							]
+							"host": ["{{BASE_URL}}"],
+							"path": ["health", "info"]
 						}
 					},
 					"response": []
@@ -50,7 +42,7 @@
 			"name": "photo",
 			"item": [
 				{
-					"name": "/photos",
+					"name": "Upload New Photo",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -62,54 +54,137 @@
 									"description": "Select a file from your local environment here",
 									"type": "file",
 									"src": []
+								},
+								{
+									"key": "categoryId",
+									"value": "1"
 								}
 							]
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/photos",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos"
-							]
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos"]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/photos",
+					"name": "Get All Photos",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/photos",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos"
-							]
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos"]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/photos/id",
+					"name": "Get Photo By ID",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/photos/1",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"photos",
-								"1"
-							]
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "1"]
 						},
 						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Waiting Photos (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/waiting",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "waiting"]
+						},
+						"description": "Retrieves a list of photos in WAIT state. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Photo (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"approve\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", ":photoId", "status"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1",
+									"description": "ID of the photo to approve"
+								}
+							]
+						},
+						"description": "Approves a photo, changing its status from WAIT to APPROVED. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Photo (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"reject\",\n  \"reason\": \"Inappropriate content\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", ":photoId", "status"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1",
+									"description": "ID of the photo to reject"
+								}
+							]
+						},
+						"description": "Rejects a photo, changing its status from WAIT to REJECTED. Requires a reason for rejection. Requires authentication. Only accessible to admins."
 					},
 					"response": []
 				}
@@ -119,7 +194,7 @@
 			"name": "mail",
 			"item": [
 				{
-					"name": "/mail/send",
+					"name": "Send Email (Requires Auth)",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -134,14 +209,375 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/mail/send",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"mail",
-								"send"
+							"host": ["{{BASE_URL}}"],
+							"path": ["mail", "send"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "location",
+			"item": [
+				{
+					"name": "Get All Locations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Location By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Location (Requires Auth)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/locations",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Location (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Location (Requires Auth)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "category",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/categories",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/categories/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category (Requires Auth)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sample Category\",\r\n    \"address\": \"123 Main St\",\r\n    \"valid_radius\": 5.0,\r\n    \"location_id\": 1,\r\n    \"status_id\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/categories",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Updated Category\",\r\n    \"address\": \"456 Main St\",\r\n    \"valid_radius\": 10.0,\r\n    \"location_id\": 1,\r\n    \"status_id\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/categories/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category (Requires Auth)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/categories/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Categories By Location ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1/categories",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1", "categories"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Categories By Coordinates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/categories/search/by-coordinates?latitude=36.89&longitude=30.69",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", "search", "by-coordinates"],
+							"query": [
+								{
+									"key": "latitude",
+									"value": "36.89"
+								},
+								{
+									"key": "longitude",
+									"value": "30.69"
+								}
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Waiting Categories (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/categories/waiting",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", "waiting"]
+						},
+						"description": "Retrieves a list of categories in WAIT state. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Category (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"approve\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/categories/:id/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", ":id", "status"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID of the category to approve"
+								}
+							]
+						},
+						"description": "Approves a category, changing its status from WAIT to APPROVED. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Category (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"reject\",\n  \"reason\": \"Inappropriate content\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/categories/:id/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["categories", ":id", "status"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID of the category to reject"
+								}
+							]
+						},
+						"description": "Rejects a category, changing its status from WAIT to REJECTED. Requires a reason for rejection. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Update User Profile (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "first_name",
+									"value": "John",
+									"type": "text",
+									"description": "First name (optional)"
+								},
+								{
+									"key": "last_name",
+									"value": "Doe",
+									"type": "text",
+									"description": "Last name (optional)"
+								},
+								{
+									"key": "tc_identity_no",
+									"value": "12345678901",
+									"type": "text",
+									"description": "TC Identity Number - must be 11 digits (optional)"
+								},
+								{
+									"key": "profile_picture",
+									"type": "file",
+									"description": "Profile picture image (optional)",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/users/profile",
+							"host": ["{{BASE_URL}}"],
+							"path": ["users", "profile"]
+						},
+						"description": "Update the current authenticated user's profile. At least one field must be provided. Profile picture must be an image file (JPEG, PNG, or GIF). TC Identity Number must be 11 digits.\n\nProfile pictures can be accessed directly via the Get Profile Picture request."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile Picture",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/profile-pictures/profile-1740951748152-122771749.jpeg",
+							"host": ["{{BASE_URL}}"],
+							"path": ["profile-pictures", "profile-1740951748152-122771749.jpeg"]
+						},
+						"description": "Access a user's profile picture directly using the filename. This endpoint doesn't require authentication and can be used in frontend applications for displaying profile pictures.\n\nThe example uses a placeholder filename - replace with an actual filename as needed."
 					},
 					"response": []
 				}
@@ -154,14 +590,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
-				"exec": [
-					"const AUTH_TOKEN = pm.collectionVariables.get(\"AUTH_TOKEN\");",
-					"",
-					"pm.request.headers.add({",
-					"    key: 'Cookie',",
-					"    value: `token=${AUTH_TOKEN}`",
-					"});"
-				]
+				"exec": ["const AUTH_TOKEN = pm.collectionVariables.get(\"AUTH_TOKEN\");", "", "pm.request.headers.add({", "    key: 'Cookie',", "    value: `token=${AUTH_TOKEN}`", "});"]
 			}
 		},
 		{
@@ -169,9 +598,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
-				"exec": [
-					""
-				]
+				"exec": [""]
 			}
 		}
 	],

@@ -1,12 +1,15 @@
-import BaseResponseDto from "../base/BaseResponseDto";
-import LocationDto from "../location/LocationDto";
+import { Decimal } from "@prisma/client/runtime/library";
 
-export default interface CategoryDto extends BaseResponseDto {
+interface CategoryDto {
+	id?: bigint;
 	name: string;
+	status_id?: number | null;
 	address: string;
-	valid_radius: number;
-	location: LocationDto;
-	status: any;
-	auction_list: any[];
-	photo_list: any[];
+	location_id?: bigint | null;
+	valid_radius: Decimal | number;
+	is_deleted?: boolean;
+	created_at?: Date;
+	updated_at?: Date;
 }
+
+export default CategoryDto;

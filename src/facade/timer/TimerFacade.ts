@@ -1,6 +1,6 @@
 import AuctionService from "src/service/auction/AuctionService";
 import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
-import CategoryService from "src/service/category/CategoryService";
+import CategoryService from "src/service/category/categoryService";
 import PhotoService from "src/service/photo/photoService";
 import StatusService from "src/service/status/StatusService";
 import TimerService from "src/service/timer/TimerService";
@@ -26,7 +26,7 @@ class TimerFacade {
 		console.log("[INFO] 🕑 Job is running at:", new Date().toISOString());
 		this.timerService.saveLastTriggerTimeToDb();
 
-		const categoryList = await this.categoryService.listAllCategories();
+		const categoryList: any = await this.categoryService.getAllCategories();
 
 		const auctionStatus = await this.statusService.getStatusFromName("auction");
 		const voteStatus = await this.statusService.getStatusFromName("vote");

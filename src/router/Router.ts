@@ -1,9 +1,12 @@
 import express from "express";
 import AuthEndpoint from "src/endpoint/auth/AuthEndpoint";
 import BankEndpoint from "src/endpoint/bank/BankEndpoint";
+import CategoryEndpoint from "src/endpoint/category/CategoryEndpoint";
 import HealthEndpoint from "src/endpoint/health/HealthEndpoint";
+import LocationEndpoint from "src/endpoint/location/LocationEndpoint";
 import MailEndpoint from "src/endpoint/mail/MailEndpoint";
 import PhotoEndpoint from "src/endpoint/photo/PhotoEndpoint";
+import UserEndpoint from "src/endpoint/user/UserEndpoint";
 
 class Router {
 	private healthEndpoint: HealthEndpoint;
@@ -11,6 +14,9 @@ class Router {
 	private mailEndpoint: MailEndpoint;
 	private authEndpoint: AuthEndpoint;
 	private bankEndpoint: BankEndpoint;
+	private locationEndpoint: LocationEndpoint;
+	private categoryEndpoint: CategoryEndpoint;
+	private userEndpoint: UserEndpoint;
 
 	constructor() {
 		this.healthEndpoint = new HealthEndpoint();
@@ -18,6 +24,9 @@ class Router {
 		this.mailEndpoint = new MailEndpoint();
 		this.authEndpoint = new AuthEndpoint();
 		this.bankEndpoint = new BankEndpoint();
+		this.locationEndpoint = new LocationEndpoint();
+		this.categoryEndpoint = new CategoryEndpoint();
+		this.userEndpoint = new UserEndpoint();
 	}
 
 	public setupRoute(app: express.Application): void {
@@ -26,6 +35,9 @@ class Router {
 		app.use(this.mailEndpoint.getRouter());
 		app.use(this.authEndpoint.getRouter());
 		app.use(this.bankEndpoint.getRouter());
+		app.use(this.locationEndpoint.getRouter());
+		app.use(this.categoryEndpoint.getRouter());
+		app.use(this.userEndpoint.getRouter());
 	}
 }
 

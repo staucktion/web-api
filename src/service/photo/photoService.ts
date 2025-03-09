@@ -10,6 +10,8 @@ import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
+import Config from "src/config/Config";
+import { StatusEnum } from "src/types/statusEnum";
 
 class PhotoService {
 	private prisma: PrismaClient;
@@ -83,27 +85,24 @@ class PhotoService {
 		}
 	}
 
-	public async uploadPhotoDb(user: UserDto, fileName: string): Promise<BaseResponseDto> {
+	public async uploadPhotoDb(fileName: string, userId: bigint | number, locationId: bigint | number, categoryId: bigint | number, statusId: number = StatusEnum.WAIT): Promise<BaseResponseDto> {
 		try {
-			// todo user id
-			// todo location id
-			// todo category id
 			// todo device info
 			const instance = await this.prisma.photo.create({
 				data: {
 					file_path: fileName,
-					user_id: user.id,
+					user_id: userId,
 					auction_id: null,
-					location_id: 1,
-					category_id: 1,
+					location_id: locationId,
+					category_id: categoryId,
 					title: fileName,
 					device_info: "deviceInfo",
 					vote_count: 0,
 					is_deleted: false,
 					created_at: new Date(),
 					updated_at: new Date(),
-					status_id: 1,
 					is_auctionable: false,
+					status_id: statusId,
 				},
 			});
 
@@ -113,33 +112,66 @@ class PhotoService {
 		}
 	}
 
-	public async listPhotos(): Promise<ReadAllPhotoResponseDto[]> {
+	public async listPhotosByStatus(statusId: number): Promise<ReadAllPhotoResponseDto[]> {
 		try {
-			const instanceList = await this.prisma.photo.findMany({
+			const photoList = await this.prisma.photo.findMany({
 				where: {
 					is_deleted: false,
+					status_id: statusId,
 				},
 			});
 
-			const mappedInstanceList: ReadAllPhotoResponseDto[] = instanceList.map((photo) => ({
+			return photoList.map((photo) => ({
 				id: Number(photo.id),
 				file_path: photo.file_path,
 				title: photo.title,
 				device_info: photo.device_info,
-				vote_count: photo.vote_count,
+				vote_count: Number(photo.vote_count),
 				user_id: Number(photo.user_id),
 				auction_id: photo.auction_id ? Number(photo.auction_id) : null,
 				location_id: Number(photo.location_id),
 				category_id: Number(photo.category_id),
-				status_id: photo.status_id,
 				is_auctionable: photo.is_auctionable,
+				status_id: Number(photo.status_id),
 				created_at: photo.created_at,
 				updated_at: photo.updated_at,
 			}));
-
-			return mappedInstanceList;
 		} catch (error: any) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
+
+	public async updatePhotoStatus(photoId: number, newStatus: StatusEnum, reason?: string): Promise<any> {
+		try {
+			// First check if the photo exists
+			const photo = await this.prisma.photo.findUnique({
+				where: { id: photoId },
+			});
+
+			if (!photo) {
+				CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build().throwError();
+			}
+
+			// Update the photo status
+			const updatedPhoto = await this.prisma.photo.update({
+				where: { id: photoId },
+				data: {
+					status_id: newStatus,
+					updated_at: new Date(),
+					// Note: We'll be storing the reason in a future update
+				},
+			});
+
+			// Return the updated photo without mapping
+			return {
+				...updatedPhoto,
+				id: Number(updatedPhoto.id),
+				vote_count: Number(updatedPhoto.vote_count),
+				status_id: Number(updatedPhoto.status_id),
+			};
+		} catch (error: any) {
+			if (error instanceof CustomError) throw error;
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update photo status").build().throwError();
 		}
 	}
 
