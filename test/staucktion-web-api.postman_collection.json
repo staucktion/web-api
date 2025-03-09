@@ -1,12 +1,115 @@
 {
 	"info": {
-		"_postman_id": "0a64a8a3-758d-44c5-a70e-d8c8b1e583b3",
+		"_postman_id": "c755b85a-5c50-4da9-84a7-147c8c75765b",
 		"name": "staucktion-web-api",
+		"description": "### Authentication\nMany endpoints require authentication via JWT token.\n\n#### How to Get Your Authentication Token:\n1. Log in to the application in your browser\n2. Open Developer Tools (F12 or Right Click → Inspect)\n3. Navigate to the \"Application\" tab\n4. Select \"Cookies\" in the left sidebar\n5. Find the appropriate domain in the list\n6. Look for a cookie named \"token\"\n7. Copy the value of this cookie\n\n#### How to Authenticate in Postman:\n1. Set the AUTH_TOKEN variable in the collection with your JWT token\n2. The token will be automatically included in the request header",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "5601458",
-		"description": "### Authentication\nMany endpoints require authentication via JWT token.\n\n#### How to Get Your Authentication Token:\n1. Log in to the application in your browser\n2. Open Developer Tools (F12 or Right Click → Inspect)\n3. Navigate to the \"Application\" tab\n4. Select \"Cookies\" in the left sidebar\n5. Find the appropriate domain in the list\n6. Look for a cookie named \"token\"\n7. Copy the value of this cookie\n\n#### How to Authenticate in Postman:\n1. Set the AUTH_TOKEN variable in the collection with your JWT token\n2. The token will be automatically included in the request header"
+		"_exporter_id": "26266539"
 	},
 	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "/auth/info",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/info",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"info"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bank",
+			"item": [
+				{
+					"name": "/banks/approve-user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cardNumber\": \"1234567890123456\",\r\n    \"expirationDate\": \"12/34\",\r\n    \"cvv\": \"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/banks/approve-user",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"banks",
+								"approve-user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bid",
+			"item": [
+				{
+					"name": "/bids/photoId",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"bidAmount\": \"100\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/bids/:photoId",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"bids",
+								":photoId"
+							],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "health",
 			"item": [
@@ -17,8 +120,12 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/health",
-							"host": ["{{BASE_URL}}"],
-							"path": ["health"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"health"
+							]
 						}
 					},
 					"response": []
@@ -30,8 +137,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/health/info",
-							"host": ["{{BASE_URL}}"],
-							"path": ["health", "info"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"health",
+								"info"
+							]
 						}
 					},
 					"response": []
@@ -63,8 +175,12 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/photos",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos"
+							]
 						}
 					},
 					"response": []
@@ -76,8 +192,12 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/photos",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos"
+							]
 						}
 					},
 					"response": []
@@ -89,8 +209,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/photos/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos", "1"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos",
+								"1"
+							]
 						},
 						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
 					},
@@ -109,8 +234,13 @@
 						],
 						"url": {
 							"raw": "{{BASE_URL}}/photos/waiting",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos", "waiting"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos",
+								"waiting"
+							]
 						},
 						"description": "Retrieves a list of photos in WAIT state. Requires authentication. Only accessible to admins."
 					},
@@ -138,8 +268,14 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/photos/:photoId/status",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos", ":photoId", "status"],
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos",
+								":photoId",
+								"status"
+							],
 							"variable": [
 								{
 									"key": "photoId",
@@ -174,8 +310,14 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/photos/:photoId/status",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos", ":photoId", "status"],
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos",
+								":photoId",
+								"status"
+							],
 							"variable": [
 								{
 									"key": "photoId",
@@ -209,8 +351,13 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/mail/send",
-							"host": ["{{BASE_URL}}"],
-							"path": ["mail", "send"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"mail",
+								"send"
+							]
 						}
 					},
 					"response": []
@@ -227,8 +374,12 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/locations",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations"
+							]
 						}
 					},
 					"response": []
@@ -240,8 +391,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/locations/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations", "1"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations",
+								"1"
+							]
 						}
 					},
 					"response": []
@@ -262,8 +418,12 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/locations",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations"
+							]
 						}
 					},
 					"response": []
@@ -284,8 +444,13 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/locations/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations", "1"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations",
+								"1"
+							]
 						}
 					},
 					"response": []
@@ -297,8 +462,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/locations/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations", "1"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations",
+								"1"
+							]
 						}
 					},
 					"response": []
@@ -315,8 +485,12 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/categories",
-							"host": ["{{BASE_URL}}"],
-							"path": ["categories"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories"
+							]
 						}
 					},
 					"response": []
@@ -328,8 +502,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/categories/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["categories", "1"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories",
+								"1"
+							]
 						}
 					},
 					"response": []
@@ -350,8 +529,12 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/categories",
-							"host": ["{{BASE_URL}}"],
-							"path": ["categories"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories"
+							]
 						}
 					},
 					"response": []
@@ -372,8 +555,13 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/categories/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["categories", "1"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories",
+								"1"
+							]
 						}
 					},
 					"response": []
@@ -385,8 +573,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/categories/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["categories", "1"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories",
+								"1"
+							]
 						}
 					},
 					"response": []
@@ -398,8 +591,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/locations/1/categories",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations", "1", "categories"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"locations",
+								"1",
+								"categories"
+							]
 						}
 					},
 					"response": []
@@ -411,8 +610,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/categories/search/by-coordinates?latitude=36.89&longitude=30.69",
-							"host": ["{{BASE_URL}}"],
-							"path": ["categories", "search", "by-coordinates"],
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories",
+								"search",
+								"by-coordinates"
+							],
 							"query": [
 								{
 									"key": "latitude",
@@ -440,8 +645,13 @@
 						],
 						"url": {
 							"raw": "{{BASE_URL}}/categories/waiting",
-							"host": ["{{BASE_URL}}"],
-							"path": ["categories", "waiting"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories",
+								"waiting"
+							]
 						},
 						"description": "Retrieves a list of categories in WAIT state. Requires authentication. Only accessible to admins."
 					},
@@ -469,8 +679,14 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/categories/:id/status",
-							"host": ["{{BASE_URL}}"],
-							"path": ["categories", ":id", "status"],
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories",
+								":id",
+								"status"
+							],
 							"variable": [
 								{
 									"key": "id",
@@ -505,8 +721,14 @@
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/categories/:id/status",
-							"host": ["{{BASE_URL}}"],
-							"path": ["categories", ":id", "status"],
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories",
+								":id",
+								"status"
+							],
 							"variable": [
 								{
 									"key": "id",
@@ -535,33 +757,38 @@
 								{
 									"key": "first_name",
 									"value": "John",
-									"type": "text",
-									"description": "First name (optional)"
+									"description": "First name (optional)",
+									"type": "text"
 								},
 								{
 									"key": "last_name",
 									"value": "Doe",
-									"type": "text",
-									"description": "Last name (optional)"
+									"description": "Last name (optional)",
+									"type": "text"
 								},
 								{
 									"key": "tc_identity_no",
 									"value": "12345678901",
-									"type": "text",
-									"description": "TC Identity Number - must be 11 digits (optional)"
+									"description": "TC Identity Number - must be 11 digits (optional)",
+									"type": "text"
 								},
 								{
 									"key": "profile_picture",
-									"type": "file",
 									"description": "Profile picture image (optional)",
+									"type": "file",
 									"src": []
 								}
 							]
 						},
 						"url": {
 							"raw": "{{BASE_URL}}/users/profile",
-							"host": ["{{BASE_URL}}"],
-							"path": ["users", "profile"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"profile"
+							]
 						},
 						"description": "Update the current authenticated user's profile. At least one field must be provided. Profile picture must be an image file (JPEG, PNG, or GIF). TC Identity Number must be 11 digits.\n\nProfile pictures can be accessed directly via the Get Profile Picture request."
 					},
@@ -574,8 +801,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{BASE_URL}}/profile-pictures/profile-1740951748152-122771749.jpeg",
-							"host": ["{{BASE_URL}}"],
-							"path": ["profile-pictures", "profile-1740951748152-122771749.jpeg"]
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"profile-pictures",
+								"profile-1740951748152-122771749.jpeg"
+							]
 						},
 						"description": "Access a user's profile picture directly using the filename. This endpoint doesn't require authentication and can be used in frontend applications for displaying profile pictures.\n\nThe example uses a placeholder filename - replace with an actual filename as needed."
 					},
@@ -590,7 +822,14 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
-				"exec": ["const AUTH_TOKEN = pm.collectionVariables.get(\"AUTH_TOKEN\");", "", "pm.request.headers.add({", "    key: 'Cookie',", "    value: `token=${AUTH_TOKEN}`", "});"]
+				"exec": [
+					"const AUTH_TOKEN = pm.collectionVariables.get(\"AUTH_TOKEN\");",
+					"",
+					"pm.request.headers.add({",
+					"    key: 'Cookie',",
+					"    value: `token=${AUTH_TOKEN}`",
+					"});"
+				]
 			}
 		},
 		{
@@ -598,7 +837,9 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
-				"exec": [""]
+				"exec": [
+					""
+				]
 			}
 		}
 	],
