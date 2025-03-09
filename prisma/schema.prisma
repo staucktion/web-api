@@ -87,13 +87,13 @@ model user {
   password                         String          @db.VarChar(255)
   first_name                       String          @db.VarChar(100)
   last_name                        String          @db.VarChar(100)
+  tc_identity_no                   String?         @db.VarChar(11)
+  profile_picture                  String?
   role_id                          BigInt?
   status_id                        Int?
   is_deleted                       Boolean
   created_at                       DateTime        @db.Timestamp(6)
   updated_at                       DateTime        @db.Timestamp(6)
-  tc_identity_no  String?    @db.VarChar(11)
-  profile_picture String?
   auction_photo_winner_user_1_list auction_photo[] @relation("auction_photo_winner_user_id_1Touser")
   auction_photo_winner_user_2_list auction_photo[] @relation("auction_photo_winner_user_id_2Touser")
   auction_photo_winner_user_3_list auction_photo[] @relation("auction_photo_winner_user_id_3Touser")
@@ -101,7 +101,6 @@ model user {
   photo_list                       photo[]
   user_role                        user_role?      @relation(fields: [role_id], references: [id], onUpdate: NoAction)
   status                           status?         @relation(fields: [status_id], references: [id], onUpdate: NoAction)
-
 }
 
 model user_role {

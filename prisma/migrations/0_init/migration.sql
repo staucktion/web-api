@@ -73,13 +73,13 @@ CREATE TABLE "user" (
     "password" VARCHAR(255) NOT NULL,
     "first_name" VARCHAR(100) NOT NULL,
     "last_name" VARCHAR(100) NOT NULL,
+    "tc_identity_no" VARCHAR(11),
+    "profile_picture" TEXT,
     "role_id" BIGINT,
     "status_id" INTEGER,
     "is_deleted" BOOLEAN NOT NULL,
     "created_at" TIMESTAMP(6) NOT NULL,
     "updated_at" TIMESTAMP(6) NOT NULL,
-    "tc_identity_no" VARCHAR(11),
-    "profile_picture" TEXT,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
