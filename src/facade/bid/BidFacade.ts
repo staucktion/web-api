@@ -84,6 +84,21 @@ class BidFacade {
 			return;
 		}
 
+		// expect new bid amount is higher than the last bid amount
+		if (auctionPhoto.last_bid_amount >= bidDto.bidAmount) {
+			res.status(400).json({ message: `need higher bid amount from last bid amount. Last bid amount: ${auctionPhoto.last_bid_amount}, current bid amount: ${bidDto.bidAmount}` });
+			return;
+		}
+
+		// update auctionphoto and bid tables
+		try {
+			const updateData = { ...auctionPhoto, last_bid_amount: bidDto.bidAmount };
+			await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateData);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
 		res.status(204).send();
 	}
 }

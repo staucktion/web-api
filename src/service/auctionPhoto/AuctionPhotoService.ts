@@ -53,6 +53,36 @@ class AuctionPhotoService {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
+
+	public async updateAuctionPhoto(id: number, updateData: any): Promise<any> {
+		try {
+			const { photo_id, auction_id, status_id, winner_user_id_1, winner_user_id_2, winner_user_id_3, bid_list, ...cleanData } = updateData;
+
+			const updatedInstance = await this.prisma.auction_photo.update({
+				where: { id },
+				data: {
+					...cleanData,
+					updated_at: DateUtil.getNowWithoutMs(),
+					auction: {
+						connect: { id: auction_id },
+					},
+					photo: {
+						connect: { id: photo_id },
+					},
+					status: {
+						connect: { id: status_id },
+					},
+					winner_user_1: winner_user_id_1 ? { connect: { id: Number(winner_user_id_1) } } : undefined,
+					winner_user_2: winner_user_id_2 ? { connect: { id: Number(winner_user_id_2) } } : undefined,
+					winner_user_3: winner_user_id_3 ? { connect: { id: Number(winner_user_id_3) } } : undefined,
+				},
+			});
+
+			return handlePrismaType(updatedInstance);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
 }
 
 export default AuctionPhotoService;
