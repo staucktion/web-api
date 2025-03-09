@@ -1,60 +1,22 @@
-import axios from "axios";
-import https from "https";
-import Config from "src/config/Config";
+import { PrismaClient } from "@prisma/client";
 import CustomError from "src/error/CustomError";
-import StatusService from "../status/StatusService";
-import CardDto from "src/dto/bank/CardDto";
+import DateUtil from "src/util/dateUtil";
+import handlePrismaType from "src/util/handlePrismaType";
+import PrismaUtil from "src/util/PrismaUtil";
 
 class BidService {
-	private statusService: StatusService;
+	private prisma: PrismaClient;
 
 	constructor() {
-		this.statusService = new StatusService();
+		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
-	public async addProvision(data: any): Promise<boolean> {
+	public async insertNewBid(data: any): Promise<any> {
 		try {
-			await axios.put(`${Config.bankUrl}/provisions/add`, data, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-				httpsAgent: new https.Agent({
-					rejectUnauthorized: false,
-				}),
-			});
-
-			return true;
+			const newInstanceTemp = await this.prisma.bid.create({ data: { ...data, created_at: DateUtil.getNowWithoutMs() } });
+			return handlePrismaType(newInstanceTemp);
 		} catch (error: any) {
-			CustomError.builder()
-				.setErrorType("Bank Error")
-				.setStatusCode(400)
-				.setDetailedMessage(error.message)
-				.setMessage(`Cannot perform bank api operation. ${error?.response?.data?.message}`)
-				.build()
-				.throwError();
-		}
-	}
-
-	public async removeProvision(data: any): Promise<boolean> {
-		try {
-			const response = await axios.put(`${Config.bankUrl}/provisions/remove`, data, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-				httpsAgent: new https.Agent({
-					rejectUnauthorized: false,
-				}),
-			});
-
-			return true;
-		} catch (error: any) {
-			CustomError.builder()
-				.setErrorType("Bank Error")
-				.setStatusCode(400)
-				.setDetailedMessage(error.message)
-				.setMessage(`Cannot perform bank api operation. ${error?.response?.data?.message}`)
-				.build()
-				.throwError();
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
 }

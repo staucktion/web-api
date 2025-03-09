@@ -90,10 +90,23 @@ class BidFacade {
 			return;
 		}
 
-		// update auctionphoto and bid tables
+		// update auctionphoto table
 		try {
 			const updateData = { ...auctionPhoto, last_bid_amount: bidDto.bidAmount };
 			await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateData);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// add bid table
+		try {
+			const createData = {
+				bid_amount: bidDto.bidAmount,
+				user_id: user.id,
+				auction_photo_id: auctionPhoto.id,
+			};
+			await this.bidService.insertNewBid(createData);
 		} catch (error: any) {
 			CustomError.handleError(res, error);
 			return;
