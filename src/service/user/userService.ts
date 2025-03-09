@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import UserDto from "src/dto/auth/UserDto";
 import UpdateUserDto from "src/dto/user/UpdateUserDto";
 import CustomError from "src/error/CustomError";
+import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 
 class UserService {
@@ -60,13 +61,16 @@ class UserService {
 					id: BigInt(userId),
 					is_deleted: false,
 				},
+				include: {
+					status: true,
+				},
 			});
 
 			if (!user) {
 				CustomError.builder().setMessage("User not found.").setErrorType("Not Found").setStatusCode(404).build().throwError();
 			}
 
-			return user;
+			return handlePrismaType(user);
 		} catch (error: any) {
 			if (error instanceof CustomError) {
 				throw error;
