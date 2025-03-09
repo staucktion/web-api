@@ -3,4 +3,5 @@ export default interface UpdateUserDto {
 	last_name?: string;
 	tc_identity_no?: string;
 	profile_picture?: string;
+	status_id?: number;
 }

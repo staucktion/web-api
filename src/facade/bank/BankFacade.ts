@@ -3,15 +3,21 @@ import Config from "src/config/Config";
 import CardDto from "src/dto/bank/CardDto";
 import CustomError from "src/error/CustomError";
 import BankService from "src/service/bank/BankService";
+import StatusService from "src/service/status/StatusService";
+import UserService from "src/service/user/userService";
 import BankValidation from "src/validation/bank/BankValidation";
 
 class BankFacade {
 	private bankService: BankService;
 	private bankValidation: BankValidation;
+	private userService: UserService;
+	private statusService: StatusService;
 
 	constructor() {
 		this.bankService = new BankService();
 		this.bankValidation = new BankValidation();
+		this.userService = new UserService();
+		this.statusService = new StatusService();
 	}
 
 	public async approveUser(req: Request, res: Response): Promise<void> {
@@ -42,13 +48,14 @@ class BankFacade {
 		}
 
 		// activate user
-		// try {
-		// 	const dataToUpdateUser = { ...photo, auction_id: createdAuction.id, status_id: voteStatus.id };
-		// 	await this.photoService.updatePhoto(photo.id, dataToUpdatePhoto);
-		// } catch (error: any) {
-		// 	CustomError.handleError(res, error);
-		// 	return;
-		// }
+		try {
+			const activeStatus = await this.statusService.getStatusFromName("active");
+			const dataToUpdateUser = { status_id: activeStatus.id };
+			await this.userService.updateUser(req.user.id, dataToUpdateUser);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
 
 		res.status(204).send();
 	}
