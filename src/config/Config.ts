@@ -8,7 +8,8 @@ class Config {
 	static explicitErrorLog = EnvVariables.explicitErrorLog;
 	static multerFileSize = EnvVariables.multerFileSize;
 	static bankUrl = EnvVariables.bankUrl;
-	static provisionAmount  = EnvVariables.provisionAmount;
+	static provisionAmount = EnvVariables.provisionAmount;
+	static initialAuctionPrice = EnvVariables.initialAuctionPrice;
 
 	static watermark = { ...EnvVariables.watermark };
 

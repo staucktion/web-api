@@ -19,6 +19,7 @@ class AuctionPhotoService {
 					auction_id: auctionId,
 					photo_id: photoId,
 					status_id: statusId,
+					last_bid_amount: Config.initialAuctionPrice,
 					start_time: DateUtil.getNowWithoutMs(),
 					finish_time: new Date(DateUtil.getNowWithoutMs().getTime() + Config.cronInterval),
 					created_at: DateUtil.getNowWithoutMs(),
