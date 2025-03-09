@@ -2,17 +2,11 @@ import axios from "axios";
 import https from "https";
 import Config from "src/config/Config";
 import CustomError from "src/error/CustomError";
-import StatusService from "../status/StatusService";
-import CardDto from "src/dto/bank/CardDto";
 
 class BankService {
-	private statusService: StatusService;
+	constructor() {}
 
-	constructor() {
-		this.statusService = new StatusService();
-	}
-
-	public async addProvision(data: CardDto): Promise<boolean> {
+	public async addProvision(data: any): Promise<boolean> {
 		try {
 			await axios.put(`${Config.bankUrl}/provisions/add`, data, {
 				headers: {
@@ -35,7 +29,7 @@ class BankService {
 		}
 	}
 
-	public async removeProvision(data: CardDto): Promise<boolean> {
+	public async removeProvision(data: any): Promise<boolean> {
 		try {
 			const response = await axios.put(`${Config.bankUrl}/provisions/remove`, data, {
 				headers: {
