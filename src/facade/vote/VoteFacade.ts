@@ -66,7 +66,7 @@ class VoteFacade {
 		}
 
 		// check auction status
-		if (auction?.status?.status !== "vote") {
+		if (auction?.status?.status !== "vote" || photo?.status?.status !== "vote") {
 			res.status(400).json({ message: `photo not icluded in available auction` });
 			return;
 		}
