@@ -20,6 +20,7 @@ model auction {
   status             status?         @relation(fields: [status_id], references: [id], onUpdate: NoAction)
   auction_photo_list auction_photo[]
   photo_list         photo[]
+  vote_list          vote[]
 }
 
 model category {
@@ -154,10 +155,12 @@ model bid {
 
 model vote {
   id              BigInt   @id @default(autoincrement())
+  auction_id      BigInt?
   user_id         BigInt?
   photo_id        BigInt?
   status_id       Int?
   transfer_amount Decimal? @db.Decimal(10, 2)
+  auction         auction? @relation(fields: [auction_id], references: [id], onUpdate: NoAction)
   photo           photo?   @relation(fields: [photo_id], references: [id], onUpdate: NoAction)
   status          status?  @relation(fields: [status_id], references: [id], onUpdate: NoAction)
   user            user?    @relation(fields: [user_id], references: [id], onUpdate: NoAction)
