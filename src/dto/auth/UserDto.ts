@@ -1,5 +1,5 @@
 export default interface UserDto {
-	id: number | bigint;
+	id: number;
 	gmail_id: string;
 	email: string;
 	username: string;
