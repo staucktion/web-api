@@ -8,6 +8,7 @@ import LocationEndpoint from "src/endpoint/location/LocationEndpoint";
 import MailEndpoint from "src/endpoint/mail/MailEndpoint";
 import PhotoEndpoint from "src/endpoint/photo/PhotoEndpoint";
 import UserEndpoint from "src/endpoint/user/UserEndpoint";
+import VoteEndpoint from "src/endpoint/vote/VoteEndpoint";
 
 class Router {
 	private healthEndpoint: HealthEndpoint;
@@ -19,6 +20,7 @@ class Router {
 	private categoryEndpoint: CategoryEndpoint;
 	private userEndpoint: UserEndpoint;
 	private bidEndpoint: BidEndpoint;
+	private voteEndpoint: VoteEndpoint;
 
 	constructor() {
 		this.healthEndpoint = new HealthEndpoint();
@@ -30,6 +32,7 @@ class Router {
 		this.categoryEndpoint = new CategoryEndpoint();
 		this.userEndpoint = new UserEndpoint();
 		this.bidEndpoint = new BidEndpoint();
+		this.voteEndpoint = new VoteEndpoint();
 	}
 
 	public setupRoute(app: express.Application): void {
@@ -42,6 +45,7 @@ class Router {
 		app.use(this.categoryEndpoint.getRouter());
 		app.use(this.userEndpoint.getRouter());
 		app.use(this.bidEndpoint.getRouter());
+		app.use(this.voteEndpoint.getRouter());
 	}
 }
 
