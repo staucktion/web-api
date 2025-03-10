@@ -18,6 +18,15 @@ class PurchasedPhotoService {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
+
+	public async listPurchasedPhotoList(): Promise<any> {
+		try {
+			const instanceList = await this.prisma.purchased_photo.findMany({});
+			return handlePrismaType(instanceList);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
 }
 
 export default PurchasedPhotoService;

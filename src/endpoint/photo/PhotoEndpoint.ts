@@ -33,6 +33,11 @@ class PhotoEndpoint {
 			this.photoFacade.listWaitingPhotos(req, res);
 		});
 
+		// Get purchased photos from auction (authenticated)
+		this.router.get("/photos/purchased", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.listOwnPurchasedPhotos(req, res);
+		});
+
 		// Approve/reject a photo (authenticated)
 		this.router.put("/photos/:photoId/status", this.authMiddleware.authenticateJWT, (req, res) => {
 			this.photoFacade.approveRejectPhoto(req, res);
