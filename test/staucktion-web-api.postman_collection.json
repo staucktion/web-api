@@ -814,6 +814,38 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "vote",
+			"item": [
+				{
+					"name": "/votes/:photoId",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/votes/:photoId",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"votes",
+								":photoId"
+							],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
