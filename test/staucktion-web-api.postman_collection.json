@@ -819,7 +819,7 @@
 			"name": "vote",
 			"item": [
 				{
-					"name": "/votes/:photoId",
+					"name": "Vote Photo",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -840,6 +840,27 @@
 									"key": "photoId",
 									"value": "1"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Own Votes",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/votes/user",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"votes",
+								"user"
 							]
 						}
 					},
