@@ -46,7 +46,7 @@ class TimerFacade {
 				// creating new auction with vote status
 				if (
 					(!category.auction_list?.length || category.auction_list.every((auction) => auction.status?.status === "finish")) &&
-					category.photo_list?.some((photo) => photo.state?.state === "approve") &&
+					category.photo_list?.some((photo) => photo.status?.status === "approve") &&
 					category.photo_list?.some((photo) => photo.is_auctionable === true)
 				) {
 					console.log("auction decision: create new auction");
