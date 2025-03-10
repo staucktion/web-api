@@ -132,6 +132,17 @@ CREATE TABLE "bid" (
     CONSTRAINT "bid_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "vote" (
+    "id" BIGSERIAL NOT NULL,
+    "user_id" BIGINT,
+    "photo_id" BIGINT,
+    "status_id" INTEGER,
+    "transfer_amount" DECIMAL(10,2),
+
+    CONSTRAINT "vote_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
 
@@ -194,4 +205,13 @@ ALTER TABLE "bid" ADD CONSTRAINT "bid_auction_photo_id_fkey" FOREIGN KEY ("aucti
 
 -- AddForeignKey
 ALTER TABLE "bid" ADD CONSTRAINT "bid_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "vote" ADD CONSTRAINT "vote_photo_id_fkey" FOREIGN KEY ("photo_id") REFERENCES "photo"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "vote" ADD CONSTRAINT "vote_status_id_fkey" FOREIGN KEY ("status_id") REFERENCES "status"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "vote" ADD CONSTRAINT "vote_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
 
