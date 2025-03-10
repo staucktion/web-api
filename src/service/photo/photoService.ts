@@ -3,15 +3,13 @@ import * as fs from "fs";
 import path from "path";
 import sharp from "sharp";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
-import UserDto from "src/dto/auth/UserDto";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import ReadAllPhotoResponseDto from "src/dto/photo/ReadAllPhotoResponseDto";
 import CustomError from "src/error/CustomError";
+import { StatusEnum } from "src/types/statusEnum";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
-import Config from "src/config/Config";
-import { StatusEnum } from "src/types/statusEnum";
 
 class PhotoService {
 	private prisma: PrismaClient;
@@ -112,6 +110,29 @@ class PhotoService {
 		}
 	}
 
+	public async getPhotoById(photoId: number): Promise<any> {
+		try {
+			const instance = await this.prisma.photo.findUnique({
+				where: {
+					id: photoId,
+				},
+				include: {
+					auction_photo_list: true,
+					auction: true,
+					category: true,
+					location: true,
+					status: true,
+					user: true,
+					vote_list: true,
+				},
+			});
+
+			return handlePrismaType(instance);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
+
 	public async listPhotosByStatus(statusId: number): Promise<ReadAllPhotoResponseDto[]> {
 		try {
 			const photoList = await this.prisma.photo.findMany({
@@ -197,8 +218,8 @@ class PhotoService {
 
 	public async updatePhoto(id: number, updateInstanceData: any): Promise<ReadAllPhotoResponseDto[]> {
 		try {
-			const { user_id, auction_id, category_id, location_id, status_id, ...cleanData } = updateInstanceData;
-
+			const { user_id, auction_id, category_id, location_id, status_id, auction_photo_list, vote_list, ...cleanData } = updateInstanceData;
+			
 			const updatedInstance = await this.prisma.photo.update({
 				where: { id },
 				data: {

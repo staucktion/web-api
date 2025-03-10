@@ -15,9 +15,48 @@ class AuctionService {
 		this.statusService = new StatusService();
 	}
 
+	public async getAuctionById(auctionId: number): Promise<any> {
+		try {
+			const auction = await this.prisma.auction.findUnique({
+				where: {
+					id: auctionId,
+					is_deleted: false,
+				},
+				include: {
+					category: true,
+					status: true,
+					auction_photo_list: true,
+					photo_list: true,
+				},
+			});
+
+			return handlePrismaType(auction);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
+
+	public async getAuctionList(): Promise<any> {
+		try {
+			const instanceTemp = await this.prisma.auction.findMany({
+				where: {
+					is_deleted: false,
+				},
+				include: {
+					category: true,
+					status: true,
+					auction_photo_list: true,
+					photo_list: true,
+				},
+			});
+
+			return handlePrismaType(instanceTemp);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
+
 	public async insertNewAuction(categoryId: number): Promise<any> {
-		// console.log("category");
-		// console.log(JSON.stringify(category, null, 2));
 		try {
 			const voteStatus = await this.statusService.getStatusFromName("vote");
 			const newAuctionTemp = await this.prisma.auction.create({
