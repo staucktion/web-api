@@ -51,6 +51,29 @@ class BankService {
 				.throwError();
 		}
 	}
+
+	public async transfer(data: any): Promise<boolean> {
+		try {
+			const response = await axios.post(`${Config.bankUrl}/transactions`, data, {
+				headers: {
+					"Content-Type": "application/json",
+				},
+				httpsAgent: new https.Agent({
+					rejectUnauthorized: false,
+				}),
+			});
+
+			return true;
+		} catch (error: any) {
+			CustomError.builder()
+				.setErrorType("Bank Error")
+				.setStatusCode(400)
+				.setDetailedMessage(error.message)
+				.setMessage(`Cannot perform bank api operation. ${error?.response?.data?.message}`)
+				.build()
+				.throwError();
+		}
+	}
 }
 
 export default BankService;

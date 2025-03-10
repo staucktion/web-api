@@ -35,6 +35,19 @@ class VoteService {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
+
+	public async updateVote(voteId, data: any): Promise<any> {
+		try {
+			const updatedInstance = await this.prisma.vote.update({
+				where: { id: voteId },
+				data,
+			});
+
+			return updatedInstance;
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
 }
 
 export default VoteService;

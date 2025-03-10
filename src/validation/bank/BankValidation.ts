@@ -4,7 +4,7 @@ import CustomError from "src/error/CustomError";
 import ValidationUtil from "src/util/ValidationUtil";
 
 class BankValidation {
-	public async approveUser(req: Request): Promise<CardDto> {
+	public async validateBankCredentials(req: Request): Promise<CardDto> {
 		const input = req.body;
 		const requiredFields: string[] = ["cardNumber", "expirationDate", "cvv"];
 

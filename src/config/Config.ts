@@ -1,3 +1,4 @@
+import CardDto from "src/dto/bank/CardDto";
 import EnvVariables from "src/env/envVariables";
 
 class Config {
@@ -22,6 +23,12 @@ class Config {
 	static googleOAuth = { ...EnvVariables.googleOAuth };
 
 	static cronInterval = null;
+
+	static stauctionBankCredentials: CardDto = {
+		cardNumber: "1234567890123456",
+		expirationDate: "12/34",
+		cvv: "123",
+	};
 }
 
 export default Config;

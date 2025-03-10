@@ -2,22 +2,43 @@ import { Request, Response } from "express";
 import Config from "src/config/Config";
 import CardDto from "src/dto/bank/CardDto";
 import CustomError from "src/error/CustomError";
+import AuctionService from "src/service/auction/AuctionService";
+import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
 import BankService from "src/service/bank/BankService";
+import PhotoService from "src/service/photo/photoService";
+import PhotographerPaymentService from "src/service/photographerPayment/PhotographerPaymentService";
+import PurchasedPhotoService from "src/service/purchasedPhoto/PurchasedPhotoService";
 import StatusService from "src/service/status/StatusService";
 import UserService from "src/service/user/userService";
+import VoteService from "src/service/vote/VoteService";
 import BankValidation from "src/validation/bank/BankValidation";
+import BaseValidation from "src/validation/base/BaseValidation";
 
 class BankFacade {
 	private bankService: BankService;
 	private bankValidation: BankValidation;
 	private userService: UserService;
 	private statusService: StatusService;
+	private baseValidation: BaseValidation;
+	private photoService: PhotoService;
+	private auctionPhotoService: AuctionPhotoService;
+	private purchasedPhotoService: PurchasedPhotoService;
+	private voteService: VoteService;
+	private photographerPaymentService: PhotographerPaymentService;
+	private auctionService: AuctionService;
 
 	constructor() {
 		this.bankService = new BankService();
 		this.bankValidation = new BankValidation();
 		this.userService = new UserService();
 		this.statusService = new StatusService();
+		this.baseValidation = new BaseValidation();
+		this.photoService = new PhotoService();
+		this.auctionPhotoService = new AuctionPhotoService();
+		this.purchasedPhotoService = new PurchasedPhotoService();
+		this.voteService = new VoteService();
+		this.photographerPaymentService = new PhotographerPaymentService();
+		this.auctionService = new AuctionService();
 	}
 
 	public async approveUser(req: Request, res: Response): Promise<void> {
@@ -26,7 +47,7 @@ class BankFacade {
 
 		// get valid body from request
 		try {
-			cardDto = await this.bankValidation.approveUser(req);
+			cardDto = await this.bankValidation.validateBankCredentials(req);
 		} catch (error: any) {
 			CustomError.handleError(res, error);
 			return;
@@ -65,6 +86,141 @@ class BankFacade {
 			const activeStatus = await this.statusService.getStatusFromName("active");
 			const dataToUpdateUser = { status_id: activeStatus.id };
 			await this.userService.updateUser(req.user.id, dataToUpdateUser);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		res.status(204).send();
+	}
+
+	public async purchasePhotoFromAuction(req: Request, res: Response): Promise<void> {
+		let photoId: number;
+		let cardDto: CardDto;
+		let photo;
+		let auctionPhoto;
+
+		// get valid param from request
+		try {
+			({ photoId } = await this.baseValidation.params(req, ["photoId"]));
+			photoId = Number(photoId);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// get valid body from request
+		try {
+			cardDto = await this.bankValidation.validateBankCredentials(req);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// get photo
+		try {
+			photo = await this.photoService.getPhotoById(photoId);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// get auction photo
+		try {
+			auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByPhotoId(photoId);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// check photo status
+		if (photo?.status?.status !== "wait_purchase_after_auction") {
+			res.status(400).json({ message: `photo is not available to purchase after auction` });
+			return;
+		}
+
+		// reject if user is not current winner
+		if (req.user.id !== auctionPhoto[`winner_user_id_${auctionPhoto.current_winner_order}`]) {
+			res.status(400).json({ message: `user is not current winner` });
+			return;
+		}
+
+		// transfer last_bid_amount to staucktion bank account
+		try {
+			const data = {
+				senderCardNumber: cardDto.cardNumber,
+				senderExpirationDate: cardDto.expirationDate,
+				senderCvv: cardDto.cvv,
+				targetCardNumber: Config.stauctionBankCredentials.cardNumber,
+				amount: auctionPhoto.last_bid_amount,
+				description: `user with id ${req.user.id} win auction with id ${auctionPhoto.auction_id} and pay ${auctionPhoto.last_bid_amount}`,
+			};
+			await this.bankService.transfer(data);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// add record to purchased photo
+		try {
+			const data = {
+				photo_id: photoId,
+				user_id: req.user.id,
+				payment_amount: auctionPhoto.last_bid_amount,
+			};
+			await this.purchasedPhotoService.insertNewPurchasedPhoto(data);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// calculate amount to distribute voters
+		const paymentToVoter = auctionPhoto.last_bid_amount / (10 * photo.vote_list.length);
+
+		// update votes
+		const waitStatus = await this.statusService.getStatusFromName("wait");
+		for (const vote of photo.vote_list) {
+			try {
+				const data = { ...vote, status_id: waitStatus.id, transfer_amount: paymentToVoter };
+				await this.voteService.updateVote(vote.id, data);
+			} catch (error: any) {
+				CustomError.handleError(res, error);
+				return;
+			}
+		}
+
+		// calculate amount to pay photographer
+		const paymentToPhotographer = (auctionPhoto.last_bid_amount * 8) / 10;
+
+		// add record to photographer payment
+		try {
+			const data = { user_id: req.user.id, status_id: waitStatus.id, payment_amount: paymentToPhotographer };
+			await this.photographerPaymentService.insertNewPhotographerPayment(data);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// update auction, auction photo and photo
+		const soldStatus = await this.statusService.getStatusFromName("sold");
+		const finishStatus = await this.statusService.getStatusFromName("finish");
+		try {
+			const data = { ...auctionPhoto, status_id: finishStatus.id };
+			await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, data);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+		try {
+			const data = { ...auctionPhoto.auction, status_id: finishStatus.id };
+			await this.auctionService.updateAuction(auctionPhoto.auction.id, data);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+		try {
+			const data = { ...photo, status_id: soldStatus.id };
+			await this.photoService.updatePhoto(photoId, data);
 		} catch (error: any) {
 			CustomError.handleError(res, error);
 			return;

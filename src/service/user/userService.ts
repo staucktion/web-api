@@ -38,7 +38,7 @@ class UserService {
 			});
 
 			// Convert BigInt to number for the DTO
-			return updatedUser;
+			return handlePrismaType(updatedUser);
 		} catch (error: any) {
 			if (error instanceof CustomError) {
 				throw error;

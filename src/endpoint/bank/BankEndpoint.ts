@@ -18,6 +18,10 @@ class BankEndpoint {
 		this.router.post("/banks/approve-user", this.authMiddleware.authenticateJWT, async (req, res) => {
 			await this.bankFacade.approveUser(req, res);
 		});
+
+		this.router.post("/banks/purchase/auction/photo/:photoId", this.authMiddleware.authenticateJWT, async (req, res) => {
+			await this.bankFacade.purchasePhotoFromAuction(req, res);
+		});
 	}
 
 	public getRouter(): Router {
