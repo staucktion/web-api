@@ -144,6 +144,26 @@ CREATE TABLE "vote" (
     CONSTRAINT "vote_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "photographer_payment" (
+    "id" BIGSERIAL NOT NULL,
+    "user_id" BIGINT,
+    "status_id" INTEGER,
+    "payment_amount" DECIMAL(10,2) NOT NULL,
+
+    CONSTRAINT "photographer_payment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "purchased_photo" (
+    "id" BIGSERIAL NOT NULL,
+    "photo_id" BIGINT,
+    "user_id" BIGINT,
+    "payment_amount" DECIMAL(10,2) NOT NULL,
+
+    CONSTRAINT "purchased_photo_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
 
@@ -218,4 +238,16 @@ ALTER TABLE "vote" ADD CONSTRAINT "vote_status_id_fkey" FOREIGN KEY ("status_id"
 
 -- AddForeignKey
 ALTER TABLE "vote" ADD CONSTRAINT "vote_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "photographer_payment" ADD CONSTRAINT "photographer_payment_status_id_fkey" FOREIGN KEY ("status_id") REFERENCES "status"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "photographer_payment" ADD CONSTRAINT "photographer_payment_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "purchased_photo" ADD CONSTRAINT "purchased_photo_photo_id_fkey" FOREIGN KEY ("photo_id") REFERENCES "photo"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "purchased_photo" ADD CONSTRAINT "purchased_photo_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
 
