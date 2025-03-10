@@ -26,9 +26,7 @@ class VoteService {
 					user_id: userId,
 				},
 				include: {
-					photo: true,
 					status: true,
-					user: true,
 				},
 			});
 

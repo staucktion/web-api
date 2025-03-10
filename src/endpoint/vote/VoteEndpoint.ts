@@ -18,6 +18,10 @@ class VoteEndpoint {
 		this.router.post("/votes/:photoId", this.authMiddleware.authenticateJWT, async (req, res) => {
 			await this.voteFacade.vote(req, res);
 		});
+
+		this.router.get("/votes/user", this.authMiddleware.authenticateJWT, async (req, res) => {
+			await this.voteFacade.getUserVotes(req, res);
+		});
 	}
 
 	public getRouter(): Router {

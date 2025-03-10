@@ -113,6 +113,16 @@ class VoteFacade {
 
 		res.status(204).send();
 	}
+
+	public async getUserVotes(req: Request, res: Response): Promise<void> {
+		try {
+			const userVoteList = await this.voteService.getVoteListByUserId(req.user.id);
+			res.status(200).json(userVoteList);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
 }
 
 export default VoteFacade;
