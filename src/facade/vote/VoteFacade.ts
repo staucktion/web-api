@@ -37,15 +37,29 @@ class VoteFacade {
 			return;
 		}
 
+		// get photo
+		try {
+			photo = await this.photoService.getPhotoById(photoId);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// reject if photo not found
+		if (!photo) {
+			res.status(400).json({ message: `photo not found` });
+			return;
+		}
+
 		// reject if user try to vote own photo
-		if (req.user.id === photoId) {
+		if (req.user.id === photo.user_id) {
 			res.status(400).json({ message: `cannot vote to own photo` });
 			return;
 		}
 
 		// get auction
 		try {
-			auction = await this.auctionService.getAuctionById(photoId);
+			auction = await this.auctionService.getAuctionById(photo.auction_id);
 		} catch (error: any) {
 			CustomError.handleError(res, error);
 			return;
@@ -75,14 +89,6 @@ class VoteFacade {
 		// reject if photo is already voted by user
 		if (filteredUserVoteList?.some((vote) => vote.photo_id === photoId)) {
 			res.status(400).json({ message: `user has already voted that photo` });
-			return;
-		}
-
-		// get photo
-		try {
-			photo = await this.photoService.getPhotoById(photoId);
-		} catch (error: any) {
-			CustomError.handleError(res, error);
 			return;
 		}
 
