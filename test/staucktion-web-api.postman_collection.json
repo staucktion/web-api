@@ -78,7 +78,7 @@
 			"name": "bank",
 			"item": [
 				{
-					"name": "/banks/approve-user",
+					"name": "Provision to Approve User",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -87,7 +87,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"cardNumber\": \"1234567890123456\",\r\n    \"expirationDate\": \"12/34\",\r\n    \"cvv\": \"123\"\r\n}",
+							"raw": "{\r\n    \"cardNumber\": \"4539187690234512\",\r\n    \"expirationDate\": \"04/29\",\r\n    \"cvv\": \"678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -102,6 +102,75 @@
 							"path": [
 								"banks",
 								"approve-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Purchase Photo From Auction",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cardNumber\": \"4539187690234512\",\r\n    \"expirationDate\": \"04/29\",\r\n    \"cvv\": \"678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/banks/purchase/auction/photo/:photoId",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"banks",
+								"purchase",
+								"auction",
+								"photo",
+								":photoId"
+							],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Withdraw Profit",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cardNumber\": \"4539187690234512\",\r\n    \"expirationDate\": \"04/29\",\r\n    \"cvv\": \"678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/banks/withdraw-profit",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"banks",
+								"withdraw-profit"
 							]
 						}
 					},
@@ -633,6 +702,27 @@
 					"response": []
 				},
 				{
+					"name": "Get Purchased Photo List From Auction",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/purchased",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"photos",
+								"purchased"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get Waiting Photos (Requires Auth)",
 					"request": {
 						"method": "GET",
@@ -846,7 +936,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Own Votes",
+					"name": "Get User Votes",
 					"request": {
 						"auth": {
 							"type": "noauth"
