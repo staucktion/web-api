@@ -18,6 +18,34 @@ class PhotographerPaymentService {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
+
+	public async getPhotographerPaymentList(): Promise<any> {
+		try {
+			const instanceList = await this.prisma.photographer_payment.findMany({
+				include: { status: true },
+			});
+			return handlePrismaType(instanceList);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
+
+	public async updatePhotographerPayment(id: number, data: any): Promise<any> {
+		try {
+			const { status, user, ...cleanData } = data;
+
+			const updatedInstance = await this.prisma.photographer_payment.update({
+				where: { id },
+				data: {
+					...cleanData,
+				},
+			});
+
+			return updatedInstance;
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
 }
 
 export default PhotographerPaymentService;

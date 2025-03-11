@@ -19,7 +19,7 @@ class PurchasedPhotoService {
 		}
 	}
 
-	public async listPurchasedPhotoList(): Promise<any> {
+	public async getPurchasedPhotoList(): Promise<any> {
 		try {
 			const instanceList = await this.prisma.purchased_photo.findMany({});
 			return handlePrismaType(instanceList);

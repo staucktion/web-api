@@ -111,7 +111,7 @@ class PhotoFacade {
 
 	public async listOwnPurchasedPhotos(_req: Request, res: Response): Promise<void> {
 		try {
-			const instanceList = await this.purchasedPhotoService.listPurchasedPhotoList();
+			const instanceList = await this.purchasedPhotoService.getPurchasedPhotoList();
 			const filteredList = instanceList.filter((purchasedPhoto) => purchasedPhoto.user_id == _req.user.id).map((purchasedPhoto) => purchasedPhoto.photo_id);
 			res.status(200).json(filteredList);
 			return;

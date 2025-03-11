@@ -36,11 +36,15 @@ class VoteService {
 		}
 	}
 
-	public async updateVote(voteId, data: any): Promise<any> {
+	public async updateVote(id, data: any): Promise<any> {
 		try {
+			const { auction, photo, status, user, ...cleanData } = data;
+
 			const updatedInstance = await this.prisma.vote.update({
-				where: { id: voteId },
-				data,
+				where: { id },
+				data: {
+					...cleanData,
+				},
 			});
 
 			return updatedInstance;

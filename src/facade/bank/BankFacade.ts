@@ -153,7 +153,7 @@ class BankFacade {
 				senderCvv: cardDto.cvv,
 				targetCardNumber: Config.stauctionBankCredentials.cardNumber,
 				amount: auctionPhoto.last_bid_amount,
-				description: `user with id ${req.user.id} win auction with id ${auctionPhoto.auction_id} and pay ${auctionPhoto.last_bid_amount}`,
+				description: `User with id ${req.user.id} win auction with id ${auctionPhoto.auction_id} and pay ${auctionPhoto.last_bid_amount}`,
 			};
 			await this.bankService.transfer(data);
 		} catch (error: any) {
@@ -227,6 +227,84 @@ class BankFacade {
 		}
 
 		res.status(204).send();
+	}
+
+	public async withdrawProfit(req: Request, res: Response): Promise<void> {
+		let voteList;
+		let photographerPaymentList;
+		let totalProfit = 0;
+		let cardDto: CardDto;
+
+		// get valid body from request
+		try {
+			cardDto = await this.bankValidation.validateBankCredentials(req);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// get vote list
+		try {
+			const voteListTmp = await this.voteService.getVoteListByUserId(req.user.id);
+			voteList = voteListTmp.filter((vote) => vote.status.status === "wait");
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// get photographer payments
+		try {
+			const photographerPaymentListTmp = await this.photographerPaymentService.getPhotographerPaymentList();
+			photographerPaymentList = photographerPaymentListTmp.filter((instance) => instance.status.status === "wait" && instance.user_id === req.user.id);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// sum vote profits and update
+		const finishStatus = await this.statusService.getStatusFromName("finish");
+		for (const vote of voteList) {
+			totalProfit += vote.transfer_amount;
+
+			try {
+				const data = { ...vote, status_id: finishStatus.id };
+				await this.voteService.updateVote(vote.id, data);
+			} catch (error: any) {
+				CustomError.handleError(res, error);
+				return;
+			}
+		}
+
+		// sum photographer paymnet profits and update
+		for (const photographerPayment of photographerPaymentList) {
+			totalProfit += photographerPayment.payment_amount;
+
+			try {
+				const data = { ...photographerPayment, status_id: finishStatus.id };
+				await this.photographerPaymentService.updatePhotographerPayment(photographerPayment.id, data);
+			} catch (error: any) {
+				CustomError.handleError(res, error);
+				return;
+			}
+		}
+
+		// transfer profit to specified bank account
+		try {
+			const data = {
+				senderCardNumber: Config.stauctionBankCredentials.cardNumber,
+				senderExpirationDate: Config.stauctionBankCredentials.expirationDate,
+				senderCvv: Config.stauctionBankCredentials.cvv,
+				targetCardNumber: cardDto.cardNumber,
+				amount: totalProfit,
+				description: `User with id ${req.user.id} make total ${totalProfit} profit. Staucktion provide that amount.`,
+			};
+			await this.bankService.transfer(data);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		res.status(200).json({ message: `User with id ${req.user.id} make total ${totalProfit} profit. Staucktion provide that amount.` });
 	}
 }
 

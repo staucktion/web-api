@@ -22,6 +22,10 @@ class BankEndpoint {
 		this.router.post("/banks/purchase/auction/photo/:photoId", this.authMiddleware.authenticateJWT, async (req, res) => {
 			await this.bankFacade.purchasePhotoFromAuction(req, res);
 		});
+
+		this.router.post("/banks/withdraw-profit", this.authMiddleware.authenticateJWT, async (req, res) => {
+			await this.bankFacade.withdrawProfit(req, res);
+		});
 	}
 
 	public getRouter(): Router {
