@@ -48,7 +48,7 @@ class TimerFacade {
 					(!category.auction_list?.length || category.auction_list.every((auction) => auction.status?.status === "finish")) &&
 					category.photo_list?.some((photo) => photo.status?.status === "approve" && photo.is_auctionable === true)
 				) {
-					console.log("auction decision: create new auction");
+					console.log("[INFO] Auction Decision: create new auction");
 					const createdAuction = await this.auctionService.insertNewAuction(category.id);
 
 					for (const photo of category.photo_list) {
@@ -61,7 +61,7 @@ class TimerFacade {
 
 				// change auction status from 'vote' to 'auction'
 				else if (category.auction_list?.some((auction) => auction.status?.status === "vote")) {
-					console.log("auction decision: change 'vote' status to 'auction'");
+					console.log("[INFO] Auction Decision: change 'vote' status to 'auction'");
 
 					for (const auction of category.auction_list) {
 						// console.log("auction");
@@ -105,7 +105,7 @@ class TimerFacade {
 
 								// if there is no bid make status finish
 								if (bidlist.length === 0) {
-									console.log("auction decision: change 'auction' status to 'finish'");
+									console.log("[INFO] Auction Decision: change 'auction' status to 'finish'");
 									const updateDataAuctionPhoto = { ...auctionPhoto, status_id: finishStatus.id };
 									await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateDataAuctionPhoto);
 
@@ -115,7 +115,7 @@ class TimerFacade {
 									const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
 									await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
 								} else {
-									console.log("auction decision: change 'auction' status to 'wait_purchase_after_auction'");
+									console.log("[INFO] Auction Decision: change 'auction' status to 'wait_purchase_after_auction'");
 									let updateData = { ...auctionPhoto, status_id: waitPurchaseStatus.id, current_winner_order: 1 };
 
 									// sort bidlist according to bid amount
@@ -170,7 +170,7 @@ class TimerFacade {
 
 							// if next winner not exists set status to finish
 							if (!auctionPhoto[`winner_user_id_${auctionPhoto.current_winner_order + 1}`]) {
-								console.log("auction decision: change 'wait_purchase_after_auction' to 'finish'");
+								console.log("[INFO] Auction Decision: change 'wait_purchase_after_auction' to 'finish'");
 
 								const dataToUpdateAuctionPhoto = { ...auctionPhoto, status_id: finishStatus.id };
 								await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, dataToUpdateAuctionPhoto);
@@ -184,7 +184,7 @@ class TimerFacade {
 
 							// if next winner exists
 							else {
-								console.log(`auction decision: stay 'wait_purchase_after_auction' and wait for next winner : ${auctionPhoto.current_winner_order + 1}`);
+								console.log(`[INFO] Auction Decision: stay 'wait_purchase_after_auction' and wait for next winner : ${auctionPhoto.current_winner_order + 1}`);
 								const dataToUpdateAuctionPhoto = { ...auctionPhoto, current_winner_order: auctionPhoto.current_winner_order + 1 };
 								await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, dataToUpdateAuctionPhoto);
 							}
@@ -194,7 +194,7 @@ class TimerFacade {
 
 				// other stage
 				else {
-					console.log("auction decision: do nothing");
+					console.log("[INFO] Auction Decision: do nothing");
 				}
 			}
 		}
