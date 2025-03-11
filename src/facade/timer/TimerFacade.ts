@@ -199,6 +199,8 @@ class TimerFacade {
 				}
 			}
 		}
+
+		console.log("[INFO] 🕑 End of cron job");
 	}
 }
 

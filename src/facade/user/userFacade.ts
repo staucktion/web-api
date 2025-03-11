@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import UpdateUserDto from "src/dto/user/UpdateUserDto";
 import CustomError from "src/error/CustomError";
 import UserService from "src/service/user/userService";
-import UserValidation from "src/validation/user/UserValidation";
 import sendJsonBigint from "src/util/sendJsonBigint";
+import UserValidation from "src/validation/user/UserValidation";
 
 class UserFacade {
 	private userService: UserService;

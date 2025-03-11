@@ -1,11 +1,11 @@
-import CustomError from "src/error/CustomError";
-import nodemailer from "nodemailer";
-import Config from "src/config/Config";
-import { MailAction } from "src/types/mailTypes";
-import * as path from "path";
-import * as fs from "fs";
-import { ORIGINAL_PHOTO_DIR } from "src/constants/photoConstants";
 import { PrismaClient } from "@prisma/client";
+import * as fs from "fs";
+import nodemailer from "nodemailer";
+import * as path from "path";
+import Config from "src/config/Config";
+import { ORIGINAL_PHOTO_DIR } from "src/constants/photoConstants";
+import CustomError from "src/error/CustomError";
+import { MailAction } from "src/types/mailTypes";
 import PrismaUtil from "src/util/PrismaUtil";
 
 let transporter: nodemailer.Transporter | null = null;
