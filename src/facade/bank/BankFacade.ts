@@ -275,7 +275,7 @@ class BankFacade {
 			}
 		}
 
-		// sum photographer paymnet profits and update
+		// sum photographer payment profits and update
 		for (const photographerPayment of photographerPaymentList) {
 			totalProfit += photographerPayment.payment_amount;
 
@@ -287,6 +287,9 @@ class BankFacade {
 				return;
 			}
 		}
+
+		// check total profit, if its zero return
+		if (totalProfit === 0) res.status(400).json({ message: `User with id ${req.user.id} has no profit. Cannot make bank transaction.` });
 
 		// transfer profit to specified bank account
 		try {
