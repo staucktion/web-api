@@ -289,7 +289,10 @@ class BankFacade {
 		}
 
 		// check total profit, if its zero return
-		if (totalProfit === 0) res.status(400).json({ message: `User with id ${req.user.id} has no profit. Cannot make bank transaction.` });
+		if (totalProfit === 0) {
+			res.status(400).json({ message: `User with id ${req.user.id} has no profit. Cannot make bank transaction.` });
+			return;
+		}
 
 		// transfer profit to specified bank account
 		try {
