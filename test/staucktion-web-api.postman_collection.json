@@ -582,6 +582,35 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "notification",
+			"item": [
+				{
+					"name": "Send Notification (Admin Only)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 1,\n    \"type\": \"success\",\n    \"message\": \"Your photo has been approved!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/notifications/send",
+							"host": ["{{BASE_URL}}"],
+							"path": ["notifications", "send"]
+						},
+						"description": "Sends a notification to a specific user via WebSocket. Only accessible to admins. The notification type must be one of: success, warning, info."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing real-time notifications via WebSocket"
 		}
 	],
 	"event": [

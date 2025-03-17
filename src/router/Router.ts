@@ -4,9 +4,10 @@ import CategoryEndpoint from "src/endpoint/category/CategoryEndpoint";
 import HealthEndpoint from "src/endpoint/health/HealthEndpoint";
 import LocationEndpoint from "src/endpoint/location/LocationEndpoint";
 import MailEndpoint from "src/endpoint/mail/MailEndpoint";
+import NotificationEndpoint from "src/endpoint/notification/NotificationEndpoint";
 import PhotoEndpoint from "src/endpoint/photo/PhotoEndpoint";
 import UserEndpoint from "src/endpoint/user/UserEndpoint";
-
+import WebSocketManager from "src/websocket/WebSocketManager";
 class Router {
 	private healthEndpoint: HealthEndpoint;
 	private photoEndpoint: PhotoEndpoint;
@@ -15,8 +16,9 @@ class Router {
 	private locationEndpoint: LocationEndpoint;
 	private categoryEndpoint: CategoryEndpoint;
 	private userEndpoint: UserEndpoint;
+	private notificationEndpoint: NotificationEndpoint;
 
-	constructor() {
+	constructor(webSocketManager: WebSocketManager) {
 		this.healthEndpoint = new HealthEndpoint();
 		this.photoEndpoint = new PhotoEndpoint();
 		this.mailEndpoint = new MailEndpoint();
@@ -24,6 +26,7 @@ class Router {
 		this.locationEndpoint = new LocationEndpoint();
 		this.categoryEndpoint = new CategoryEndpoint();
 		this.userEndpoint = new UserEndpoint();
+		this.notificationEndpoint = new NotificationEndpoint(webSocketManager);
 	}
 
 	public setupRoute(app: express.Application): void {
@@ -34,6 +37,7 @@ class Router {
 		app.use(this.locationEndpoint.getRouter());
 		app.use(this.categoryEndpoint.getRouter());
 		app.use(this.userEndpoint.getRouter());
+		app.use(this.notificationEndpoint.getRouter());
 	}
 }
 

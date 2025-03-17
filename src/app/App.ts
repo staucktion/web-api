@@ -16,10 +16,10 @@ class App {
 	constructor() {
 		this.app = express();
 		this.httpServer = createServer(this.app);
-		this.router = new Router();
+		this.webSocketManager = new WebSocketManager(this.httpServer);
+		this.router = new Router(this.webSocketManager);
 		this.initializeMiddlewares();
 		this.initializeRoutes();
-		this.webSocketManager = new WebSocketManager(this.httpServer);
 	}
 
 	private initializeMiddlewares(): void {
