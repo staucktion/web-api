@@ -96,6 +96,8 @@ class AuthEndpoint {
 				this.authFacade.handleSuccessfulGoogleCallback,
 				this.authFacade.handleAuthError
 			);
+
+			this.router.post("/auth/google/android", this.authFacade.handleGoogleAndroidAuth, this.authFacade.handleSuccessfulGoogleCallback, this.authFacade.handleAuthError);
 		} else {
 			console.warn("Google OAuth configuration is not set up properly. Auth service will not work.");
 		}
