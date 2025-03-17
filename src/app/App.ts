@@ -1,19 +1,25 @@
 import cors from "cors";
 import express, { Application } from "express";
 import cookieParser from "cookie-parser";
+import { createServer, Server as HttpServer } from "http";
 import Config from "src/config/Config";
 import Logger from "src/log/Logger";
 import Router from "src/router/Router";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 class App {
 	private app: Application;
 	private router: Router;
+	private httpServer: HttpServer;
+	private webSocketManager: WebSocketManager;
 
 	constructor() {
 		this.app = express();
+		this.httpServer = createServer(this.app);
 		this.router = new Router();
 		this.initializeMiddlewares();
 		this.initializeRoutes();
+		this.webSocketManager = new WebSocketManager(this.httpServer);
 	}
 
 	private initializeMiddlewares(): void {
@@ -52,14 +58,20 @@ class App {
 	public listen(): void {
 		this.checkEnvVariables();
 		const port = Config.port;
-		this.app.listen(port, () => {
+		this.httpServer.listen(port, () => {
 			console.log("🚀🚀🚀");
 			console.log(`🚀 API launched on: http://localhost:${port}`);
 			console.log(`🚀 Mode: ${Config.mode}`);
 			console.log(`🚀 Request Log: ${Config.requestLog}`);
 			console.log(`🚀 Explicit Error Log: ${Config.explicitErrorLog}`);
+			console.log(`🚀 WebSocket server is ready for connections`);
 			console.log("🚀🚀🚀");
 		});
+	}
+
+	// Method to access WebSocket manager for broadcasting messages
+	public getWebSocketManager(): WebSocketManager {
+		return this.webSocketManager;
 	}
 }
 
