@@ -41,12 +41,6 @@ class PhotoFacade {
 			return;
 		}
 
-		// check if category id provided
-		if (!req.body.categoryId) {
-			CustomError.handleError(res, CustomError.builder().setMessage("categoryId must be provided").setErrorType("Bad Request").setStatusCode(400).build());
-			return;
-		}
-
 		let uploadPhotoDto: UploadPhotoDto;
 
 		// get valid body from request
@@ -84,7 +78,7 @@ class PhotoFacade {
 
 		// save to database with WAIT status
 		try {
-			const baseResponseDto: BaseResponseDto = await this.photoService.uploadPhotoDb(uploadPhotoDto.filename, req.user.id, location.id, category.id, StatusEnum.WAIT);
+			const baseResponseDto: BaseResponseDto = await this.photoService.uploadPhotoDb(uploadPhotoDto.filename, req.user.id, location.id, category.id, uploadPhotoDto.deviceInfo, StatusEnum.WAIT);
 
 			sendJsonBigint(res, baseResponseDto, 200);
 			return;
