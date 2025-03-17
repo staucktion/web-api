@@ -160,6 +160,8 @@ class PhotoService {
 				category_id: Number(photo.category_id),
 				is_auctionable: photo.is_auctionable,
 				status_id: Number(photo.status_id),
+				purchase_now_price: photo.purchase_now_price ? Number(photo.purchase_now_price) : null,
+				purchased_at: photo.purchased_at ? new Date(photo.purchased_at) : null,
 				created_at: photo.created_at,
 				updated_at: photo.updated_at,
 			}));
@@ -260,7 +262,7 @@ class PhotoService {
 					updated_at: DateUtil.getNowWithoutMs(),
 					user: { connect: { id: user_id } },
 					status: { connect: { id: status_id } },
-					auction: { connect: { id: auction_id } },
+					auction: auction_id ? { connect: { id: auction_id } } : undefined,
 					category: { connect: { id: category_id } },
 					location: { connect: { id: location_id } },
 				},

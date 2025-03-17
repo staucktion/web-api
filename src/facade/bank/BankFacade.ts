@@ -229,6 +229,109 @@ class BankFacade {
 		res.status(204).send();
 	}
 
+	public async purchasePhotoNow(req: Request, res: Response): Promise<void> {
+		let photoId: number;
+		let cardDto: CardDto;
+		let photo;
+
+		// get valid param from request
+		try {
+			({ photoId } = await this.baseValidation.params(req, ["photoId"]));
+			photoId = Number(photoId);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// get valid body from request
+		try {
+			cardDto = await this.bankValidation.validateBankCredentials(req);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// get photo
+		try {
+			photo = await this.photoService.getPhotoById(photoId);
+
+			if (!photo) {
+				res.status(400).json({ message: `Photo not found` });
+				return;
+			}
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		const soldStatus = await this.statusService.getStatusFromName("sold");
+
+		if (photo.status.status === soldStatus.status) {
+			res.status(400).json({ message: `Photo is already sold` });
+			return;
+		}
+
+		// check photo status
+		if (photo?.status?.status !== "purchasable" || photo.purchase_now_price === null || photo.is_auctionable) {
+			res.status(400).json({ message: `Photo is not for sale` });
+			return;
+		}
+
+		// transfer purchase_now_price to staucktion bank account
+		try {
+			const data = {
+				senderCardNumber: cardDto.cardNumber,
+				senderExpirationDate: cardDto.expirationDate,
+				senderCvv: cardDto.cvv,
+				targetCardNumber: Config.stauctionBankCredentials.cardNumber,
+				amount: photo.purchase_now_price,
+				description: `User #${req.user.id} has used purchase now feature on photo #${photo.id} and paid ${photo.purchase_now_price}`,
+			};
+			await this.bankService.transfer(data);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// add record to purchased photo
+		try {
+			const data = {
+				photo_id: photoId,
+				user_id: req.user.id,
+				payment_amount: photo.purchase_now_price,
+			};
+			await this.purchasedPhotoService.insertNewPurchasedPhoto(data);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		const waitStatus = await this.statusService.getStatusFromName("wait");
+
+		// calculate amount to pay photographer
+		const paymentToPhotographer = (photo.purchase_now_price * 9) / 10;
+
+		// add record to photographer payment
+		try {
+			const data = { user_id: req.user.id, status_id: waitStatus.id, payment_amount: paymentToPhotographer };
+			await this.photographerPaymentService.insertNewPhotographerPayment(data);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// update photo
+		try {
+			const data = { ...photo, status_id: soldStatus.id, purchased_at: new Date() };
+			await this.photoService.updatePhoto(photoId, data);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		res.status(204).send();
+	}
+
 	public async withdrawProfit(req: Request, res: Response): Promise<void> {
 		let voteList;
 		let photographerPaymentList;
