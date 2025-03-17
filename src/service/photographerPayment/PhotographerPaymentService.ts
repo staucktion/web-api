@@ -19,9 +19,13 @@ class PhotographerPaymentService {
 		}
 	}
 
-	public async getPhotographerPaymentList(): Promise<any> {
+	public async getPhotographerPaymentList(userId: number, statusId: number): Promise<any> {
 		try {
 			const instanceList = await this.prisma.photographer_payment.findMany({
+				where: {
+					user_id: userId,
+					status_id: statusId,
+				},
 				include: { status: true },
 			});
 			return handlePrismaType(instanceList);

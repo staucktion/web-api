@@ -253,9 +253,9 @@ class BankFacade {
 		}
 
 		// get photographer payments
+		const waitStatus = await this.statusService.getStatusFromName("wait");
 		try {
-			const photographerPaymentListTmp = await this.photographerPaymentService.getPhotographerPaymentList();
-			photographerPaymentList = photographerPaymentListTmp.filter((instance) => instance.status.status === "wait" && instance.user_id === req.user.id);
+			photographerPaymentList = await this.photographerPaymentService.getPhotographerPaymentList(req.user.id, waitStatus.id);
 		} catch (error: any) {
 			CustomError.handleError(res, error);
 			return;
