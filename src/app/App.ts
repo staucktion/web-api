@@ -6,12 +6,14 @@ import Config from "src/config/Config";
 import Logger from "src/log/Logger";
 import Router from "src/router/Router";
 import WebSocketManager from "src/websocket/WebSocketManager";
+import { Timer } from "src/timer/Timer";
 
 class App {
 	private app: Application;
 	private router: Router;
 	private httpServer: HttpServer;
 	private webSocketManager: WebSocketManager;
+	private timer: Timer;
 
 	constructor() {
 		this.app = express();
@@ -20,6 +22,8 @@ class App {
 		this.router = new Router(this.webSocketManager);
 		this.initializeMiddlewares();
 		this.initializeRoutes();
+		this.timer = new Timer();
+		this.timer.start();
 	}
 
 	private initializeMiddlewares(): void {

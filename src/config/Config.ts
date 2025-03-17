@@ -1,3 +1,4 @@
+import CardDto from "src/dto/bank/CardDto";
 import EnvVariables from "src/env/envVariables";
 
 class Config {
@@ -7,6 +8,9 @@ class Config {
 	static requestLog = EnvVariables.requestLog;
 	static explicitErrorLog = EnvVariables.explicitErrorLog;
 	static multerFileSize = EnvVariables.multerFileSize;
+	static bankUrl = EnvVariables.bankUrl;
+	static provisionAmount = EnvVariables.provisionAmount;
+	static initialAuctionPrice = EnvVariables.initialAuctionPrice;
 
 	static watermark = { ...EnvVariables.watermark };
 
@@ -17,6 +21,14 @@ class Config {
 	static jwt = { ...EnvVariables.jwt };
 
 	static googleOAuth = { ...EnvVariables.googleOAuth };
+
+	static cronInterval = null;
+
+	static stauctionBankCredentials: CardDto = {
+		cardNumber: "1234567890123456",
+		expirationDate: "12/34",
+		cvv: "123",
+	};
 }
 
 export default Config;

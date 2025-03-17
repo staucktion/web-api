@@ -8,28 +8,19 @@ datasource db {
 }
 
 model auction {
-  id          BigInt    @id @default(autoincrement())
-  category_id BigInt?
-  status_id   Int?
-  start_time  DateTime  @db.Timestamp(6)
-  finish_time DateTime  @db.Timestamp(6)
-  is_deleted  Boolean
-  created_at  DateTime  @db.Timestamp(6)
-  updated_at  DateTime  @db.Timestamp(6)
-  category    category? @relation(fields: [category_id], references: [id], onUpdate: NoAction)
-  status      status?   @relation(fields: [status_id], references: [id], onUpdate: NoAction)
-  bid_list    bid[]
-  photo_list  photo[]
-}
-
-model bid {
-  id                   BigInt   @id @default(autoincrement())
-  auction_id           BigInt?
-  user_id              BigInt?
-  amount               Decimal  @db.Decimal(15, 2)
-  provision_id_on_bank BigInt?  @unique
-  auction              auction? @relation(fields: [auction_id], references: [id], onUpdate: NoAction)
-  user                 user?    @relation(fields: [user_id], references: [id], onUpdate: NoAction)
+  id                 BigInt          @id @default(autoincrement())
+  category_id        BigInt?
+  status_id          Int?
+  start_time         DateTime        @db.Timestamp(6)
+  finish_time        DateTime        @db.Timestamp(6)
+  is_deleted         Boolean
+  created_at         DateTime        @db.Timestamp(6)
+  updated_at         DateTime        @db.Timestamp(6)
+  category           category?       @relation(fields: [category_id], references: [id], onUpdate: NoAction)
+  status             status?         @relation(fields: [status_id], references: [id], onUpdate: NoAction)
+  auction_photo_list auction_photo[]
+  photo_list         photo[]
+  vote_list          vote[]
 }
 
 model category {
@@ -57,58 +48,142 @@ model location {
 }
 
 model photo {
-  id          BigInt    @id @default(autoincrement())
-  file_path   String?   @db.VarChar(100)
-  title       String?   @db.VarChar(100)
-  user_id     BigInt?
-  auction_id  BigInt?
-  location_id BigInt?
-  category_id BigInt?
-  status_id   Int?
-  device_info String    @db.VarChar(255)
-  vote_count  Int
-  is_deleted  Boolean
-  created_at  DateTime  @db.Timestamp(6)
-  updated_at  DateTime  @db.Timestamp(6)
-  auction     auction?  @relation(fields: [auction_id], references: [id], onUpdate: NoAction)
-  category    category? @relation(fields: [category_id], references: [id], onUpdate: NoAction)
-  location    location? @relation(fields: [location_id], references: [id], onUpdate: NoAction)
-  status      status?   @relation(fields: [status_id], references: [id], onUpdate: NoAction)
-  user        user?     @relation(fields: [user_id], references: [id], onUpdate: NoAction)
+  id                   BigInt            @id @default(autoincrement())
+  file_path            String?           @db.VarChar(100)
+  title                String?           @db.VarChar(100)
+  user_id              BigInt?
+  auction_id           BigInt?
+  location_id          BigInt?
+  category_id          BigInt?
+  status_id            Int?
+  is_auctionable       Boolean
+  device_info          String            @db.VarChar(255)
+  vote_count           Int
+  is_deleted           Boolean
+  created_at           DateTime          @db.Timestamp(6)
+  updated_at           DateTime          @db.Timestamp(6)
+  auction_photo_list   auction_photo[]
+  auction              auction?          @relation(fields: [auction_id], references: [id], onUpdate: NoAction)
+  category             category?         @relation(fields: [category_id], references: [id], onUpdate: NoAction)
+  location             location?         @relation(fields: [location_id], references: [id], onUpdate: NoAction)
+  status               status?           @relation(fields: [status_id], references: [id], onUpdate: NoAction)
+  user                 user?             @relation(fields: [user_id], references: [id], onUpdate: NoAction)
+  purchased_photo_list purchased_photo[]
+  vote_list            vote[]
 }
 
 model status {
-  id            Int        @id @default(autoincrement())
-  status        String     @db.VarChar(100)
-  auction_list  auction[]
-  category_list category[]
-  photo_list    photo[]
-  user_list     user[]
+  id                        Int                    @id @default(autoincrement())
+  status                    String                 @db.VarChar(100)
+  auction_list              auction[]
+  auction_photo_list        auction_photo[]
+  category_list             category[]
+  photo_list                photo[]
+  photographer_payment_list photographer_payment[]
+  user_list                 user[]
+  vote_list                 vote[]
 }
 
 model user {
-  id         BigInt     @id @default(autoincrement())
-  gmail_id   String?    @db.VarChar(100)
-  username   String     @db.VarChar(100)
-  email      String     @db.VarChar(100)
-  password   String     @db.VarChar(255)
-  first_name String     @db.VarChar(100)
-  last_name  String     @db.VarChar(100)
-  role_id    BigInt?
-  status_id  Int?
-  is_deleted Boolean
-  created_at DateTime   @db.Timestamp(6)
-  updated_at DateTime   @db.Timestamp(6)
-  tc_identity_no  String?    @db.VarChar(11)
-  profile_picture String?
-  bid_list   bid[]
-  photo_list photo[]
-  user_role  user_role? @relation(fields: [role_id], references: [id], onUpdate: NoAction)
-  status     status?    @relation(fields: [status_id], references: [id], onUpdate: NoAction)
+  id                               BigInt                 @id @default(autoincrement())
+  gmail_id                         String?                @db.VarChar(100)
+  username                         String                 @db.VarChar(100)
+  email                            String                 @db.VarChar(100)
+  password                         String                 @db.VarChar(255)
+  first_name                       String                 @db.VarChar(100)
+  last_name                        String                 @db.VarChar(100)
+  tc_identity_no                   String?                @db.VarChar(11)
+  profile_picture                  String?
+  role_id                          BigInt?
+  status_id                        Int?
+  is_deleted                       Boolean
+  created_at                       DateTime               @db.Timestamp(6)
+  updated_at                       DateTime               @db.Timestamp(6)
+  auction_photo_winner_user_1_list auction_photo[]        @relation("auction_photo_winner_user_id_1Touser")
+  auction_photo_winner_user_2_list auction_photo[]        @relation("auction_photo_winner_user_id_2Touser")
+  auction_photo_winner_user_3_list auction_photo[]        @relation("auction_photo_winner_user_id_3Touser")
+  bid_list                         bid[]
+  photo_list                       photo[]
+  photographer_payment_list        photographer_payment[]
+  purchased_photo_list             purchased_photo[]
+  user_role                        user_role?             @relation(fields: [role_id], references: [id], onUpdate: NoAction)
+  status                           status?                @relation(fields: [status_id], references: [id], onUpdate: NoAction)
+  vote_list                        vote[]
 }
 
 model user_role {
   id        BigInt @id @default(autoincrement())
   role      String @unique @db.VarChar(100)
   user_list user[]
+}
+
+model cron {
+  id                BigInt    @id @default(autoincrement())
+  unit              String    @db.Char(1)
+  interval          Int
+  last_trigger_time DateTime? @db.Timestamp(6)
+}
+
+model auction_photo {
+  id                   BigInt   @id @default(autoincrement())
+  photo_id             BigInt?
+  auction_id           BigInt?
+  status_id            Int
+  last_bid_amount      Decimal? @db.Decimal(10, 2)
+  start_time           DateTime @db.Timestamp(6)
+  finish_time          DateTime @db.Timestamp(6)
+  current_winner_order Int?
+  winner_user_id_1     BigInt?
+  winner_user_id_2     BigInt?
+  winner_user_id_3     BigInt?
+  created_at           DateTime @db.Timestamp(6)
+  updated_at           DateTime @db.Timestamp(6)
+  auction              auction? @relation(fields: [auction_id], references: [id], onUpdate: NoAction)
+  photo                photo?   @relation(fields: [photo_id], references: [id], onUpdate: NoAction)
+  status               status   @relation(fields: [status_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  winner_user_1        user?    @relation("auction_photo_winner_user_id_1Touser", fields: [winner_user_id_1], references: [id], onUpdate: NoAction)
+  winner_user_2        user?    @relation("auction_photo_winner_user_id_2Touser", fields: [winner_user_id_2], references: [id], onUpdate: NoAction)
+  winner_user_3        user?    @relation("auction_photo_winner_user_id_3Touser", fields: [winner_user_id_3], references: [id], onUpdate: NoAction)
+  bid_list             bid[]
+}
+
+model bid {
+  id               BigInt         @id @default(autoincrement())
+  bid_amount       Decimal        @db.Decimal(10, 2)
+  user_id          BigInt?
+  auction_photo_id BigInt?
+  created_at       DateTime       @db.Timestamp(6)
+  auction_photo    auction_photo? @relation(fields: [auction_photo_id], references: [id], onUpdate: NoAction)
+  user             user?          @relation(fields: [user_id], references: [id], onUpdate: NoAction)
+}
+
+model vote {
+  id              BigInt   @id @default(autoincrement())
+  auction_id      BigInt?
+  user_id         BigInt?
+  photo_id        BigInt?
+  status_id       Int?
+  transfer_amount Decimal? @db.Decimal(10, 2)
+  auction         auction? @relation(fields: [auction_id], references: [id], onUpdate: NoAction)
+  photo           photo?   @relation(fields: [photo_id], references: [id], onUpdate: NoAction)
+  status          status?  @relation(fields: [status_id], references: [id], onUpdate: NoAction)
+  user            user?    @relation(fields: [user_id], references: [id], onUpdate: NoAction)
+}
+
+model photographer_payment {
+  id             BigInt  @id @default(autoincrement())
+  user_id        BigInt?
+  status_id      Int?
+  payment_amount Decimal @db.Decimal(10, 2)
+  status         status? @relation(fields: [status_id], references: [id], onUpdate: NoAction)
+  user           user?   @relation(fields: [user_id], references: [id], onUpdate: NoAction)
+}
+
+model purchased_photo {
+  id             BigInt  @id @default(autoincrement())
+  photo_id       BigInt?
+  user_id        BigInt?
+  payment_amount Decimal @db.Decimal(10, 2)
+  photo          photo?  @relation(fields: [photo_id], references: [id], onUpdate: NoAction)
+  user           user?   @relation(fields: [user_id], references: [id], onUpdate: NoAction)
 }

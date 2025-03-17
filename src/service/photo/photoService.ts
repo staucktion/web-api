@@ -6,8 +6,10 @@ import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import ReadAllPhotoResponseDto from "src/dto/photo/ReadAllPhotoResponseDto";
 import CustomError from "src/error/CustomError";
-import PrismaUtil from "src/util/PrismaUtil";
 import { StatusEnum } from "src/types/statusEnum";
+import DateUtil from "src/util/dateUtil";
+import handlePrismaType from "src/util/handlePrismaType";
+import PrismaUtil from "src/util/PrismaUtil";
 
 class PhotoService {
 	private prisma: PrismaClient;
@@ -103,11 +105,35 @@ class PhotoService {
 					is_deleted: false,
 					created_at: new Date(),
 					updated_at: new Date(),
+					is_auctionable: false,
 					status_id: statusId,
 				},
 			});
 
 			return { id: Number(instance.id) };
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
+	}
+
+	public async getPhotoById(photoId: number): Promise<any> {
+		try {
+			const instance = await this.prisma.photo.findUnique({
+				where: {
+					id: photoId,
+				},
+				include: {
+					auction_photo_list: true,
+					auction: true,
+					category: true,
+					location: true,
+					status: true,
+					user: true,
+					vote_list: true,
+				},
+			});
+
+			return handlePrismaType(instance);
 		} catch (error: any) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
@@ -132,6 +158,7 @@ class PhotoService {
 				auction_id: photo.auction_id ? Number(photo.auction_id) : null,
 				location_id: Number(photo.location_id),
 				category_id: Number(photo.category_id),
+				is_auctionable: photo.is_auctionable,
 				status_id: Number(photo.status_id),
 				created_at: photo.created_at,
 				updated_at: photo.updated_at,
@@ -219,6 +246,29 @@ class PhotoService {
 			});
 		} catch (error: any) {
 			CustomError.builder().setMessage("Error deleting photo").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(error.statusCode).build().throwError();
+		}
+	}
+
+	public async updatePhoto(id: number, updateInstanceData: any): Promise<ReadAllPhotoResponseDto[]> {
+		try {
+			const { user_id, auction_id, category_id, location_id, status_id, auction_photo_list, vote_list, ...cleanData } = updateInstanceData;
+
+			const updatedInstance = await this.prisma.photo.update({
+				where: { id },
+				data: {
+					...cleanData,
+					updated_at: DateUtil.getNowWithoutMs(),
+					user: { connect: { id: user_id } },
+					status: { connect: { id: status_id } },
+					auction: { connect: { id: auction_id } },
+					category: { connect: { id: category_id } },
+					location: { connect: { id: location_id } },
+				},
+			});
+
+			return handlePrismaType(updatedInstance);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
 }
