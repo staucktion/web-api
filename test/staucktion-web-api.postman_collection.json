@@ -187,6 +187,42 @@
 						"description": "Rejects a photo, changing its status from WAIT to REJECTED. Requires a reason for rejection. Requires authentication. Only accessible to admins."
 					},
 					"response": []
+				},
+				{
+					"name": "Delete Photo (Requires Auth)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", ":photoId"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1",
+									"description": "ID of the photo to delete"
+								}
+							]
+						},
+						"description": "Deletes a photo. Requires authentication. Only accessible to admins."
+					},
+					"response": []
 				}
 			]
 		},

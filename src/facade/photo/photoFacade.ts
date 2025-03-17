@@ -168,6 +168,28 @@ class PhotoFacade {
 			return;
 		}
 	}
+
+	public async deletePhoto(req: Request, res: Response): Promise<void> {
+		// check if user authenticated
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		// check if photo id provided
+		if (!req.params.photoId) {
+			CustomError.handleError(res, CustomError.builder().setMessage("photoId must be provided").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
+		try {
+			await this.photoService.deletePhoto(parseInt(req.params.photoId));
+			sendJsonBigint(res, { message: "Photo deleted successfully" }, 200);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
 }
 
 export default PhotoFacade;

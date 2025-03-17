@@ -7,7 +7,6 @@ import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import ReadAllPhotoResponseDto from "src/dto/photo/ReadAllPhotoResponseDto";
 import CustomError from "src/error/CustomError";
 import PrismaUtil from "src/util/PrismaUtil";
-import Config from "src/config/Config";
 import { StatusEnum } from "src/types/statusEnum";
 
 class PhotoService {
@@ -187,6 +186,33 @@ class PhotoService {
 			return resolvedPath;
 		} catch (error: any) {
 			CustomError.builder().setMessage("Error reading photo file").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
+		}
+	}
+
+	public async deletePhoto(photoId: number): Promise<void> {
+		try {
+			// check if photo exists
+			const photo = await this.prisma.photo.findUnique({
+				where: { id: photoId, is_deleted: false },
+			});
+
+			if (!photo) {
+				CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build().throwError();
+			}
+		} catch (error: any) {
+			CustomError.builder().setMessage(error.message).setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(error.statusCode).build().throwError();
+		}
+
+		try {
+			await this.prisma.photo.update({
+				where: { id: photoId },
+				data: {
+					is_deleted: true,
+					updated_at: new Date(),
+				},
+			});
+		} catch (error: any) {
+			CustomError.builder().setMessage("Error deleting photo").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(error.statusCode).build().throwError();
 		}
 	}
 }

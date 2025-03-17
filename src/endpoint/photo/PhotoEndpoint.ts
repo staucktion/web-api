@@ -42,6 +42,11 @@ class PhotoEndpoint {
 		this.router.get("/photos/:photoId", (req, res) => {
 			this.photoFacade.getPhoto(req, res);
 		});
+
+		// Delete a photo (authenticated) - admin only
+		this.router.delete("/photos/:photoId", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, (req, res) => {
+			this.photoFacade.deletePhoto(req, res);
+		});
 	}
 
 	public getRouter(): Router {
