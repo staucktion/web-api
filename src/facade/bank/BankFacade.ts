@@ -151,7 +151,7 @@ class BankFacade {
 				senderCardNumber: cardDto.cardNumber,
 				senderExpirationDate: cardDto.expirationDate,
 				senderCvv: cardDto.cvv,
-				targetCardNumber: Config.stauctionBankCredentials.cardNumber,
+				targetCardNumber: Config.staucktionBankCredentials.cardNumber,
 				amount: auctionPhoto.last_bid_amount,
 				description: `User with id ${req.user.id} win auction with id ${auctionPhoto.auction_id} and pay ${auctionPhoto.last_bid_amount}`,
 			};
@@ -291,9 +291,9 @@ class BankFacade {
 		// transfer profit to specified bank account
 		try {
 			const data = {
-				senderCardNumber: Config.stauctionBankCredentials.cardNumber,
-				senderExpirationDate: Config.stauctionBankCredentials.expirationDate,
-				senderCvv: Config.stauctionBankCredentials.cvv,
+				senderCardNumber: Config.staucktionBankCredentials.cardNumber,
+				senderExpirationDate: Config.staucktionBankCredentials.expirationDate,
+				senderCvv: Config.staucktionBankCredentials.cvv,
 				targetCardNumber: cardDto.cardNumber,
 				amount: totalProfit,
 				description: `User with id ${req.user.id} make total ${totalProfit} profit. Staucktion provide that amount.`,
