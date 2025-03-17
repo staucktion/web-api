@@ -16,8 +16,9 @@ class EnvVariables {
 
 	static email = {
 		from: process.env.EMAIL_FROM,
+		user: process.env.EMAIL_USER,
 		pass: process.env.EMAIL_PASS,
-		service: process.env.EMAIL_SERVICE,
+		smtp: process.env.EMAIL_SMTP,
 	};
 
 	static appUrl = process.env.VITE_APP_URL;
