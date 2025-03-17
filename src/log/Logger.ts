@@ -11,7 +11,7 @@ class Logger {
 		const method = req.method.padEnd(7);
 		const url = req.originalUrl;
 
-		console.log(`[Info] Request ${requestNumber} -> ${ip} - ${method} - ${url}`);
+		console.log(`[INFO] Request ${requestNumber} -> ${ip} - ${method} - ${url}`);
 		next();
 	}
 

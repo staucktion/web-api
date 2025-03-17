@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "0a64a8a3-758d-44c5-a70e-d8c8b1e583b3",
+		"_postman_id": "77027d74-5fea-415b-aec5-d6813def18c4",
 		"name": "staucktion-web-api",
+		"description": "### Authentication\nMany endpoints require authentication via JWT token.\n\n#### How to Get Your Authentication Token:\n1. Log in to the application in your browser\n2. Open Developer Tools (F12 or Right Click → Inspect)\n3. Navigate to the \"Application\" tab\n4. Select \"Cookies\" in the left sidebar\n5. Find the appropriate domain in the list\n6. Look for a cookie named \"token\"\n7. Copy the value of this cookie\n\n#### How to Authenticate in Postman:\n1. Set the AUTH_TOKEN variable in the collection with your JWT token\n2. The token will be automatically included in the request header",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "5601458",
-		"description": "### Authentication\nMany endpoints require authentication via JWT token.\n\n#### How to Get Your Authentication Token:\n1. Log in to the application in your browser\n2. Open Developer Tools (F12 or Right Click → Inspect)\n3. Navigate to the \"Application\" tab\n4. Select \"Cookies\" in the left sidebar\n5. Find the appropriate domain in the list\n6. Look for a cookie named \"token\"\n7. Copy the value of this cookie\n\n#### How to Authenticate in Postman:\n1. Set the AUTH_TOKEN variable in the collection with your JWT token\n2. The token will be automatically included in the request header"
+		"_exporter_id": "26266539"
 	},
 	"item": [
 		{
@@ -39,204 +39,127 @@
 			]
 		},
 		{
-			"name": "photo",
+			"name": "auth",
 			"item": [
 				{
-					"name": "Upload New Photo",
+					"name": "/auth/info",
 					"request": {
 						"method": "POST",
 						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "photo",
-									"description": "Select a file from your local environment here",
-									"type": "file",
-									"src": []
-								},
-								{
-									"key": "categoryId",
-									"value": "1"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/photos",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Photos",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/photos",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Photo By ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/photos/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos", "1"]
-						},
-						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
-					},
-					"response": []
-				},
-				{
-					"name": "Get Waiting Photos (Requires Auth)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{JWT_TOKEN}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{BASE_URL}}/photos/waiting",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos", "waiting"]
-						},
-						"description": "Retrieves a list of photos in WAIT state. Requires authentication. Only accessible to admins."
-					},
-					"response": []
-				},
-				{
-					"name": "Approve Photo (Requires Auth)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{JWT_TOKEN}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"action\": \"approve\"\n}"
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/photos/:photoId/status",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos", ":photoId", "status"],
-							"variable": [
-								{
-									"key": "photoId",
-									"value": "1",
-									"description": "ID of the photo to approve"
-								}
-							]
-						},
-						"description": "Approves a photo, changing its status from WAIT to APPROVED. Requires authentication. Only accessible to admins."
-					},
-					"response": []
-				},
-				{
-					"name": "Reject Photo (Requires Auth)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{JWT_TOKEN}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"action\": \"reject\",\n  \"reason\": \"Inappropriate content\"\n}"
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/photos/:photoId/status",
-							"host": ["{{BASE_URL}}"],
-							"path": ["photos", ":photoId", "status"],
-							"variable": [
-								{
-									"key": "photoId",
-									"value": "1",
-									"description": "ID of the photo to reject"
-								}
-							]
-						},
-						"description": "Rejects a photo, changing its status from WAIT to REJECTED. Requires a reason for rejection. Requires authentication. Only accessible to admins."
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Photo (Requires Auth)",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{JWT_TOKEN}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
 						"body": {
 							"mode": "raw",
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{BASE_URL}}/photos/:photoId",
+							"raw": "{{BASE_URL}}/auth/info",
 							"host": ["{{BASE_URL}}"],
-							"path": ["photos", ":photoId"],
+							"path": ["auth", "info"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bank",
+			"item": [
+				{
+					"name": "Provision to Approve User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cardNumber\": \"4539187690234512\",\r\n    \"expirationDate\": \"04/29\",\r\n    \"cvv\": \"678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/banks/approve-user",
+							"host": ["{{BASE_URL}}"],
+							"path": ["banks", "approve-user"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Purchase Photo From Auction",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cardNumber\": \"4539187690234512\",\r\n    \"expirationDate\": \"04/29\",\r\n    \"cvv\": \"678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/banks/purchase/auction/photo/:photoId",
+							"host": ["{{BASE_URL}}"],
+							"path": ["banks", "purchase", "auction", "photo", ":photoId"],
 							"variable": [
 								{
 									"key": "photoId",
-									"value": "1",
-									"description": "ID of the photo to delete"
+									"value": "1"
 								}
 							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Withdraw Profit",
+					"request": {
+						"auth": {
+							"type": "noauth"
 						},
-						"description": "Deletes a photo. Requires authentication. Only accessible to admins."
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cardNumber\": \"4539187690234512\",\r\n    \"expirationDate\": \"04/29\",\r\n    \"cvv\": \"678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/banks/withdraw-profit",
+							"host": ["{{BASE_URL}}"],
+							"path": ["banks", "withdraw-profit"]
+						}
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "mail",
+			"name": "bid",
 			"item": [
 				{
-					"name": "Send Email (Requires Auth)",
+					"name": "/bids/photoId",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"photoId\": 1,\r\n    \"action\": \"Approve Purchase\"\r\n}",
+							"raw": "{\r\n    \"bidAmount\": \"100\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -244,97 +167,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASE_URL}}/mail/send",
+							"raw": "{{BASE_URL}}/bids/:photoId",
 							"host": ["{{BASE_URL}}"],
-							"path": ["mail", "send"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "location",
-			"item": [
-				{
-					"name": "Get All Locations",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/locations",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Location By ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/locations/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations", "1"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Location (Requires Auth)",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"path": ["bids", ":photoId"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "3"
 								}
-							}
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/locations",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Location (Requires Auth)",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/locations/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations", "1"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Location (Requires Auth)",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/locations/1",
-							"host": ["{{BASE_URL}}"],
-							"path": ["locations", "1"]
+							]
 						}
 					},
 					"response": []
@@ -558,6 +399,325 @@
 			]
 		},
 		{
+			"name": "location",
+			"item": [
+				{
+					"name": "Get All Locations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Location By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Location (Requires Auth)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/locations",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Location (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"latitude\": \"40.7128\",\r\n    \"longitude\": \"-74.0060\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Location (Requires Auth)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/locations/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["locations", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "mail",
+			"item": [
+				{
+					"name": "Send Email (Requires Auth)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"photoId\": 1,\r\n    \"action\": \"Approve Purchase\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/mail/send",
+							"host": ["{{BASE_URL}}"],
+							"path": ["mail", "send"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "photo",
+			"item": [
+				{
+					"name": "Upload New Photo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "photo",
+									"description": "Select a file from your local environment here",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "categoryId",
+									"value": "1"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Photos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Photo By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/1",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "1"]
+						},
+						"description": "Change the path at the end of the URL to the actual name of the file you want to view."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Purchased Photo List From Auction",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/purchased",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "purchased"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Waiting Photos (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/waiting",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "waiting"]
+						},
+						"description": "Retrieves a list of photos in WAIT state. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Photo (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"approve\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", ":photoId", "status"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1",
+									"description": "ID of the photo to approve"
+								}
+							]
+						},
+						"description": "Approves a photo, changing its status from WAIT to APPROVED. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Photo (Requires Auth)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"reject\",\n  \"reason\": \"Inappropriate content\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", ":photoId", "status"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1",
+									"description": "ID of the photo to reject"
+								}
+							]
+						},
+						"description": "Rejects a photo, changing its status from WAIT to REJECTED. Requires a reason for rejection. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Photo (Requires Auth)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", ":photoId"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1",
+									"description": "ID of the photo to delete"
+								}
+							]
+						},
+						"description": "Deletes a photo. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "user",
 			"item": [
 				{
@@ -571,25 +731,25 @@
 								{
 									"key": "first_name",
 									"value": "John",
-									"type": "text",
-									"description": "First name (optional)"
+									"description": "First name (optional)",
+									"type": "text"
 								},
 								{
 									"key": "last_name",
 									"value": "Doe",
-									"type": "text",
-									"description": "Last name (optional)"
+									"description": "Last name (optional)",
+									"type": "text"
 								},
 								{
 									"key": "tc_identity_no",
 									"value": "12345678901",
-									"type": "text",
-									"description": "TC Identity Number - must be 11 digits (optional)"
+									"description": "TC Identity Number - must be 11 digits (optional)",
+									"type": "text"
 								},
 								{
 									"key": "profile_picture",
-									"type": "file",
 									"description": "Profile picture image (optional)",
+									"type": "file",
 									"src": []
 								}
 							]
@@ -614,6 +774,49 @@
 							"path": ["profile-pictures", "profile-1740951748152-122771749.jpeg"]
 						},
 						"description": "Access a user's profile picture directly using the filename. This endpoint doesn't require authentication and can be used in frontend applications for displaying profile pictures.\n\nThe example uses a placeholder filename - replace with an actual filename as needed."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "vote",
+			"item": [
+				{
+					"name": "Vote Photo",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/votes/:photoId",
+							"host": ["{{BASE_URL}}"],
+							"path": ["votes", ":photoId"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Votes",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/votes/user",
+							"host": ["{{BASE_URL}}"],
+							"path": ["votes", "user"]
+						}
 					},
 					"response": []
 				}

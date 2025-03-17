@@ -9,6 +9,10 @@ class DateUtil {
 
 		return `${year}-${month}-${day}-${hours}-${minutes}-${milliseconds}`;
 	}
+
+	public static getNowWithoutMs(): Date {
+		return new Date(new Date().toISOString().replace(/\.\d{3}Z$/, "Z"));
+	}
 }
 
 export default DateUtil;

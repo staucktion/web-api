@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import Config from "src/config/Config";
 import { PrismaClient } from "@prisma/client";
 import PrismaUtil from "src/util/PrismaUtil";
+import handlePrismaType from "src/util/handlePrismaType";
 
 class AuthService {
 	private prisma: PrismaClient;
@@ -22,7 +23,7 @@ class AuthService {
 			},
 		});
 
-		return user;
+		return handlePrismaType(user);
 	}
 
 	async createUser(user: Pick<UserDto, "email" | "gmail_id" | "username" | "profile_picture" | "first_name" | "last_name">): Promise<UserDto> {

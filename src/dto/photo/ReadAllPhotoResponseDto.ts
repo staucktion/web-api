@@ -9,6 +9,7 @@ export default interface ReadAllPhotoResponseDto {
 	location_id: number;
 	category_id: number;
 	status_id: number;
+	is_auctionable: boolean;
 	created_at: Date;
 	updated_at: Date;
 }

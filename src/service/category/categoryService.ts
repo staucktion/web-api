@@ -3,12 +3,31 @@ import CustomError from "src/error/CustomError";
 import CategoryDto from "src/dto/category/CategoryDto";
 import { StatusEnum } from "src/types/statusEnum";
 import PrismaUtil from "src/util/PrismaUtil";
+import handlePrismaType from "src/util/handlePrismaType";
 
 class CategoryService {
 	private prisma: PrismaClient;
 
 	constructor() {
 		this.prisma = PrismaUtil.getPrismaClient();
+	}
+
+	public async getAllCategories(): Promise<CategoryDto[]> {
+		try {
+			const instanceListTmp = await this.prisma.category.findMany({
+				where: { is_deleted: false },
+				include: {
+					location: true,
+					status: true,
+					auction_list: { where: { is_deleted: false }, include: { status: true, photo_list: true } },
+					photo_list: { where: { is_deleted: false }, include: { status: true } },
+				},
+			});
+
+			return handlePrismaType(instanceListTmp).map(({ location_id, status_id, ...rest }) => rest);
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		}
 	}
 
 	async getCategoryById(id: bigint | number): Promise<CategoryDto | null> {
@@ -24,20 +43,6 @@ class CategoryService {
 		});
 
 		return category;
-	}
-
-	async getAllCategories(): Promise<CategoryDto[]> {
-		const categories = await this.prisma.category.findMany({
-			where: {
-				is_deleted: false,
-			},
-			include: {
-				location: true,
-				status: true,
-			},
-		});
-
-		return categories;
 	}
 
 	async getAllCategoriesByStatus(statusId: StatusEnum): Promise<CategoryDto[]> {

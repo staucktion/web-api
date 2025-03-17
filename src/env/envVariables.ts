@@ -7,6 +7,9 @@ class EnvVariables {
 	static requestLog: boolean = Boolean(process.env.REQUEST_LOG);
 	static explicitErrorLog: boolean = Boolean(process.env.REQUEST_LOG);
 	static multerFileSize = parseInt(process.env.MULTER_FILE_SIZE);
+	static bankUrl: string = process.env.BANK_URL;
+	static provisionAmount = parseInt(process.env.PROVISION);
+	static initialAuctionPrice: string = process.env.INITIAL_AUCTION_PRICE;
 
 	static watermark = {
 		fontSize: parseFloat(process.env.WATERMARK_FONT_SIZE),
