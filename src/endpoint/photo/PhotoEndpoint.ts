@@ -28,13 +28,13 @@ class PhotoEndpoint {
 			this.photoFacade.listPhotos(req, res);
 		});
 
-		// Get waiting photos (authenticated)
-		this.router.get("/photos/waiting", this.authMiddleware.authenticateJWT, (req, res) => {
+		// Get waiting photos (authenticated) - validator
+		this.router.get("/photos/waiting", this.authMiddleware.authenticateJWT, this.authMiddleware.validateValidator, (req, res) => {
 			this.photoFacade.listWaitingPhotos(req, res);
 		});
 
-		// Approve/reject a photo (authenticated)
-		this.router.put("/photos/:photoId/status", this.authMiddleware.authenticateJWT, (req, res) => {
+		// Approve/reject a photo (authenticated) - validator
+		this.router.put("/photos/:photoId/status", this.authMiddleware.authenticateJWT, this.authMiddleware.validateValidator, (req, res) => {
 			this.photoFacade.approveRejectPhoto(req, res);
 		});
 
