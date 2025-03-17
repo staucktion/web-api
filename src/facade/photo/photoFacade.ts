@@ -6,6 +6,7 @@ import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import CategoryDto from "src/dto/category/CategoryDto";
 import GetPhotoRequestDto from "src/dto/error/GetPhotoRequestDto";
 import LocationDto from "src/dto/location/LocationDto";
+import PurchasedPhotoDto from "src/dto/photo/PurchasedPhotoDto";
 import UploadPhotoDto from "src/dto/photo/UploadPhotoDto";
 import CustomError from "src/error/CustomError";
 import CategoryService from "src/service/category/categoryService";
@@ -109,11 +110,10 @@ class PhotoFacade {
 		}
 	}
 
-	public async listOwnPurchasedPhotos(_req: Request, res: Response): Promise<void> {
+	public async listOwnPurchasedPhotoList(req: Request, res: Response): Promise<void> {
 		try {
-			const instanceList = await this.purchasedPhotoService.getPurchasedPhotoList();
-			const filteredList = instanceList.filter((purchasedPhoto) => purchasedPhoto.user_id == _req.user.id).map((purchasedPhoto) => purchasedPhoto.photo_id);
-			res.status(200).json(filteredList);
+			const instanceList: PurchasedPhotoDto[] = await this.purchasedPhotoService.listOwnPurchasedPhotoList(req.user.id);
+			res.status(200).json(instanceList);
 			return;
 		} catch (error: any) {
 			CustomError.handleError(res, error);

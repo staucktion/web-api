@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import PurchasedPhotoDto from "src/dto/photo/PurchasedPhotoDto";
 import CustomError from "src/error/CustomError";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
@@ -19,9 +20,13 @@ class PurchasedPhotoService {
 		}
 	}
 
-	public async getPurchasedPhotoList(): Promise<any> {
+	public async listOwnPurchasedPhotoList(userId: number): Promise<PurchasedPhotoDto[]> {
 		try {
-			const instanceList = await this.prisma.purchased_photo.findMany({});
+			const instanceList = await this.prisma.purchased_photo.findMany({
+				where: {
+					user_id: userId,
+				},
+			});
 			return handlePrismaType(instanceList);
 		} catch (error: any) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
