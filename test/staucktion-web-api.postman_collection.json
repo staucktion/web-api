@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "77027d74-5fea-415b-aec5-d6813def18c4",
+		"_postman_id": "d6d62557-5e5b-466d-8bdb-a7c9e6702040",
 		"name": "staucktion-web-api",
 		"description": "### Authentication\nMany endpoints require authentication via JWT token.\n\n#### How to Get Your Authentication Token:\n1. Log in to the application in your browser\n2. Open Developer Tools (F12 or Right Click → Inspect)\n3. Navigate to the \"Application\" tab\n4. Select \"Cookies\" in the left sidebar\n5. Find the appropriate domain in the list\n6. Look for a cookie named \"token\"\n7. Copy the value of this cookie\n\n#### How to Authenticate in Postman:\n1. Set the AUTH_TOKEN variable in the collection with your JWT token\n2. The token will be automatically included in the request header",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26266539"
+		"_exporter_id": "5601458"
 	},
 	"item": [
 		{
@@ -42,7 +42,29 @@
 			"name": "auth",
 			"item": [
 				{
-					"name": "/auth/info",
+					"name": "Get Login Token From Google IdToken",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id_token\": \"Put the idToken Google has provided here\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/google/android",
+							"host": ["{{BASE_URL}}"],
+							"path": ["auth", "google", "android"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User Info",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -109,6 +131,34 @@
 							"raw": "{{BASE_URL}}/banks/purchase/auction/photo/:photoId",
 							"host": ["{{BASE_URL}}"],
 							"path": ["banks", "purchase", "auction", "photo", ":photoId"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Purchase Photo Now",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cardNumber\": \"4539187690234512\",\n    \"expirationDate\": \"04/29\",\n    \"cvv\": \"678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/banks/purchase/now/photo/:photoId",
+							"host": ["{{BASE_URL}}"],
+							"path": ["banks", "purchase", "now", "photo", ":photoId"],
 							"variable": [
 								{
 									"key": "photoId",
@@ -528,11 +578,16 @@
 									"key": "photo",
 									"description": "Select a file from your local environment here",
 									"type": "file",
-									"src": []
+									"src": "/Users/tekno/Downloads/eiffel-tower.jpeg"
 								},
 								{
 									"key": "categoryId",
 									"value": "1"
+								},
+								{
+									"key": "deviceInfo",
+									"value": "Google Pixel Pro 8",
+									"type": "text"
 								}
 							]
 						},
@@ -714,6 +769,34 @@
 						"description": "Deletes a photo. Requires authentication. Only accessible to admins."
 					},
 					"response": []
+				},
+				{
+					"name": "Set Photo Purchase Now Price (Requires Authentication)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"price\": 750\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/photos/:photoId/price",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", ":photoId", "price"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -845,6 +928,14 @@
 							"path": ["notifications", "send"]
 						},
 						"description": "Sends a notification to a specific user via WebSocket. Only accessible to admins. The notification type must be one of: success, warning, info."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notifications",
+					"request": {
+						"method": "GET",
+						"header": []
 					},
 					"response": []
 				}
