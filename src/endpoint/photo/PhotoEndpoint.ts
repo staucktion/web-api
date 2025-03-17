@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import PhotoFacade from "src/facade/photo/photoFacade";
-import MulterUtil from "src/util/multerUtil";
 import { AuthMiddleware } from "src/middleware/authMiddleware";
+import MulterUtil from "src/util/multerUtil";
 
 class PhotoEndpoint {
 	private photoFacade: PhotoFacade;
@@ -31,6 +31,11 @@ class PhotoEndpoint {
 		// Get waiting photos (authenticated)
 		this.router.get("/photos/waiting", this.authMiddleware.authenticateJWT, (req, res) => {
 			this.photoFacade.listWaitingPhotos(req, res);
+		});
+
+		// Get purchased photos from auction (authenticated)
+		this.router.get("/photos/purchased", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.listOwnPurchasedPhotoList(req, res);
 		});
 
 		// Approve/reject a photo (authenticated)

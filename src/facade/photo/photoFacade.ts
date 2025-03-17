@@ -1,31 +1,35 @@
 import { Request, Response } from "express";
 import * as path from "path";
 import Config from "src/config/Config";
-import { WATERMARK_PHOTO_DIR, ORIGINAL_PHOTO_DIR } from "src/constants/photoConstants";
+import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import CategoryDto from "src/dto/category/CategoryDto";
-import LocationDto from "src/dto/location/LocationDto";
 import GetPhotoRequestDto from "src/dto/error/GetPhotoRequestDto";
+import LocationDto from "src/dto/location/LocationDto";
+import PurchasedPhotoDto from "src/dto/photo/PurchasedPhotoDto";
 import UploadPhotoDto from "src/dto/photo/UploadPhotoDto";
 import CustomError from "src/error/CustomError";
 import CategoryService from "src/service/category/categoryService";
 import LocationService from "src/service/location/locationService";
 import PhotoService from "src/service/photo/photoService";
-import PhotoValidation from "src/validation/photo/PhotoValidation";
+import PurchasedPhotoService from "src/service/purchasedPhoto/PurchasedPhotoService";
 import { StatusEnum } from "src/types/statusEnum";
 import sendJsonBigint from "src/util/sendJsonBigint";
+import PhotoValidation from "src/validation/photo/PhotoValidation";
 
 class PhotoFacade {
 	private photoService: PhotoService;
 	private photoValidation: PhotoValidation;
 	private locationService: LocationService;
 	private categoryService: CategoryService;
+	private purchasedPhotoService: PurchasedPhotoService;
 
 	constructor() {
 		this.photoValidation = new PhotoValidation();
 		this.photoService = new PhotoService();
 		this.locationService = new LocationService();
 		this.categoryService = new CategoryService();
+		this.purchasedPhotoService = new PurchasedPhotoService();
 	}
 
 	public async uploadPhoto(req: Request, res: Response): Promise<void> {
@@ -99,6 +103,17 @@ class PhotoFacade {
 			// Only show APPROVED photos in the general list
 			const instanceList = await this.photoService.listPhotosByStatus(StatusEnum.APPROVE);
 			sendJsonBigint(res, instanceList, 200);
+			return;
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
+	public async listOwnPurchasedPhotoList(req: Request, res: Response): Promise<void> {
+		try {
+			const instanceList: PurchasedPhotoDto[] = await this.purchasedPhotoService.listOwnPurchasedPhotoList(req.user.id);
+			res.status(200).json(instanceList);
 			return;
 		} catch (error: any) {
 			CustomError.handleError(res, error);
