@@ -6,6 +6,7 @@ import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import ReadAllPhotoResponseDto from "src/dto/photo/ReadAllPhotoResponseDto";
 import CustomError from "src/error/CustomError";
+import StatusService from "src/service/status/StatusService";
 import { StatusEnum } from "src/types/statusEnum";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
@@ -13,9 +14,11 @@ import PrismaUtil from "src/util/PrismaUtil";
 
 class PhotoService {
 	private prisma: PrismaClient;
+	private statusService: StatusService;
 
 	constructor() {
 		this.prisma = PrismaUtil.getPrismaClient();
+		this.statusService = new StatusService();
 	}
 
 	public async addTextWatermark(inputPath: string, outputPath: string, watermarkText: string): Promise<void> {
@@ -276,9 +279,12 @@ class PhotoService {
 
 	public async updatePhotoPurchaseNowPrice(photoId: number, price: number | null): Promise<void> {
 		try {
+			const newStatus = price === null ? "approve" : "purchasable";
+			const status = await this.statusService.getStatusFromName(newStatus);
+
 			await this.prisma.photo.update({
-				where: { id: photoId },
-				data: { purchase_now_price: price, updated_at: DateUtil.getNowWithoutMs() },
+				where: { id: photoId, is_deleted: false, status: { status: { in: ["approve", "purchasable"] } } },
+				data: { purchase_now_price: price, updated_at: DateUtil.getNowWithoutMs(), status: { connect: { id: status.id } } },
 			});
 		} catch (error: any) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update photo purchase now price").build().throwError();

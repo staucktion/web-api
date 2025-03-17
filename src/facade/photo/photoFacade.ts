@@ -242,6 +242,13 @@ class PhotoFacade {
 			return;
 		}
 
+		const approveStatus = await this.statusService.getStatusFromName("approve");
+		const purchasableStatus = await this.statusService.getStatusFromName("purchasable");
+		if (![approveStatus.id, purchasableStatus.id].includes(photo.status_id)) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Photo needs to be approved first to update purchase now price").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
 		try {
 			await this.photoService.updatePhotoPurchaseNowPrice(photoId, price);
 		} catch (error: any) {
