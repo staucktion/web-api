@@ -1,11 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import UserDto from "src/dto/auth/UserDto";
 import AuthService from "src/service/auth/authService";
+import FormattedGoogleProfileDto from "src/dto/auth/FormattedGoogleProfileDto";
 
 declare global {
 	namespace Express {
 		interface Request {
 			user?: UserDto;
+			passportUser?: FormattedGoogleProfileDto;
+			sendTokenAsJson?: boolean;
 		}
 	}
 }
