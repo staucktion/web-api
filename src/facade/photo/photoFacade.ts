@@ -12,6 +12,7 @@ import CategoryService from "src/service/category/categoryService";
 import LocationService from "src/service/location/locationService";
 import PhotoService from "src/service/photo/photoService";
 import PurchasedPhotoService from "src/service/purchasedPhoto/PurchasedPhotoService";
+import StatusService from "src/service/status/StatusService";
 import { StatusEnum } from "src/types/statusEnum";
 import sendJsonBigint from "src/util/sendJsonBigint";
 import PhotoValidation from "src/validation/photo/PhotoValidation";
@@ -22,6 +23,7 @@ class PhotoFacade {
 	private locationService: LocationService;
 	private categoryService: CategoryService;
 	private purchasedPhotoService: PurchasedPhotoService;
+	private statusService: StatusService;
 
 	constructor() {
 		this.photoValidation = new PhotoValidation();
@@ -29,6 +31,7 @@ class PhotoFacade {
 		this.locationService = new LocationService();
 		this.categoryService = new CategoryService();
 		this.purchasedPhotoService = new PurchasedPhotoService();
+		this.statusService = new StatusService();
 	}
 
 	public async uploadPhoto(req: Request, res: Response): Promise<void> {
@@ -198,6 +201,55 @@ class PhotoFacade {
 			CustomError.handleError(res, error);
 			return;
 		}
+	}
+
+	public async updatePhotoPurchaseNowPrice(req: Request, res: Response): Promise<void> {
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		let photoId: number;
+		let price: number | null;
+		let photo;
+
+		try {
+			({ photoId, price } = await this.photoValidation.updatePhotoPurchaseNowPriceRequest(req));
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		try {
+			photo = await this.photoService.getPhotoById(photoId);
+			if (!photo) {
+				CustomError.handleError(res, CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build());
+				return;
+			}
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		if (photo.user_id !== req.user.id) {
+			CustomError.handleError(res, CustomError.builder().setMessage("You are not authorized to update this photo").setErrorType("Unauthorized").setStatusCode(403).build());
+			return;
+		}
+
+		const soldStatus = await this.statusService.getStatusFromName("sold");
+		if (photo.status_id === soldStatus.id) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Photo is already sold").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
+		try {
+			await this.photoService.updatePhotoPurchaseNowPrice(photoId, price);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		sendJsonBigint(res, { message: "Photo purchase now price updated successfully" }, 200);
 	}
 }
 

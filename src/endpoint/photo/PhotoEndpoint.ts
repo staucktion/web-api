@@ -52,6 +52,11 @@ class PhotoEndpoint {
 		this.router.delete("/photos/:photoId", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, (req, res) => {
 			this.photoFacade.deletePhoto(req, res);
 		});
+
+		// Update photo purchase now price (authenticated)
+		this.router.post("/photos/:photoId/price", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.updatePhotoPurchaseNowPrice(req, res);
+		});
 	}
 
 	public getRouter(): Router {
