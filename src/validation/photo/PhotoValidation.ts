@@ -90,6 +90,19 @@ class PhotoValidation {
 
 		return { photoId, action, reason };
 	}
+
+	public async updatePhotoPurchaseNowPriceRequest(req: Request): Promise<{ photoId: number; price: number | null }> {
+		const photoId = parseInt(req.params.photoId);
+		if (isNaN(photoId)) CustomError.builder().setMessage("Photo ID is invalid.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+
+		const price = req.body.price;
+		if (price === undefined) CustomError.builder().setMessage("Price is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		const priceNumber = price === null ? null : Number(price);
+		if (priceNumber !== null && isNaN(priceNumber)) CustomError.builder().setMessage("Price is invalid.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		if (priceNumber !== null && priceNumber <= 0) CustomError.builder().setMessage("Price must be greater than 0.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+
+		return { photoId, price: priceNumber };
+	}
 }
 
 export default PhotoValidation;

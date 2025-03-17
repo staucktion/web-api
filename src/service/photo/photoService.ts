@@ -273,6 +273,17 @@ class PhotoService {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
+
+	public async updatePhotoPurchaseNowPrice(photoId: number, price: number | null): Promise<void> {
+		try {
+			await this.prisma.photo.update({
+				where: { id: photoId },
+				data: { purchase_now_price: price, updated_at: DateUtil.getNowWithoutMs() },
+			});
+		} catch (error: any) {
+			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update photo purchase now price").build().throwError();
+		}
+	}
 }
 
 export default PhotoService;
