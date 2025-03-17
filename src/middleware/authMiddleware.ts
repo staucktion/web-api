@@ -45,4 +45,38 @@ export class AuthMiddleware {
 			res.status(403).json({ message: "Invalid token" });
 		}
 	};
+
+	public validateValidator = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		// Since this middleware runs after authMiddleware, we know req.user exists
+		// But we'll double check just to be safe
+		if (!req.user) {
+			res.status(401).json({ message: "Access Denied! No token provided." });
+			return;
+		}
+
+		// Check if user has a role and if it's a validator (admin is also allowed)
+		if (!req.user.user_role || !["validator", "admin"].includes(req.user.user_role.role)) {
+			res.status(403).json({ message: "Access Denied! User is not a validator." });
+			return;
+		}
+
+		next();
+	};
+
+	public validateAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		// Since this middleware runs after authMiddleware, we know req.user exists
+		// But we'll double check just to be safe
+		if (!req.user) {
+			res.status(401).json({ message: "Access Denied! No token provided." });
+			return;
+		}
+
+		// Check if user has a role and if it's an admin
+		if (!req.user.user_role || req.user.user_role.role !== "admin") {
+			res.status(403).json({ message: "Access Denied! User is not an admin." });
+			return;
+		}
+
+		next();
+	};
 }
