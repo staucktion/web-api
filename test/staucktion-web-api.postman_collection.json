@@ -935,7 +935,13 @@
 					"name": "Get Notifications",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/notifications",
+							"host": ["{{BASE_URL}}"],
+							"path": ["notifications"]
+						},
+						"description": "Retrieves notifications for the current authenticated user."
 					},
 					"response": []
 				}
