@@ -18,8 +18,14 @@ class NotificationEndpoint {
 	}
 
 	private initializeRoutes(): void {
+		// Send notification (authenticated) - admin only
 		this.router.post("/notifications/send", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
 			await this.notificationFacade.sendNotification(req, res);
+		});
+
+		// Get notifications (authenticated)
+		this.router.get("/notifications", this.authMiddleware.authenticateJWT, async (req, res) => {
+			await this.notificationFacade.getNotifications(req, res);
 		});
 	}
 
