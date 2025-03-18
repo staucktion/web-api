@@ -4,6 +4,7 @@ import CronDto from "src/dto/cron/CronDto";
 import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
 import PrismaUtil from "src/util/PrismaUtil";
+import handlePrismaError from "src/util/handlePrismaError";
 
 class TimerService {
 	private prisma: PrismaClient;
@@ -29,7 +30,7 @@ class TimerService {
 
 			return cronDto;
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -73,7 +74,7 @@ class TimerService {
 
 			return cronExpression;
 		} catch (error) {
-			CustomError.builder().setErrorType("Cron Expression Read Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -89,7 +90,7 @@ class TimerService {
 				throw CustomError.builder().setErrorType("Cron Write Error").setStatusCode(404).setMessage("Cannot update cron last_triggered_time").build();
 			}
 		} catch (error) {
-			throw CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build();
+			handlePrismaError(error);
 		}
 	}
 }

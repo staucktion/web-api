@@ -11,6 +11,7 @@ import { StatusEnum } from "src/types/statusEnum";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
+import handlePrismaError from "src/util/handlePrismaError";
 
 class PhotoService {
 	private prisma: PrismaClient;
@@ -115,7 +116,7 @@ class PhotoService {
 
 			return { id: Number(instance.id) };
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -138,7 +139,7 @@ class PhotoService {
 
 			return handlePrismaType(instance);
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -169,7 +170,7 @@ class PhotoService {
 				updated_at: photo.updated_at,
 			}));
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -203,7 +204,7 @@ class PhotoService {
 			};
 		} catch (error) {
 			if (error instanceof CustomError) throw error;
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update photo status").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -250,7 +251,7 @@ class PhotoService {
 				},
 			});
 		} catch (error) {
-			CustomError.builder().setMessage("Error deleting photo").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(error.statusCode).build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -273,7 +274,7 @@ class PhotoService {
 
 			return handlePrismaType(updatedInstance);
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -287,7 +288,7 @@ class PhotoService {
 				data: { purchase_now_price: price, updated_at: DateUtil.getNowWithoutMs(), status: { connect: { id: status.id } } },
 			});
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update photo purchase now price").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 }

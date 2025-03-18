@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import photographerPaymentResponse from "src/dto/photographerPayment/photographerPaymentResponse";
-import CustomError from "src/error/CustomError";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
+import handlePrismaError from "src/util/handlePrismaError";
 
 class PhotographerPaymentService {
 	private prisma: PrismaClient;
@@ -16,7 +16,7 @@ class PhotographerPaymentService {
 			const newInstance = await this.prisma.photographer_payment.create({ data });
 			return handlePrismaType(newInstance);
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -31,7 +31,7 @@ class PhotographerPaymentService {
 			});
 			return handlePrismaType(instanceList);
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -48,7 +48,7 @@ class PhotographerPaymentService {
 
 			return updatedInstance;
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 }

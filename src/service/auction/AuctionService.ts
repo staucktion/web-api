@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import Config from "src/config/Config";
-import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 import StatusService from "../status/StatusService";
+import handlePrismaError from "src/util/handlePrismaError";
 
 class AuctionService {
 	private prisma: PrismaClient;
@@ -32,7 +32,7 @@ class AuctionService {
 
 			return handlePrismaType(auction);
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -52,7 +52,7 @@ class AuctionService {
 
 			return handlePrismaType(instanceTemp);
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -73,7 +73,7 @@ class AuctionService {
 
 			return handlePrismaType(newAuctionTemp);
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -97,7 +97,7 @@ class AuctionService {
 
 			return handlePrismaType(updatedAuction);
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 }

@@ -4,7 +4,7 @@ import CategoryDto from "src/dto/category/CategoryDto";
 import { StatusEnum } from "src/types/statusEnum";
 import PrismaUtil from "src/util/PrismaUtil";
 import handlePrismaType from "src/util/handlePrismaType";
-
+import handlePrismaError from "src/util/handlePrismaError";
 class CategoryService {
 	private prisma: PrismaClient;
 
@@ -26,7 +26,7 @@ class CategoryService {
 
 			return handlePrismaType(instanceListTmp).map(({ _location_id, _status_id, ...rest }) => rest);
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -56,7 +56,7 @@ class CategoryService {
 
 			return categories;
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot get categories by status").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -124,7 +124,7 @@ class CategoryService {
 		} catch (error) {
 			if (error instanceof CustomError) throw error;
 
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update category status").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -172,7 +172,7 @@ class CategoryService {
 
 			return categories;
 		} catch (error) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot get categories by location and status").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 

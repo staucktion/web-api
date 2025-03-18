@@ -3,6 +3,7 @@ import UserDto from "src/dto/auth/UserDto";
 import UpdateUserDto from "src/dto/user/UpdateUserDto";
 import CustomError from "src/error/CustomError";
 import handlePrismaType from "src/util/handlePrismaType";
+import handlePrismaError from "src/util/handlePrismaError";
 import PrismaUtil from "src/util/PrismaUtil";
 
 class UserService {
@@ -44,13 +45,7 @@ class UserService {
 				throw error;
 			}
 
-			CustomError.builder()
-				.setMessage("Failed to update user.")
-				.setDetailedMessage(error.message || "Unknown error")
-				.setErrorType("Database Error")
-				.setStatusCode(500)
-				.build()
-				.throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -76,13 +71,7 @@ class UserService {
 				throw error;
 			}
 
-			CustomError.builder()
-				.setMessage("Failed to retrieve user.")
-				.setDetailedMessage(error.message || "Unknown error")
-				.setErrorType("Database Error")
-				.setStatusCode(500)
-				.build()
-				.throwError();
+			handlePrismaError(error);
 		}
 	}
 }
