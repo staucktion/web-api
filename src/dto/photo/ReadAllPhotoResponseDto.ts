@@ -1,4 +1,4 @@
-export default interface ReadAllPhotoResponseDto {
+interface ReadAllPhotoResponseDto {
 	id: number;
 	file_path: string;
 	title: string;
@@ -15,3 +15,5 @@ export default interface ReadAllPhotoResponseDto {
 	created_at: Date;
 	updated_at: Date;
 }
+
+export default ReadAllPhotoResponseDto;

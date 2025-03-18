@@ -1,3 +1,5 @@
-export default interface BaseResponseDto {
+interface BaseResponseDto {
 	id: number;
 }
+
+export default BaseResponseDto;
