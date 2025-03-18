@@ -24,11 +24,11 @@ class LocationEndpoint {
 		// Create a new location - authenticated access
 		this.router.post("/locations", this.authMiddleware.authenticateJWT, this.locationFacade.handleCreateLocation);
 
-		// Update a location - authenticated access
-		this.router.put("/locations/:id", this.authMiddleware.authenticateJWT, this.locationFacade.handleUpdateLocation);
+		// Update a location - authenticated access (validator)
+		this.router.put("/locations/:id", this.authMiddleware.authenticateJWT, this.authMiddleware.validateValidator, this.locationFacade.handleUpdateLocation);
 
-		// Delete a location - authenticated access
-		this.router.delete("/locations/:id", this.authMiddleware.authenticateJWT, this.locationFacade.handleDeleteLocation);
+		// Delete a location - authenticated access (admin)
+		this.router.delete("/locations/:id", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, this.locationFacade.handleDeleteLocation);
 	}
 
 	public getRouter(): Router {

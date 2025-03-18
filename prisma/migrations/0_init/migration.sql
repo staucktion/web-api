@@ -49,6 +49,8 @@ CREATE TABLE "photo" (
     "is_auctionable" BOOLEAN NOT NULL,
     "device_info" VARCHAR(255) NOT NULL,
     "vote_count" INTEGER NOT NULL,
+    "purchase_now_price" DECIMAL(10,2),
+    "purchased_at" TIMESTAMP(6),
     "is_deleted" BOOLEAN NOT NULL,
     "created_at" TIMESTAMP(6) NOT NULL,
     "updated_at" TIMESTAMP(6) NOT NULL,
@@ -164,11 +166,28 @@ CREATE TABLE "purchased_photo" (
     CONSTRAINT "purchased_photo_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "notification" (
+    "id" BIGSERIAL NOT NULL,
+    "sent_by_user_id" BIGINT NOT NULL,
+    "sent_to_user_id" BIGINT NOT NULL,
+    "type" VARCHAR(255) NOT NULL,
+    "message" VARCHAR(255) NOT NULL,
+    "seen_at" TIMESTAMP(6),
+    "created_at" TIMESTAMP(6) NOT NULL,
+    "updated_at" TIMESTAMP(6) NOT NULL,
+
+    CONSTRAINT "notification_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_role_role_key" ON "user_role"("role");
+
+-- CreateIndex
+CREATE INDEX "notification_sent_to_user_id_seen_at_idx" ON "notification"("sent_to_user_id", "seen_at");
 
 -- AddForeignKey
 ALTER TABLE "auction" ADD CONSTRAINT "auction_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "category"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
@@ -250,4 +269,10 @@ ALTER TABLE "purchased_photo" ADD CONSTRAINT "purchased_photo_photo_id_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "purchased_photo" ADD CONSTRAINT "purchased_photo_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "notification" ADD CONSTRAINT "notification_sent_by_user_id_fkey" FOREIGN KEY ("sent_by_user_id") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "notification" ADD CONSTRAINT "notification_sent_to_user_id_fkey" FOREIGN KEY ("sent_to_user_id") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 

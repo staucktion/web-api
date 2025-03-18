@@ -14,6 +14,18 @@ class Logger {
 		console.log(`[INFO] Request ${requestNumber} -> ${ip} - ${method} - ${url}`);
 		next();
 	}
+
+	public static info(message: string): void {
+		console.log(`[Info] ${message}`);
+	}
+
+	public static error(message: string): void {
+		console.error(`[Error] ${message}`);
+	}
+
+	public static warn(message: string): void {
+		console.warn(`[Warning] ${message}`);
+	}
 }
 
 export default Logger;

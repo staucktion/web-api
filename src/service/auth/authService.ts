@@ -18,6 +18,9 @@ class AuthService {
 				gmail_id,
 				is_deleted: false,
 			},
+			include: {
+				user_role: true,
+			},
 		});
 
 		return handlePrismaType(user);

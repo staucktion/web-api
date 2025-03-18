@@ -28,8 +28,8 @@ class PhotoEndpoint {
 			this.photoFacade.listPhotos(req, res);
 		});
 
-		// Get waiting photos (authenticated)
-		this.router.get("/photos/waiting", this.authMiddleware.authenticateJWT, (req, res) => {
+		// Get waiting photos (authenticated) - validator
+		this.router.get("/photos/waiting", this.authMiddleware.authenticateJWT, this.authMiddleware.validateValidator, (req, res) => {
 			this.photoFacade.listWaitingPhotos(req, res);
 		});
 
@@ -38,14 +38,24 @@ class PhotoEndpoint {
 			this.photoFacade.listOwnPurchasedPhotoList(req, res);
 		});
 
-		// Approve/reject a photo (authenticated)
-		this.router.put("/photos/:photoId/status", this.authMiddleware.authenticateJWT, (req, res) => {
+		// Approve/reject a photo (authenticated) - validator
+		this.router.put("/photos/:photoId/status", this.authMiddleware.authenticateJWT, this.authMiddleware.validateValidator, (req, res) => {
 			this.photoFacade.approveRejectPhoto(req, res);
 		});
 
 		// Get a specific photo (public)
 		this.router.get("/photos/:photoId", (req, res) => {
 			this.photoFacade.getPhoto(req, res);
+		});
+
+		// Delete a photo (authenticated) - admin only
+		this.router.delete("/photos/:photoId", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, (req, res) => {
+			this.photoFacade.deletePhoto(req, res);
+		});
+
+		// Update photo purchase now price (authenticated)
+		this.router.post("/photos/:photoId/price", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.updatePhotoPurchaseNowPrice(req, res);
 		});
 	}
 

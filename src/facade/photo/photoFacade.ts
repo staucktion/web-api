@@ -13,6 +13,7 @@ import CategoryService from "src/service/category/categoryService";
 import LocationService from "src/service/location/locationService";
 import PhotoService from "src/service/photo/photoService";
 import PurchasedPhotoService from "src/service/purchasedPhoto/PurchasedPhotoService";
+import StatusService from "src/service/status/StatusService";
 import { StatusEnum } from "src/types/statusEnum";
 import sendJsonBigint from "src/util/sendJsonBigint";
 import PhotoValidation from "src/validation/photo/PhotoValidation";
@@ -23,6 +24,7 @@ class PhotoFacade {
 	private locationService: LocationService;
 	private categoryService: CategoryService;
 	private purchasedPhotoService: PurchasedPhotoService;
+	private statusService: StatusService;
 
 	constructor() {
 		this.photoValidation = new PhotoValidation();
@@ -30,6 +32,7 @@ class PhotoFacade {
 		this.locationService = new LocationService();
 		this.categoryService = new CategoryService();
 		this.purchasedPhotoService = new PurchasedPhotoService();
+		this.statusService = new StatusService();
 	}
 
 	public async uploadPhoto(req: Request, res: Response): Promise<void> {
@@ -42,12 +45,6 @@ class PhotoFacade {
 		// check if file uploaded
 		if (!req.file) {
 			CustomError.handleError(res, CustomError.builder().setMessage("There is no file in the request").setErrorType("Bad Request").setStatusCode(400).build());
-			return;
-		}
-
-		// check if category id provided
-		if (!req.body.categoryId) {
-			CustomError.handleError(res, CustomError.builder().setMessage("categoryId must be provided").setErrorType("Bad Request").setStatusCode(400).build());
 			return;
 		}
 
@@ -88,7 +85,7 @@ class PhotoFacade {
 
 		// save to database with WAIT status
 		try {
-			const baseResponseDto: BaseResponseDto = await this.photoService.uploadPhotoDb(uploadPhotoDto.filename, req.user.id, location.id, category.id, StatusEnum.WAIT);
+			const baseResponseDto: BaseResponseDto = await this.photoService.uploadPhotoDb(uploadPhotoDto.filename, req.user.id, location.id, category.id, uploadPhotoDto.deviceInfo, StatusEnum.WAIT);
 
 			sendJsonBigint(res, baseResponseDto, 200);
 			return;
@@ -182,6 +179,84 @@ class PhotoFacade {
 			CustomError.handleError(res, error);
 			return;
 		}
+	}
+
+	public async deletePhoto(req: Request, res: Response): Promise<void> {
+		// check if user authenticated
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		// check if photo id provided
+		if (!req.params.photoId) {
+			CustomError.handleError(res, CustomError.builder().setMessage("photoId must be provided").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
+		try {
+			await this.photoService.deletePhoto(parseInt(req.params.photoId));
+			sendJsonBigint(res, { message: "Photo deleted successfully" }, 200);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
+	public async updatePhotoPurchaseNowPrice(req: Request, res: Response): Promise<void> {
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		let photoId: number;
+		let price: number | null;
+		let photo;
+
+		try {
+			({ photoId, price } = await this.photoValidation.updatePhotoPurchaseNowPriceRequest(req));
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		try {
+			photo = await this.photoService.getPhotoById(photoId);
+			if (!photo) {
+				CustomError.handleError(res, CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build());
+				return;
+			}
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		if (photo.user_id !== req.user.id) {
+			CustomError.handleError(res, CustomError.builder().setMessage("You are not authorized to update this photo").setErrorType("Unauthorized").setStatusCode(403).build());
+			return;
+		}
+
+		const soldStatus = await this.statusService.getStatusFromName("sold");
+		if (photo.status_id === soldStatus.id) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Photo is already sold").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
+		const approveStatus = await this.statusService.getStatusFromName("approve");
+		const purchasableStatus = await this.statusService.getStatusFromName("purchasable");
+		if (![approveStatus.id, purchasableStatus.id].includes(photo.status_id)) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Photo needs to be approved first to update purchase now price").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
+		try {
+			await this.photoService.updatePhotoPurchaseNowPrice(photoId, price);
+		} catch (error: any) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		sendJsonBigint(res, { message: "Photo purchase now price updated successfully" }, 200);
 	}
 }
 

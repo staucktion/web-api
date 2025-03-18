@@ -18,8 +18,8 @@ class CategoryEndpoint {
 		// Get all categories - public access
 		this.router.get("/categories", this.categoryFacade.handleGetAllCategories);
 
-		// Get waiting categories - authenticated access (admin)
-		this.router.get("/categories/waiting", this.authMiddleware.authenticateJWT, this.categoryFacade.handleGetWaitingCategories);
+		// Get waiting categories - authenticated access (validator)
+		this.router.get("/categories/waiting", this.authMiddleware.authenticateJWT, this.authMiddleware.validateValidator, this.categoryFacade.handleGetWaitingCategories);
 
 		// Get categories by coordinates - public access
 		// This must come before the :id route to avoid being caught by that pattern
@@ -34,11 +34,11 @@ class CategoryEndpoint {
 		// Update a category - authenticated access
 		this.router.put("/categories/:id", this.authMiddleware.authenticateJWT, this.categoryFacade.handleUpdateCategory);
 
-		// Approve/reject a category - authenticated access (admin)
-		this.router.put("/categories/:id/status", this.authMiddleware.authenticateJWT, this.categoryFacade.handleApproveRejectCategory);
+		// Approve/reject a category - authenticated access (validator)
+		this.router.put("/categories/:id/status", this.authMiddleware.authenticateJWT, this.authMiddleware.validateValidator, this.categoryFacade.handleApproveRejectCategory);
 
-		// Delete a category - authenticated access
-		this.router.delete("/categories/:id", this.authMiddleware.authenticateJWT, this.categoryFacade.handleDeleteCategory);
+		// Delete a category - authenticated access (admin)
+		this.router.delete("/categories/:id", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, this.categoryFacade.handleDeleteCategory);
 
 		// Get categories by location ID - public access
 		this.router.get("/locations/:locationId/categories", this.categoryFacade.handleGetCategoriesByLocationId);
