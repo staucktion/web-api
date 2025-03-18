@@ -15,7 +15,7 @@ class PhotographerPaymentService {
 		try {
 			const newInstance = await this.prisma.photographer_payment.create({ data });
 			return handlePrismaType(newInstance);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
@@ -30,14 +30,14 @@ class PhotographerPaymentService {
 				include: { status: true },
 			});
 			return handlePrismaType(instanceList);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
 
 	public async updatePhotographerPayment(id: number, data: any): Promise<any> {
 		try {
-			const { status, user, ...cleanData } = data;
+			const { _status, _user, ...cleanData } = data;
 
 			const updatedInstance = await this.prisma.photographer_payment.update({
 				where: { id },
@@ -47,7 +47,7 @@ class PhotographerPaymentService {
 			});
 
 			return updatedInstance;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}

@@ -2,15 +2,15 @@ import CustomError from "src/error/CustomError";
 
 class ValidationUtil {
 	public static checkObjectExistence(obj) {
-		if (obj === undefined) CustomError.builder().setErrorType("Object Validation").setDetailedMessage(`Object is undefined.`).build().throwError();
-		if (obj === null) CustomError.builder().setErrorType("Object Validation").setDetailedMessage(`Object is null.`).build().throwError();
-		if (obj === "") CustomError.builder().setErrorType("Object Validation").setDetailedMessage(`Object is empty string.`).build().throwError();
+		if (obj === undefined) CustomError.builder().setErrorType("Object Validation").setDetailedMessage("Object is undefined.").build().throwError();
+		if (obj === null) CustomError.builder().setErrorType("Object Validation").setDetailedMessage("Object is null.").build().throwError();
+		if (obj === "") CustomError.builder().setErrorType("Object Validation").setDetailedMessage("Object is empty string.").build().throwError();
 	}
 
 	public static checkArrayData(arr) {
-		if (typeof arr !== "object") CustomError.builder().setErrorType("Array Validation").setDetailedMessage(`Parameter is not an object.`).build().throwError();
-		if (!Array.isArray(arr)) CustomError.builder().setErrorType("Array Validation").setDetailedMessage(`Object is not an array.`).build().throwError();
-		if (arr.length === 0) CustomError.builder().setErrorType("Data Validation").setDetailedMessage(`Array is empty.`).build().throwError();
+		if (typeof arr !== "object") CustomError.builder().setErrorType("Array Validation").setDetailedMessage("Parameter is not an object.").build().throwError();
+		if (!Array.isArray(arr)) CustomError.builder().setErrorType("Array Validation").setDetailedMessage("Object is not an array.").build().throwError();
+		if (arr.length === 0) CustomError.builder().setErrorType("Data Validation").setDetailedMessage("Array is empty.").build().throwError();
 	}
 
 	public static checkRequiredFields(requiredFields: string[], obj) {

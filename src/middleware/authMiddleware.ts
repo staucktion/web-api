@@ -44,7 +44,7 @@ export class AuthMiddleware {
 			} else {
 				res.status(403).json({ message: "Invalid token" });
 			}
-		} catch (error) {
+		} catch (_error) {
 			res.status(403).json({ message: "Invalid token" });
 		}
 	};

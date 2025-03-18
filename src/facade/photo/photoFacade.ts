@@ -53,7 +53,7 @@ class PhotoFacade {
 		// get valid body from request
 		try {
 			uploadPhotoDto = await this.photoValidation.uploadPhotoRequest(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -62,7 +62,7 @@ class PhotoFacade {
 		let category: CategoryDto;
 		try {
 			category = await this.categoryService.getCategoryById(uploadPhotoDto.categoryId);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -70,7 +70,7 @@ class PhotoFacade {
 		let location: LocationDto;
 		try {
 			location = await this.locationService.getLocationById(category.location_id);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -78,7 +78,7 @@ class PhotoFacade {
 		// add watermark to the uploaded photo
 		try {
 			await this.photoService.addTextWatermark(`${uploadPhotoDto.destination}${uploadPhotoDto.filename}`, path.join(WATERMARK_PHOTO_DIR, uploadPhotoDto.filename), Config.watermark.text);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -89,7 +89,7 @@ class PhotoFacade {
 
 			sendJsonBigint(res, baseResponseDto, 200);
 			return;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -101,7 +101,7 @@ class PhotoFacade {
 			const instanceList = await this.photoService.listPhotosByStatus(StatusEnum.APPROVE);
 			sendJsonBigint(res, instanceList, 200);
 			return;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -112,7 +112,7 @@ class PhotoFacade {
 			const instanceList: PurchasedPhotoDto[] = await this.purchasedPhotoService.listOwnPurchasedPhotoList(req.user.id);
 			res.status(200).json(instanceList);
 			return;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -123,7 +123,7 @@ class PhotoFacade {
 			const waitingPhotos = await this.photoService.listPhotosByStatus(StatusEnum.WAIT);
 			sendJsonBigint(res, waitingPhotos, 200);
 			return;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -154,7 +154,7 @@ class PhotoFacade {
 				},
 				200
 			);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -166,7 +166,7 @@ class PhotoFacade {
 		// get valid body from request
 		try {
 			getPhotoRequestDto = await this.photoValidation.getPhotoRequest(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -175,7 +175,7 @@ class PhotoFacade {
 			const photoPath = await this.photoService.getPhotoPath(getPhotoRequestDto.photoId);
 			res.sendFile(photoPath);
 			return;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -197,7 +197,7 @@ class PhotoFacade {
 		try {
 			await this.photoService.deletePhoto(parseInt(req.params.photoId));
 			sendJsonBigint(res, { message: "Photo deleted successfully" }, 200);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -215,7 +215,7 @@ class PhotoFacade {
 
 		try {
 			({ photoId, price } = await this.photoValidation.updatePhotoPurchaseNowPriceRequest(req));
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -226,7 +226,7 @@ class PhotoFacade {
 				CustomError.handleError(res, CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build());
 				return;
 			}
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -251,7 +251,7 @@ class PhotoFacade {
 
 		try {
 			await this.photoService.updatePhotoPurchaseNowPrice(photoId, price);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}

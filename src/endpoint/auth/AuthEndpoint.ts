@@ -42,7 +42,7 @@ class AuthEndpoint {
 						try {
 							const jsonString = Buffer.from(rawState, "base64url").toString("utf8");
 							parsedState = JSON.parse(jsonString) as CombinedState;
-						} catch (err) {
+						} catch (_err) {
 							done(new Error("Invalid state format"), null);
 							return;
 						}

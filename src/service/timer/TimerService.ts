@@ -28,7 +28,7 @@ class TimerService {
 			};
 
 			return cronDto;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
@@ -72,7 +72,7 @@ class TimerService {
 			}
 
 			return cronExpression;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setErrorType("Cron Expression Read Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
@@ -88,7 +88,7 @@ class TimerService {
 			if (updatedCron.count === 0) {
 				throw CustomError.builder().setErrorType("Cron Write Error").setStatusCode(404).setMessage("Cannot update cron last_triggered_time").build();
 			}
-		} catch (error: any) {
+		} catch (error) {
 			throw CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build();
 		}
 	}

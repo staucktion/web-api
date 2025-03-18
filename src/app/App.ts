@@ -68,7 +68,7 @@ class App {
 			console.log(`🚀 Mode: ${Config.mode}`);
 			console.log(`🚀 Request Log: ${Config.requestLog}`);
 			console.log(`🚀 Explicit Error Log: ${Config.explicitErrorLog}`);
-			console.log(`🚀 WebSocket server is ready for connections`);
+			console.log("🚀 WebSocket server is ready for connections");
 			console.log("🚀🚀🚀");
 		});
 	}

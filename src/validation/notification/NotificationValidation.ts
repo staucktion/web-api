@@ -12,14 +12,14 @@ class NotificationValidation {
 		// validate request body
 		try {
 			ValidationUtil.checkObjectExistence(notificationDto);
-		} catch (error: any) {
+		} catch (_error) {
 			CustomError.builder().setMessage("Request body is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		// validate required fields
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, notificationDto);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 

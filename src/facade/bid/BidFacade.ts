@@ -37,7 +37,7 @@ class BidFacade {
 		// get valid body from request
 		try {
 			bidDto = await this.bidValidation.bid(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -45,7 +45,7 @@ class BidFacade {
 		// get valid param from request
 		try {
 			({ photoId } = await this.baseValidation.params(req, ["photoId"]));
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -53,7 +53,7 @@ class BidFacade {
 		// get user
 		try {
 			user = await this.userService.getUserById(handlePrismaType(req.user.id));
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -67,7 +67,7 @@ class BidFacade {
 		// get auction photo
 		try {
 			auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByPhotoId(photoId);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -94,7 +94,7 @@ class BidFacade {
 		try {
 			const updateData = { ...auctionPhoto, last_bid_amount: bidDto.bidAmount };
 			await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateData);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -107,7 +107,7 @@ class BidFacade {
 				auction_photo_id: auctionPhoto.id,
 			};
 			await this.bidService.insertNewBid(createData);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}

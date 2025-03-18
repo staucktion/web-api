@@ -15,7 +15,7 @@ class PurchasedPhotoService {
 		try {
 			const newInstance = await this.prisma.purchased_photo.create({ data });
 			return handlePrismaType(newInstance);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
@@ -28,7 +28,7 @@ class PurchasedPhotoService {
 				},
 			});
 			return handlePrismaType(instanceList);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}

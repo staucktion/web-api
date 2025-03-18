@@ -25,9 +25,9 @@ export class Timer {
 			timezone: "UTC",
 		});
 
-		console.info(`🕑🕑🕑`);
+		console.info("🕑🕑🕑");
 		console.info(`🕑 Timer started with cron expression: ${cronExpression}`);
-		console.info(`🕑🕑🕑`);
+		console.info("🕑🕑🕑");
 	}
 
 	public stop() {
@@ -41,7 +41,7 @@ export class Timer {
 	private async cronJob() {
 		try {
 			await this.timerFacade.cronJob();
-		} catch (error: any) {
+		} catch (error) {
 			console.error("Cron Error");
 			console.error(error);
 		}

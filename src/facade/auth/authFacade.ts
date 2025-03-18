@@ -48,7 +48,7 @@ class AuthFacade {
 			}
 		} catch (err) {
 			console.error("Unable to create session for user.gmail_id " + user?.gmail_id);
-			redirectWithHost(res, `/?error=${encodeURIComponent(`Unexpected error happened while logging in. Please contact support. Thank you!`)}`);
+			redirectWithHost(res, `/?error=${encodeURIComponent("Unexpected error happened while logging in. Please contact support. Thank you!")}`);
 			console.dir(err);
 		}
 	};
@@ -116,7 +116,7 @@ class AuthFacade {
 				res.clearCookie("token");
 				res.status(200).json({ user: null });
 			}
-		} catch (error) {
+		} catch (_error) {
 			res.clearCookie("token");
 			res.status(403).json({ message: "Invalid token. You have been logged out." });
 		}

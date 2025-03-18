@@ -18,14 +18,14 @@ class PhotoValidation {
 		// validate request body
 		try {
 			ValidationUtil.checkObjectExistence(uploadPhotoDto);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) CustomError.builder().setMessage("Request body is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		// validate required fields
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, uploadPhotoDto);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError)
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
@@ -42,14 +42,14 @@ class PhotoValidation {
 		// validate request body
 		try {
 			ValidationUtil.checkObjectExistence(req.params);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) CustomError.builder().setMessage("Request body is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		// validate required fields
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, req.params);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError)
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}

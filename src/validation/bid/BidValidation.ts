@@ -1,5 +1,4 @@
 import { Request } from "express";
-import CardDto from "src/dto/bank/CardDto";
 import BidDto from "src/dto/bid/BidDto";
 import CustomError from "src/error/CustomError";
 import ValidationUtil from "src/util/ValidationUtil";
@@ -13,14 +12,14 @@ class BidValidation {
 		// validate request body
 		try {
 			ValidationUtil.checkObjectExistence(input);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) CustomError.builder().setMessage("Request body is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		// validate required fields
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, input);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError)
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
@@ -28,7 +27,7 @@ class BidValidation {
 		// check numeric field
 		try {
 			ValidationUtil.validateNumericFieldsOfObject(numericFields, input);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError)
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
@@ -36,7 +35,7 @@ class BidValidation {
 		// assign numeric field
 		try {
 			ValidationUtil.assignNumericFieldsOnObject(numericFields, input);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError)
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}

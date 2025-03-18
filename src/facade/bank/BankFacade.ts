@@ -13,7 +13,7 @@ import UserService from "src/service/user/userService";
 import VoteService from "src/service/vote/VoteService";
 import BankValidation from "src/validation/bank/BankValidation";
 import BaseValidation from "src/validation/base/BaseValidation";
-
+import { hasKey } from "src/util/tsUtil";
 class BankFacade {
 	private bankService: BankService;
 	private bankValidation: BankValidation;
@@ -48,7 +48,7 @@ class BankFacade {
 		// get valid body from request
 		try {
 			cardDto = await this.bankValidation.validateBankCredentials(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -56,8 +56,8 @@ class BankFacade {
 		// add provision
 		try {
 			await this.bankService.addProvision({ ...cardDto, provision: Config.provisionAmount });
-		} catch (error: any) {
-			if (error.message === "Cannot perform bank api operation. Balance is not sufficient for provision.") banUser = true;
+		} catch (error) {
+			if (hasKey(error, "message") && error.message === "Cannot perform bank api operation. Balance is not sufficient for provision.") banUser = true;
 		}
 
 		// ban user
@@ -68,7 +68,7 @@ class BankFacade {
 				await this.userService.updateUser(req.user.id, dataToUpdateUser);
 				res.status(400).json({ message: "provision is not enough, user banned." });
 				return;
-			} catch (error: any) {
+			} catch (error) {
 				CustomError.handleError(res, error);
 				return;
 			}
@@ -76,7 +76,7 @@ class BankFacade {
 		// remove provision
 		try {
 			await this.bankService.removeProvision({ ...cardDto, provision: Config.provisionAmount });
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -86,7 +86,7 @@ class BankFacade {
 			const activeStatus = await this.statusService.getStatusFromName("active");
 			const dataToUpdateUser = { status_id: activeStatus.id };
 			await this.userService.updateUser(req.user.id, dataToUpdateUser);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -104,7 +104,7 @@ class BankFacade {
 		try {
 			({ photoId } = await this.baseValidation.params(req, ["photoId"]));
 			photoId = Number(photoId);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -112,7 +112,7 @@ class BankFacade {
 		// get valid body from request
 		try {
 			cardDto = await this.bankValidation.validateBankCredentials(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -120,7 +120,7 @@ class BankFacade {
 		// get photo
 		try {
 			photo = await this.photoService.getPhotoById(photoId);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -128,20 +128,20 @@ class BankFacade {
 		// get auction photo
 		try {
 			auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByPhotoId(photoId);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 
 		// check photo status
 		if (photo?.status?.status !== "wait_purchase_after_auction") {
-			res.status(400).json({ message: `photo is not available to purchase after auction` });
+			res.status(400).json({ message: "Photo is not available to purchase after auction" });
 			return;
 		}
 
 		// reject if user is not current winner
 		if (req.user.id !== auctionPhoto[`winner_user_id_${auctionPhoto.current_winner_order}`]) {
-			res.status(400).json({ message: `user is not current winner` });
+			res.status(400).json({ message: "User is not current winner" });
 			return;
 		}
 
@@ -156,7 +156,7 @@ class BankFacade {
 				description: `User with id ${req.user.id} win auction with id ${auctionPhoto.auction_id} and pay ${auctionPhoto.last_bid_amount}`,
 			};
 			await this.bankService.transfer(data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -169,7 +169,7 @@ class BankFacade {
 				payment_amount: auctionPhoto.last_bid_amount,
 			};
 			await this.purchasedPhotoService.insertNewPurchasedPhoto(data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -183,7 +183,7 @@ class BankFacade {
 			try {
 				const data = { ...vote, status_id: waitStatus.id, transfer_amount: paymentToVoter };
 				await this.voteService.updateVote(vote.id, data);
-			} catch (error: any) {
+			} catch (error) {
 				CustomError.handleError(res, error);
 				return;
 			}
@@ -196,7 +196,7 @@ class BankFacade {
 		try {
 			const data = { user_id: req.user.id, status_id: waitStatus.id, payment_amount: paymentToPhotographer };
 			await this.photographerPaymentService.insertNewPhotographerPayment(data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -207,21 +207,21 @@ class BankFacade {
 		try {
 			const data = { ...auctionPhoto, status_id: finishStatus.id };
 			await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 		try {
 			const data = { ...auctionPhoto.auction, status_id: finishStatus.id };
 			await this.auctionService.updateAuction(auctionPhoto.auction.id, data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 		try {
 			const data = { ...photo, status_id: soldStatus.id };
 			await this.photoService.updatePhoto(photoId, data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -238,7 +238,7 @@ class BankFacade {
 		try {
 			({ photoId } = await this.baseValidation.params(req, ["photoId"]));
 			photoId = Number(photoId);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -246,7 +246,7 @@ class BankFacade {
 		// get valid body from request
 		try {
 			cardDto = await this.bankValidation.validateBankCredentials(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -256,10 +256,10 @@ class BankFacade {
 			photo = await this.photoService.getPhotoById(photoId);
 
 			if (!photo) {
-				res.status(400).json({ message: `Photo not found` });
+				res.status(400).json({ message: "Photo not found" });
 				return;
 			}
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -267,13 +267,13 @@ class BankFacade {
 		const soldStatus = await this.statusService.getStatusFromName("sold");
 
 		if (photo.status.status === soldStatus.status) {
-			res.status(400).json({ message: `Photo is already sold` });
+			res.status(400).json({ message: "Photo is already sold" });
 			return;
 		}
 
 		// check photo status
 		if (photo?.status?.status !== "purchasable" || photo.purchase_now_price === null || photo.is_auctionable) {
-			res.status(400).json({ message: `Photo is not for sale` });
+			res.status(400).json({ message: "Photo is not for sale" });
 			return;
 		}
 
@@ -283,12 +283,12 @@ class BankFacade {
 				senderCardNumber: cardDto.cardNumber,
 				senderExpirationDate: cardDto.expirationDate,
 				senderCvv: cardDto.cvv,
-				targetCardNumber: Config.stauctionBankCredentials.cardNumber,
+				targetCardNumber: Config.staucktionBankCredentials.cardNumber,
 				amount: photo.purchase_now_price,
 				description: `User #${req.user.id} has used purchase now feature on photo #${photo.id} and paid ${photo.purchase_now_price}`,
 			};
 			await this.bankService.transfer(data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -301,7 +301,7 @@ class BankFacade {
 				payment_amount: photo.purchase_now_price,
 			};
 			await this.purchasedPhotoService.insertNewPurchasedPhoto(data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -315,7 +315,7 @@ class BankFacade {
 		try {
 			const data = { user_id: req.user.id, status_id: waitStatus.id, payment_amount: paymentToPhotographer };
 			await this.photographerPaymentService.insertNewPhotographerPayment(data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -324,7 +324,7 @@ class BankFacade {
 		try {
 			const data = { ...photo, status_id: soldStatus.id, purchased_at: new Date() };
 			await this.photoService.updatePhoto(photoId, data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -341,7 +341,7 @@ class BankFacade {
 		// get valid body from request
 		try {
 			cardDto = await this.bankValidation.validateBankCredentials(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -350,7 +350,7 @@ class BankFacade {
 		try {
 			const voteListTmp = await this.voteService.getVoteListByUserId(req.user.id);
 			voteList = voteListTmp.filter((vote) => vote.status.status === "wait");
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -359,7 +359,7 @@ class BankFacade {
 		const waitStatus = await this.statusService.getStatusFromName("wait");
 		try {
 			photographerPaymentList = await this.photographerPaymentService.getPhotographerPaymentList(req.user.id, waitStatus.id);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -372,7 +372,7 @@ class BankFacade {
 			try {
 				const data = { ...vote, status_id: finishStatus.id };
 				await this.voteService.updateVote(vote.id, data);
-			} catch (error: any) {
+			} catch (error) {
 				CustomError.handleError(res, error);
 				return;
 			}
@@ -385,7 +385,7 @@ class BankFacade {
 			try {
 				const data = { ...photographerPayment, status_id: finishStatus.id };
 				await this.photographerPaymentService.updatePhotographerPayment(photographerPayment.id, data);
-			} catch (error: any) {
+			} catch (error) {
 				CustomError.handleError(res, error);
 				return;
 			}
@@ -408,7 +408,7 @@ class BankFacade {
 				description: `User with id ${req.user.id} make total ${totalProfit} profit. Staucktion provide that amount.`,
 			};
 			await this.bankService.transfer(data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}

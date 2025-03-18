@@ -39,7 +39,7 @@ class UserService {
 
 			// Convert BigInt to number for the DTO
 			return handlePrismaType(updatedUser);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) {
 				throw error;
 			}
@@ -71,7 +71,7 @@ class UserService {
 			}
 
 			return handlePrismaType(user);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) {
 				throw error;
 			}

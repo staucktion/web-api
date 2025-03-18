@@ -74,7 +74,7 @@ class MailService {
 			}
 
 			await new Promise<void>((resolve, reject) => {
-				transporter.sendMail(mailOptions, (error, info) => {
+				transporter.sendMail(mailOptions, (error, _info) => {
 					if (error) reject(error);
 					else resolve();
 				});
@@ -88,7 +88,7 @@ class MailService {
 					is_deleted: true,
 				},
 			});
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setMessage("Cannot send email.").setDetailedMessage(error.message).setErrorType("Email Error").setStatusCode(500).build().throwError();
 		}
 	}

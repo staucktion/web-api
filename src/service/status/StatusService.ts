@@ -13,7 +13,7 @@ class StatusService {
 	public async getStatusFromName(name: string): Promise<StatusDto> {
 		try {
 			return await this.prisma.status.findFirst({ where: { status: name } });
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}

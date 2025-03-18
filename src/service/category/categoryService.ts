@@ -24,8 +24,8 @@ class CategoryService {
 				},
 			});
 
-			return handlePrismaType(instanceListTmp).map(({ location_id, status_id, ...rest }) => rest);
-		} catch (error: any) {
+			return handlePrismaType(instanceListTmp).map(({ _location_id, _status_id, ...rest }) => rest);
+		} catch (error) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
 		}
 	}
@@ -55,7 +55,7 @@ class CategoryService {
 			});
 
 			return categories;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot get categories by status").build().throwError();
 		}
 	}
@@ -99,7 +99,7 @@ class CategoryService {
 		return updatedCategory;
 	}
 
-	async updateCategoryStatus(id: bigint, newStatus: StatusEnum, reason?: string): Promise<CategoryDto> {
+	async updateCategoryStatus(id: bigint, newStatus: StatusEnum, _reason?: string): Promise<CategoryDto> {
 		try {
 			// Check if category exists
 			const existingCategory = await this.prisma.category.findUnique({
@@ -121,7 +121,7 @@ class CategoryService {
 			});
 
 			return updatedCategory;
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) throw error;
 
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update category status").build().throwError();
@@ -171,7 +171,7 @@ class CategoryService {
 			});
 
 			return categories;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot get categories by location and status").build().throwError();
 		}
 	}
