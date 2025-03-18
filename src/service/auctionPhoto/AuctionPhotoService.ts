@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import Config from "src/config/Config";
-import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
