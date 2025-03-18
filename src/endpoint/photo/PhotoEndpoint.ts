@@ -35,7 +35,7 @@ class PhotoEndpoint {
 
 		// Get purchased photos from auction (authenticated)
 		this.router.get("/photos/purchased", this.authMiddleware.authenticateJWT, (req, res) => {
-			this.photoFacade.listOwnPurchasedPhotos(req, res);
+			this.photoFacade.listOwnPurchasedPhotoList(req, res);
 		});
 
 		// Approve/reject a photo (authenticated) - validator

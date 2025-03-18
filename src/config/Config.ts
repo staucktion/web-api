@@ -24,7 +24,7 @@ class Config {
 
 	static cronInterval = null;
 
-	static stauctionBankCredentials: CardDto = {
+	static staucktionBankCredentials: CardDto = {
 		cardNumber: "1234567890123456",
 		expirationDate: "12/34",
 		cvv: "123",

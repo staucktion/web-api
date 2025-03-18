@@ -151,7 +151,7 @@ class BankFacade {
 				senderCardNumber: cardDto.cardNumber,
 				senderExpirationDate: cardDto.expirationDate,
 				senderCvv: cardDto.cvv,
-				targetCardNumber: Config.stauctionBankCredentials.cardNumber,
+				targetCardNumber: Config.staucktionBankCredentials.cardNumber,
 				amount: auctionPhoto.last_bid_amount,
 				description: `User with id ${req.user.id} win auction with id ${auctionPhoto.auction_id} and pay ${auctionPhoto.last_bid_amount}`,
 			};
@@ -356,9 +356,9 @@ class BankFacade {
 		}
 
 		// get photographer payments
+		const waitStatus = await this.statusService.getStatusFromName("wait");
 		try {
-			const photographerPaymentListTmp = await this.photographerPaymentService.getPhotographerPaymentList();
-			photographerPaymentList = photographerPaymentListTmp.filter((instance) => instance.status.status === "wait" && instance.user_id === req.user.id);
+			photographerPaymentList = await this.photographerPaymentService.getPhotographerPaymentList(req.user.id, waitStatus.id);
 		} catch (error: any) {
 			CustomError.handleError(res, error);
 			return;
@@ -378,7 +378,7 @@ class BankFacade {
 			}
 		}
 
-		// sum photographer paymnet profits and update
+		// sum photographer payment profits and update
 		for (const photographerPayment of photographerPaymentList) {
 			totalProfit += photographerPayment.payment_amount;
 
@@ -391,12 +391,18 @@ class BankFacade {
 			}
 		}
 
+		// check total profit, if its zero return
+		if (totalProfit === 0) {
+			res.status(400).json({ message: `User with id ${req.user.id} has no profit. Cannot make bank transaction.` });
+			return;
+		}
+
 		// transfer profit to specified bank account
 		try {
 			const data = {
-				senderCardNumber: Config.stauctionBankCredentials.cardNumber,
-				senderExpirationDate: Config.stauctionBankCredentials.expirationDate,
-				senderCvv: Config.stauctionBankCredentials.cvv,
+				senderCardNumber: Config.staucktionBankCredentials.cardNumber,
+				senderExpirationDate: Config.staucktionBankCredentials.expirationDate,
+				senderCvv: Config.staucktionBankCredentials.cvv,
 				targetCardNumber: cardDto.cardNumber,
 				amount: totalProfit,
 				description: `User with id ${req.user.id} make total ${totalProfit} profit. Staucktion provide that amount.`,

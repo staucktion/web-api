@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import photographerPaymentResponse from "src/dto/photographerPayment/photographerPaymentResponse";
 import CustomError from "src/error/CustomError";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
@@ -19,9 +20,13 @@ class PhotographerPaymentService {
 		}
 	}
 
-	public async getPhotographerPaymentList(): Promise<any> {
+	public async getPhotographerPaymentList(userId: number, statusId: number): Promise<photographerPaymentResponse> {
 		try {
 			const instanceList = await this.prisma.photographer_payment.findMany({
+				where: {
+					user_id: userId,
+					status_id: statusId,
+				},
 				include: { status: true },
 			});
 			return handlePrismaType(instanceList);
