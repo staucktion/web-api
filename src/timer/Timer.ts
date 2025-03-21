@@ -28,6 +28,15 @@ export class Timer {
 		console.info("🕑🕑🕑");
 		console.info(`🕑 Timer started with cron expression: ${cronExpression}`);
 		console.info("🕑🕑🕑");
+
+		const didCronRun = await this.timerService.didCronRun();
+		if (didCronRun) {
+			console.info("🕑🕑🕑");
+			console.info("🕑 Cron job did not previously run in the defined interval.");
+			console.info("🕑 Running it now...");
+			console.info("🕑🕑🕑");
+			await this.cronJob();
+		}
 	}
 
 	public stop() {
