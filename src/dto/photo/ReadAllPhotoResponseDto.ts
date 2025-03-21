@@ -33,7 +33,7 @@ interface ReadAllPhotoResponseDto {
 		};
 	};
 	status: {
-		id: bigint;
+		id: number;
 		status: string;
 	};
 }
