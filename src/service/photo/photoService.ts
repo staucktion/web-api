@@ -148,7 +148,7 @@ class PhotoService {
 			const photoList = await this.prisma.photo.findMany({
 				where: {
 					is_deleted: false,
-					status_id: statusId,
+					status_id: { in: Array.isArray(statusId) ? statusId : [statusId] },
 					user_id: userId ?? undefined,
 				},
 				include: {

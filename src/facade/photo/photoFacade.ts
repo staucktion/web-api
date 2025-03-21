@@ -146,6 +146,16 @@ class PhotoFacade {
 		}
 	}
 
+	public async listPublicPurchasablePhotos(_req: Request, res: Response): Promise<void> {
+		try {
+			const purchasablePhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.PURCHASABLE, null);
+			sendJsonBigint(res, purchasablePhotos, 200);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
 	public async approveRejectPhoto(req: Request, res: Response): Promise<void> {
 		// Check authentication
 		if (!req.user) {
