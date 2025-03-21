@@ -52,6 +52,10 @@ class CategoryService {
 					is_deleted: false,
 					status_id: Number(statusId),
 				},
+				include: {
+					location: true,
+					status: true,
+				},
 			});
 
 			return categories;
