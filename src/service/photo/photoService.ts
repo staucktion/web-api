@@ -309,7 +309,7 @@ class PhotoService {
 		try {
 			await this.prisma.photo.update({
 				where: { id: photoId, is_deleted: false },
-				data: { is_auctionable: auctionable, updated_at: DateUtil.getNowWithoutMs() },
+				data: { is_auctionable: auctionable, updated_at: DateUtil.getNowWithoutMs(), status: { connect: { id: auctionable ? StatusEnum.APPROVE : StatusEnum.PURCHASABLE } } },
 			});
 		} catch (error) {
 			handlePrismaError(error);
