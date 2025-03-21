@@ -66,7 +66,7 @@ class CategoryService {
 		const newCategory = await this.prisma.category.create({
 			data: {
 				name: category.name,
-				status_id: category.status_id,
+				status_id: StatusEnum.WAIT,
 				address: category.address,
 				location_id: category.location_id,
 				valid_radius: category.valid_radius,
