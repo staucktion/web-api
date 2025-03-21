@@ -156,6 +156,16 @@ class PhotoFacade {
 		}
 	}
 
+	public async listPublicAuctionPhotos(_req: Request, res: Response): Promise<void> {
+		try {
+			const auctionPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.AUCTION, null);
+			sendJsonBigint(res, auctionPhotos, 200);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
 	public async approveRejectPhoto(req: Request, res: Response): Promise<void> {
 		// Check authentication
 		if (!req.user) {

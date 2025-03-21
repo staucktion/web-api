@@ -43,6 +43,11 @@ class PhotoEndpoint {
 			this.photoFacade.listPublicPurchasablePhotos(req, res);
 		});
 
+		// Get public photos in auction (public)
+		this.router.get("/photos/auction", (req, res) => {
+			this.photoFacade.listPublicAuctionPhotos(req, res);
+		});
+
 		// Get purchased photos from auction (authenticated)
 		this.router.get("/photos/purchased", this.authMiddleware.authenticateJWT, (req, res) => {
 			this.photoFacade.listOwnPurchasedPhotoList(req, res);
