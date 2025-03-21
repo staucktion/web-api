@@ -151,7 +151,11 @@ class PhotoService {
 					status_id: statusId,
 				},
 				include: {
-					category: true,
+					category: {
+						include: {
+							location: true,
+						},
+					},
 				},
 			});
 

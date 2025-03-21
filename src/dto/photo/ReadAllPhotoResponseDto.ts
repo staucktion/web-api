@@ -26,6 +26,11 @@ interface ReadAllPhotoResponseDto {
 		name: string;
 		address: string;
 		valid_radius: Decimal;
+		location: {
+			id: bigint;
+			latitude: string;
+			longitude: string;
+		};
 	};
 }
 
