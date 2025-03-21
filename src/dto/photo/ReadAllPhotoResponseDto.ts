@@ -36,6 +36,22 @@ interface ReadAllPhotoResponseDto {
 		id: number;
 		status: string;
 	};
+	user: {
+		id: bigint;
+		status_id: number | null;
+		is_deleted: boolean;
+		created_at: Date;
+		updated_at: Date;
+		gmail_id: string | null;
+		username: string;
+		email: string;
+		password: string;
+		first_name: string;
+		last_name: string;
+		tc_identity_no: string | null;
+		profile_picture: string | null;
+		role_id: bigint | null;
+	};
 }
 
 export default ReadAllPhotoResponseDto;
