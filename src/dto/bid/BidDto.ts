@@ -1,3 +1,5 @@
-export default interface BidDto {
-	bidAmount:number;
+interface BidDto {
+	bidAmount: number;
 }
+
+export default BidDto;

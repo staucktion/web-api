@@ -1,5 +1,7 @@
-export default interface CardDto {
+interface CardDto {
 	cardNumber: string;
 	expirationDate: string;
 	cvv: string;
 }
+
+export default CardDto;

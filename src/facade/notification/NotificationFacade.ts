@@ -23,14 +23,14 @@ class NotificationFacade {
 
 		try {
 			notificationDto = await this.notificationValidation.validateNotificationRequest(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 
 		try {
 			await this.notificationService.sendNotification(req.user.id, notificationDto);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -47,7 +47,7 @@ class NotificationFacade {
 			const notifications = await this.notificationService.getNotifications(req.user.id);
 
 			sendJsonBigint(res, notifications, 200);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}

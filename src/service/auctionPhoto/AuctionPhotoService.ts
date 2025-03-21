@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import Config from "src/config/Config";
-import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
+import handlePrismaError from "src/util/handlePrismaError";
 
 class AuctionPhotoService {
 	private prisma: PrismaClient;
@@ -28,8 +28,8 @@ class AuctionPhotoService {
 			});
 
 			return handlePrismaType(newTempInstance);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -49,8 +49,8 @@ class AuctionPhotoService {
 			});
 
 			return handlePrismaType(auctionPhoto);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -70,14 +70,14 @@ class AuctionPhotoService {
 			});
 
 			return handlePrismaType(auctionPhoto);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
 	public async updateAuctionPhoto(id: number, updateData: any): Promise<any> {
 		try {
-			const { photo_id, auction_id, status_id, winner_user_id_1, winner_user_id_2, winner_user_id_3, bid_list, ...cleanData } = updateData;
+			const { photo_id, auction_id, status_id, winner_user_id_1, winner_user_id_2, winner_user_id_3, bid_list: _bid_list, ...cleanData } = updateData;
 
 			const updatedInstance = await this.prisma.auction_photo.update({
 				where: { id },
@@ -100,8 +100,8 @@ class AuctionPhotoService {
 			});
 
 			return handlePrismaType(updatedInstance);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 }

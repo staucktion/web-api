@@ -4,6 +4,7 @@ import CronDto from "src/dto/cron/CronDto";
 import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
 import PrismaUtil from "src/util/PrismaUtil";
+import handlePrismaError from "src/util/handlePrismaError";
 
 class TimerService {
 	private prisma: PrismaClient;
@@ -28,8 +29,8 @@ class TimerService {
 			};
 
 			return cronDto;
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -72,8 +73,8 @@ class TimerService {
 			}
 
 			return cronExpression;
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Cron Expression Read Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -88,8 +89,21 @@ class TimerService {
 			if (updatedCron.count === 0) {
 				throw CustomError.builder().setErrorType("Cron Write Error").setStatusCode(404).setMessage("Cannot update cron last_triggered_time").build();
 			}
-		} catch (error: any) {
-			throw CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build();
+		} catch (error) {
+			handlePrismaError(error);
+		}
+	}
+
+	public async didCronRun(): Promise<boolean> {
+		try {
+			const cronDto: CronDto = await this.getCronInformation();
+			const currentTime = DateUtil.getNowWithoutMs();
+			const lastTriggerTime = cronDto.lastTriggerTime;
+			Config.cronInterval = this.convertCronToMilliseconds(cronDto);
+
+			return currentTime.getTime() - lastTriggerTime.getTime() > Config.cronInterval;
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 }

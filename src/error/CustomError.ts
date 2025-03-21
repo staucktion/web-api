@@ -56,7 +56,7 @@ class CustomError {
 		throw this;
 	}
 
-	public static handleError(res: Response, error: any): void {
+	public static handleError(res: Response, error: unknown): void {
 		const isCustomError = error instanceof CustomError;
 		if (Config.explicitErrorLog)
 			if (isCustomError) error.log();

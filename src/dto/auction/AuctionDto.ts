@@ -1,7 +1,7 @@
 import BaseResponseDto from "../base/BaseResponseDto";
 import StatusDto from "../status/StatusDto";
 
-export default interface AuctionDto extends BaseResponseDto {
+interface AuctionDto extends BaseResponseDto {
 	category_id: number;
 	status: StatusDto;
 	start_time: Date;
@@ -10,3 +10,5 @@ export default interface AuctionDto extends BaseResponseDto {
 	created_at: Date;
 	updated_at: Date;
 }
+
+export default AuctionDto;

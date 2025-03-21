@@ -23,14 +23,14 @@ class MailFacade {
 		// get valid body from request
 		try {
 			emailDto = await this.mailValidation.sendMailRequest(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 
 		try {
 			await this.mailService.sendMail(emailDto.photoId, emailDto.action, req.user.email);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}

@@ -38,11 +38,15 @@ class UserValidation {
 			CustomError.builder().setMessage("Last name cannot be empty.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
+		if (updateUserDto.username && updateUserDto.username.trim() === "") {
+			CustomError.builder().setMessage("Username cannot be empty.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		}
+
 		return updateUserDto;
 	}
 
 	private hasAtLeastOneField(dto: UpdateUserDto): boolean {
-		return !!(dto.first_name || dto.last_name || dto.tc_identity_no || dto.profile_picture);
+		return !!(dto.first_name || dto.last_name || dto.tc_identity_no || dto.profile_picture || dto.username);
 	}
 }
 

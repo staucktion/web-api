@@ -11,14 +11,14 @@ class BankValidation {
 		// validate request body
 		try {
 			ValidationUtil.checkObjectExistence(input);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) CustomError.builder().setMessage("Request body is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		// validate required fields
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, input);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError)
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}

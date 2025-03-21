@@ -1,4 +1,4 @@
-export default interface GoogleProfileDto {
+interface GoogleProfileDto {
 	provider: "google";
 	sub: string;
 	id: string;
@@ -23,3 +23,5 @@ export default interface GoogleProfileDto {
 		email_verified: boolean;
 	};
 }
+
+export default GoogleProfileDto;

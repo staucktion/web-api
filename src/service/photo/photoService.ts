@@ -11,6 +11,7 @@ import { StatusEnum } from "src/types/statusEnum";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
+import handlePrismaError from "src/util/handlePrismaError";
 
 class PhotoService {
 	private prisma: PrismaClient;
@@ -81,7 +82,7 @@ class PhotoService {
 
 			// Overlay the watermark on the image
 			await image.composite([{ input: svgBuffer, top: 0, left: 0 }]).toFile(outputPath);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setMessage("cannot watermark photo").setDetailedMessage(error.message).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
 		}
 	}
@@ -114,8 +115,8 @@ class PhotoService {
 			});
 
 			return { id: Number(instance.id) };
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -137,17 +138,27 @@ class PhotoService {
 			});
 
 			return handlePrismaType(instance);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
-	public async listPhotosByStatus(statusId: number): Promise<ReadAllPhotoResponseDto[]> {
+	public async listPhotosByStatusAndUserId(statusId: number | number[], userId: number | null): Promise<ReadAllPhotoResponseDto[]> {
 		try {
 			const photoList = await this.prisma.photo.findMany({
 				where: {
 					is_deleted: false,
-					status_id: statusId,
+					status_id: { in: Array.isArray(statusId) ? statusId : [statusId] },
+					user_id: userId ?? undefined,
+				},
+				include: {
+					category: {
+						include: {
+							location: true,
+						},
+					},
+					status: true,
+					user: true,
 				},
 			});
 
@@ -167,13 +178,16 @@ class PhotoService {
 				purchased_at: photo.purchased_at ? new Date(photo.purchased_at) : null,
 				created_at: photo.created_at,
 				updated_at: photo.updated_at,
+				category: photo.category,
+				status: photo.status,
+				user: photo.user,
 			}));
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
-	public async updatePhotoStatus(photoId: number, newStatus: StatusEnum, reason?: string): Promise<any> {
+	public async updatePhotoStatus(photoId: number, newStatus: StatusEnum, _reason?: string): Promise<any> {
 		try {
 			// First check if the photo exists
 			const photo = await this.prisma.photo.findUnique({
@@ -201,9 +215,9 @@ class PhotoService {
 				vote_count: Number(updatedPhoto.vote_count),
 				status_id: Number(updatedPhoto.status_id),
 			};
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) throw error;
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update photo status").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -222,7 +236,7 @@ class PhotoService {
 			const resolvedPath = path.resolve(WATERMARK_PHOTO_DIR, instance.file_path);
 			if (!fs.existsSync(resolvedPath)) throw new Error();
 			return resolvedPath;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setMessage("Error reading photo file").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
 		}
 	}
@@ -237,7 +251,7 @@ class PhotoService {
 			if (!photo) {
 				CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build().throwError();
 			}
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder().setMessage(error.message).setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(error.statusCode).build().throwError();
 		}
 
@@ -249,14 +263,14 @@ class PhotoService {
 					updated_at: new Date(),
 				},
 			});
-		} catch (error: any) {
-			CustomError.builder().setMessage("Error deleting photo").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(error.statusCode).build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
 	public async updatePhoto(id: number, updateInstanceData: any): Promise<ReadAllPhotoResponseDto[]> {
 		try {
-			const { user_id, auction_id, category_id, location_id, status_id, auction_photo_list, vote_list, ...cleanData } = updateInstanceData;
+			const { user_id, auction_id, category_id, location_id, status_id, auction_photo_list: _auction_photo_list, vote_list: _vote_list, ...cleanData } = updateInstanceData;
 
 			const updatedInstance = await this.prisma.photo.update({
 				where: { id },
@@ -272,8 +286,8 @@ class PhotoService {
 			});
 
 			return handlePrismaType(updatedInstance);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -286,8 +300,19 @@ class PhotoService {
 				where: { id: photoId, is_deleted: false, status: { status: { in: ["approve", "purchasable"] } } },
 				data: { purchase_now_price: price, updated_at: DateUtil.getNowWithoutMs(), status: { connect: { id: status.id } } },
 			});
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update photo purchase now price").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
+		}
+	}
+
+	public async updatePhotoAuctionableStatus(photoId: number, auctionable: boolean): Promise<void> {
+		try {
+			await this.prisma.photo.update({
+				where: { id: photoId, is_deleted: false },
+				data: { is_auctionable: auctionable, updated_at: DateUtil.getNowWithoutMs(), status: { connect: { id: auctionable ? StatusEnum.APPROVE : StatusEnum.PURCHASABLE } } },
+			});
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 }

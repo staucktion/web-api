@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import PurchasedPhotoDto from "src/dto/photo/PurchasedPhotoDto";
-import CustomError from "src/error/CustomError";
+import handlePrismaError from "src/util/handlePrismaError";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 
@@ -15,8 +15,8 @@ class PurchasedPhotoService {
 		try {
 			const newInstance = await this.prisma.purchased_photo.create({ data });
 			return handlePrismaType(newInstance);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -28,8 +28,8 @@ class PurchasedPhotoService {
 				},
 			});
 			return handlePrismaType(instanceList);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 }

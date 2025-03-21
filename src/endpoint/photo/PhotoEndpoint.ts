@@ -25,12 +25,32 @@ class PhotoEndpoint {
 
 		// Get all approved photos (public)
 		this.router.get("/photos", (req, res) => {
-			this.photoFacade.listPhotos(req, res);
+			this.photoFacade.listPublicPhotos(req, res);
+		});
+
+		// Get all own photos (authenticated)
+		this.router.get("/photos/my", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.listOwnPhotos(req, res);
 		});
 
 		// Get waiting photos (authenticated) - validator
 		this.router.get("/photos/waiting", this.authMiddleware.authenticateJWT, this.authMiddleware.validateValidator, (req, res) => {
 			this.photoFacade.listWaitingPhotos(req, res);
+		});
+
+		// Get public purchasable photos (public)
+		this.router.get("/photos/purchasable", (req, res) => {
+			this.photoFacade.listPublicPurchasablePhotos(req, res);
+		});
+
+		// Get public photos in auction (public)
+		this.router.get("/photos/auction", (req, res) => {
+			this.photoFacade.listPublicAuctionPhotos(req, res);
+		});
+
+		// Get public photos in voting stage (public)
+		this.router.get("/photos/vote", (req, res) => {
+			this.photoFacade.listPublicVotingPhotos(req, res);
 		});
 
 		// Get purchased photos from auction (authenticated)
@@ -56,6 +76,11 @@ class PhotoEndpoint {
 		// Update photo purchase now price (authenticated)
 		this.router.post("/photos/:photoId/price", this.authMiddleware.authenticateJWT, (req, res) => {
 			this.photoFacade.updatePhotoPurchaseNowPrice(req, res);
+		});
+
+		// Update photo auctionable status (authenticated)
+		this.router.post("/photos/:photoId/auctionable", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.updatePhotoAuctionableStatus(req, res);
 		});
 	}
 
