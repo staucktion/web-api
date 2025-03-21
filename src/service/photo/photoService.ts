@@ -150,6 +150,9 @@ class PhotoService {
 					is_deleted: false,
 					status_id: statusId,
 				},
+				include: {
+					category: true,
+				},
 			});
 
 			return photoList.map((photo) => ({
@@ -168,6 +171,7 @@ class PhotoService {
 				purchased_at: photo.purchased_at ? new Date(photo.purchased_at) : null,
 				created_at: photo.created_at,
 				updated_at: photo.updated_at,
+				category: photo.category,
 			}));
 		} catch (error) {
 			handlePrismaError(error);

@@ -1,3 +1,5 @@
+import { Decimal } from "@prisma/client/runtime/library";
+
 interface ReadAllPhotoResponseDto {
 	id: number;
 	file_path: string;
@@ -14,6 +16,17 @@ interface ReadAllPhotoResponseDto {
 	purchased_at: Date | null;
 	created_at: Date;
 	updated_at: Date;
+	category: {
+		id: bigint;
+		location_id: bigint | null;
+		status_id: number | null;
+		is_deleted: boolean;
+		created_at: Date;
+		updated_at: Date;
+		name: string;
+		address: string;
+		valid_radius: Decimal;
+	};
 }
 
 export default ReadAllPhotoResponseDto;
