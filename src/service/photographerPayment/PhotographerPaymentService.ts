@@ -37,7 +37,7 @@ class PhotographerPaymentService {
 
 	public async updatePhotographerPayment(id: number, data: any): Promise<any> {
 		try {
-			const { _status, _user, ...cleanData } = data;
+			const { status: _status, user: _user, ...cleanData } = data;
 
 			const updatedInstance = await this.prisma.photographer_payment.update({
 				where: { id },

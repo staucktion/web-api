@@ -270,7 +270,7 @@ class PhotoService {
 
 	public async updatePhoto(id: number, updateInstanceData: any): Promise<ReadAllPhotoResponseDto[]> {
 		try {
-			const { user_id, auction_id, category_id, location_id, status_id, _auction_photo_list, _vote_list, ...cleanData } = updateInstanceData;
+			const { user_id, auction_id, category_id, location_id, status_id, auction_photo_list: _auction_photo_list, vote_list: _vote_list, ...cleanData } = updateInstanceData;
 
 			const updatedInstance = await this.prisma.photo.update({
 				where: { id },

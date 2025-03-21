@@ -77,7 +77,7 @@ class AuctionPhotoService {
 
 	public async updateAuctionPhoto(id: number, updateData: any): Promise<any> {
 		try {
-			const { photo_id, auction_id, status_id, winner_user_id_1, winner_user_id_2, winner_user_id_3, _bid_list, ...cleanData } = updateData;
+			const { photo_id, auction_id, status_id, winner_user_id_1, winner_user_id_2, winner_user_id_3, bid_list: _bid_list, ...cleanData } = updateData;
 
 			const updatedInstance = await this.prisma.auction_photo.update({
 				where: { id },

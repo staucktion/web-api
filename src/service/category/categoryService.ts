@@ -24,7 +24,7 @@ class CategoryService {
 				},
 			});
 
-			return handlePrismaType(instanceListTmp).map(({ _location_id, _status_id, ...rest }) => rest);
+			return handlePrismaType(instanceListTmp).map(({ location_id: _location_id, status_id: _status_id, ...rest }) => rest);
 		} catch (error) {
 			handlePrismaError(error);
 		}
