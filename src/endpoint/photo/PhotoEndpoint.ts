@@ -25,7 +25,12 @@ class PhotoEndpoint {
 
 		// Get all approved photos (public)
 		this.router.get("/photos", (req, res) => {
-			this.photoFacade.listPhotos(req, res);
+			this.photoFacade.listPublicPhotos(req, res);
+		});
+
+		// Get all own photos (authenticated)
+		this.router.get("/photos/my", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.listOwnPhotos(req, res);
 		});
 
 		// Get waiting photos (authenticated) - validator

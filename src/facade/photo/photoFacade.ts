@@ -95,10 +95,27 @@ class PhotoFacade {
 		}
 	}
 
-	public async listPhotos(_req: Request, res: Response): Promise<void> {
+	public async listPublicPhotos(_req: Request, res: Response): Promise<void> {
 		try {
 			// Only show APPROVED photos in the general list
-			const instanceList = await this.photoService.listPhotosByStatus(StatusEnum.APPROVE);
+			const instanceList = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.APPROVE, null);
+			sendJsonBigint(res, instanceList, 200);
+			return;
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
+	public async listOwnPhotos(req: Request, res: Response): Promise<void> {
+		// check if user authenticated
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		try {
+			const instanceList = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.APPROVE, req.user.id);
 			sendJsonBigint(res, instanceList, 200);
 			return;
 		} catch (error) {
@@ -120,7 +137,7 @@ class PhotoFacade {
 
 	public async listWaitingPhotos(_req: Request, res: Response): Promise<void> {
 		try {
-			const waitingPhotos = await this.photoService.listPhotosByStatus(StatusEnum.WAIT);
+			const waitingPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.WAIT, null);
 			sendJsonBigint(res, waitingPhotos, 200);
 			return;
 		} catch (error) {

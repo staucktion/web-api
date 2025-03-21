@@ -143,12 +143,13 @@ class PhotoService {
 		}
 	}
 
-	public async listPhotosByStatus(statusId: number): Promise<ReadAllPhotoResponseDto[]> {
+	public async listPhotosByStatusAndUserId(statusId: number, userId: number | null): Promise<ReadAllPhotoResponseDto[]> {
 		try {
 			const photoList = await this.prisma.photo.findMany({
 				where: {
 					is_deleted: false,
 					status_id: statusId,
+					user_id: userId ?? undefined,
 				},
 				include: {
 					category: {
