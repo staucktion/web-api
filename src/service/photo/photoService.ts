@@ -143,7 +143,7 @@ class PhotoService {
 		}
 	}
 
-	public async listPhotosByStatusAndUserId(statusId: number, userId: number | null): Promise<ReadAllPhotoResponseDto[]> {
+	public async listPhotosByStatusAndUserId(statusId: number | number[], userId: number | null): Promise<ReadAllPhotoResponseDto[]> {
 		try {
 			const photoList = await this.prisma.photo.findMany({
 				where: {
@@ -297,6 +297,17 @@ class PhotoService {
 			await this.prisma.photo.update({
 				where: { id: photoId, is_deleted: false, status: { status: { in: ["approve", "purchasable"] } } },
 				data: { purchase_now_price: price, updated_at: DateUtil.getNowWithoutMs(), status: { connect: { id: status.id } } },
+			});
+		} catch (error) {
+			handlePrismaError(error);
+		}
+	}
+
+	public async updatePhotoAuctionableStatus(photoId: number, auctionable: boolean): Promise<void> {
+		try {
+			await this.prisma.photo.update({
+				where: { id: photoId, is_deleted: false },
+				data: { is_auctionable: auctionable, updated_at: DateUtil.getNowWithoutMs() },
 			});
 		} catch (error) {
 			handlePrismaError(error);

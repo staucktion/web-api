@@ -67,6 +67,11 @@ class PhotoEndpoint {
 		this.router.post("/photos/:photoId/price", this.authMiddleware.authenticateJWT, (req, res) => {
 			this.photoFacade.updatePhotoPurchaseNowPrice(req, res);
 		});
+
+		// Update photo auctionable status (authenticated)
+		this.router.post("/photos/:photoId/auctionable", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.updatePhotoAuctionableStatus(req, res);
+		});
 	}
 
 	public getRouter(): Router {

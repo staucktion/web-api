@@ -115,7 +115,7 @@ class PhotoFacade {
 		}
 
 		try {
-			const instanceList = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.APPROVE, req.user.id);
+			const instanceList = await this.photoService.listPhotosByStatusAndUserId([StatusEnum.APPROVE, StatusEnum.PURCHASABLE], req.user.id);
 			sendJsonBigint(res, instanceList, 200);
 			return;
 		} catch (error) {
@@ -284,6 +284,62 @@ class PhotoFacade {
 		}
 
 		sendJsonBigint(res, { message: "Photo purchase now price updated successfully" }, 200);
+	}
+
+	public async updatePhotoAuctionableStatus(req: Request, res: Response): Promise<void> {
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		let photoId: number;
+		let auctionable: boolean;
+		let photo;
+
+		try {
+			({ photoId, auctionable } = await this.photoValidation.updatePhotoAuctionableStatusRequest(req));
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		try {
+			photo = await this.photoService.getPhotoById(photoId);
+			if (!photo) {
+				CustomError.handleError(res, CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build());
+				return;
+			}
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		if (photo.user_id !== req.user.id) {
+			CustomError.handleError(res, CustomError.builder().setMessage("You are not authorized to update this photo").setErrorType("Unauthorized").setStatusCode(403).build());
+			return;
+		}
+
+		const soldStatus = await this.statusService.getStatusFromName("sold");
+		if (photo.status_id === soldStatus.id) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Photo is already sold").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
+		const approveStatus = await this.statusService.getStatusFromName("approve");
+		const purchasableStatus = await this.statusService.getStatusFromName("purchasable");
+		if (![approveStatus.id, purchasableStatus.id].includes(photo.status_id)) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Photo needs to be approved first to update purchase now price").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
+		try {
+			await this.photoService.updatePhotoAuctionableStatus(photoId, auctionable);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		sendJsonBigint(res, { message: "Photo auctionable status updated successfully" }, 200);
 	}
 }
 
