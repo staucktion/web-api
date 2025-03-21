@@ -14,6 +14,8 @@ import VoteService from "src/service/vote/VoteService";
 import BankValidation from "src/validation/bank/BankValidation";
 import BaseValidation from "src/validation/base/BaseValidation";
 import { hasKey } from "src/util/tsUtil";
+import MailService from "src/service/mail/mailService";
+import { MailAction } from "src/types/mailTypes";
 class BankFacade {
 	private bankService: BankService;
 	private bankValidation: BankValidation;
@@ -26,6 +28,7 @@ class BankFacade {
 	private voteService: VoteService;
 	private photographerPaymentService: PhotographerPaymentService;
 	private auctionService: AuctionService;
+	private mailService: MailService;
 
 	constructor() {
 		this.bankService = new BankService();
@@ -39,6 +42,7 @@ class BankFacade {
 		this.voteService = new VoteService();
 		this.photographerPaymentService = new PhotographerPaymentService();
 		this.auctionService = new AuctionService();
+		this.mailService = new MailService();
 	}
 
 	public async approveUser(req: Request, res: Response): Promise<void> {
@@ -324,6 +328,14 @@ class BankFacade {
 		try {
 			const data = { ...photo, status_id: soldStatus.id, purchased_at: new Date() };
 			await this.photoService.updatePhoto(photoId, data);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// send email to purchaser
+		try {
+			await this.mailService.sendMail(photoId, MailAction.APPROVE_PURCHASE, req.user.email);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
