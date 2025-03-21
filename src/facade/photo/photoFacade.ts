@@ -166,6 +166,16 @@ class PhotoFacade {
 		}
 	}
 
+	public async listPublicVotingPhotos(_req: Request, res: Response): Promise<void> {
+		try {
+			const votingPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.VOTE, null);
+			sendJsonBigint(res, votingPhotos, 200);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
 	public async approveRejectPhoto(req: Request, res: Response): Promise<void> {
 		// Check authentication
 		if (!req.user) {
