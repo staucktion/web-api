@@ -156,6 +156,7 @@ class PhotoService {
 							location: true,
 						},
 					},
+					status: true,
 				},
 			});
 
@@ -176,6 +177,7 @@ class PhotoService {
 				created_at: photo.created_at,
 				updated_at: photo.updated_at,
 				category: photo.category,
+				status: photo.status,
 			}));
 		} catch (error) {
 			handlePrismaError(error);

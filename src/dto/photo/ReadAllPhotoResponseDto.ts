@@ -32,6 +32,10 @@ interface ReadAllPhotoResponseDto {
 			longitude: string;
 		};
 	};
+	status: {
+		id: bigint;
+		status: string;
+	};
 }
 
 export default ReadAllPhotoResponseDto;
