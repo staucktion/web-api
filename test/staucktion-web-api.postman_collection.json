@@ -600,7 +600,7 @@
 					"response": []
 				},
 				{
-					"name": "Get All Photos",
+					"name": "Get All Public Photos",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -608,6 +608,19 @@
 							"raw": "{{BASE_URL}}/photos",
 							"host": ["{{BASE_URL}}"],
 							"path": ["photos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Own Photos (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/my",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "my"]
 						}
 					},
 					"response": []

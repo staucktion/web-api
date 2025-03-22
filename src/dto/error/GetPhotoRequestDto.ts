@@ -1,3 +1,5 @@
-export default interface GetPhotoRequestDto {
+interface GetPhotoRequestDto {
 	photoId: number;
 }
+
+export default GetPhotoRequestDto;

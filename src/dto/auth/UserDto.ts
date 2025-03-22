@@ -1,4 +1,4 @@
-export default interface UserDto {
+interface UserDto {
 	id: number;
 	gmail_id: string;
 	email: string;
@@ -12,3 +12,5 @@ export default interface UserDto {
 		role: string;
 	};
 }
+
+export default UserDto;

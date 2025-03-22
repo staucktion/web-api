@@ -18,7 +18,7 @@ class BankService {
 			});
 
 			return true;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder()
 				.setErrorType("Bank Error")
 				.setStatusCode(400)
@@ -31,7 +31,7 @@ class BankService {
 
 	public async removeProvision(data: any): Promise<boolean> {
 		try {
-			const response = await axios.put(`${Config.bankUrl}/provisions/remove`, data, {
+			await axios.put(`${Config.bankUrl}/provisions/remove`, data, {
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -41,7 +41,7 @@ class BankService {
 			});
 
 			return true;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder()
 				.setErrorType("Bank Error")
 				.setStatusCode(400)
@@ -54,7 +54,7 @@ class BankService {
 
 	public async transfer(data: any): Promise<boolean> {
 		try {
-			const response = await axios.post(`${Config.bankUrl}/transactions`, data, {
+			await axios.post(`${Config.bankUrl}/transactions`, data, {
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -64,7 +64,7 @@ class BankService {
 			});
 
 			return true;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.builder()
 				.setErrorType("Bank Error")
 				.setStatusCode(400)

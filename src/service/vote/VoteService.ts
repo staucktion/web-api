@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import CustomError from "src/error/CustomError";
 import handlePrismaType from "src/util/handlePrismaType";
+import handlePrismaError from "src/util/handlePrismaError";
 import PrismaUtil from "src/util/PrismaUtil";
 
 class VoteService {
@@ -14,8 +14,8 @@ class VoteService {
 		try {
 			const newInstanceTemp = await this.prisma.vote.create({ data });
 			return handlePrismaType(newInstanceTemp);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -31,14 +31,14 @@ class VoteService {
 			});
 
 			return handlePrismaType(instanceList);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
 	public async updateVote(id, data: any): Promise<any> {
 		try {
-			const { auction, photo, status, user, ...cleanData } = data;
+			const { auction: _auction, photo: _photo, status: _status, user: _user, ...cleanData } = data;
 
 			const updatedInstance = await this.prisma.vote.update({
 				where: { id },
@@ -48,8 +48,8 @@ class VoteService {
 			});
 
 			return updatedInstance;
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 }

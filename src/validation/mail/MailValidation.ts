@@ -12,21 +12,21 @@ class MailValidation {
 		// validate request body
 		try {
 			ValidationUtil.checkObjectExistence(emailDto);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) CustomError.builder().setMessage("Request body is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		// validate required fields
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, emailDto);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError)
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		// validate action
 		if (!isValidMailAction(emailDto.action)) {
-			CustomError.builder().setMessage(`Action is not valid.`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			CustomError.builder().setMessage("Action is not valid.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		return emailDto;

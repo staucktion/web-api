@@ -53,7 +53,7 @@ class PhotoFacade {
 		// get valid body from request
 		try {
 			uploadPhotoDto = await this.photoValidation.uploadPhotoRequest(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -62,7 +62,7 @@ class PhotoFacade {
 		let category: CategoryDto;
 		try {
 			category = await this.categoryService.getCategoryById(uploadPhotoDto.categoryId);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -70,7 +70,7 @@ class PhotoFacade {
 		let location: LocationDto;
 		try {
 			location = await this.locationService.getLocationById(category.location_id);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -78,7 +78,7 @@ class PhotoFacade {
 		// add watermark to the uploaded photo
 		try {
 			await this.photoService.addTextWatermark(`${uploadPhotoDto.destination}${uploadPhotoDto.filename}`, path.join(WATERMARK_PHOTO_DIR, uploadPhotoDto.filename), Config.watermark.text);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -89,19 +89,36 @@ class PhotoFacade {
 
 			sendJsonBigint(res, baseResponseDto, 200);
 			return;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 	}
 
-	public async listPhotos(_req: Request, res: Response): Promise<void> {
+	public async listPublicPhotos(_req: Request, res: Response): Promise<void> {
 		try {
 			// Only show APPROVED photos in the general list
-			const instanceList = await this.photoService.listPhotosByStatus(StatusEnum.APPROVE);
+			const instanceList = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.APPROVE, null);
 			sendJsonBigint(res, instanceList, 200);
 			return;
-		} catch (error: any) {
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
+	public async listOwnPhotos(req: Request, res: Response): Promise<void> {
+		// check if user authenticated
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		try {
+			const instanceList = await this.photoService.listPhotosByStatusAndUserId([StatusEnum.APPROVE, StatusEnum.PURCHASABLE], req.user.id);
+			sendJsonBigint(res, instanceList, 200);
+			return;
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -112,7 +129,7 @@ class PhotoFacade {
 			const instanceList: PurchasedPhotoDto[] = await this.purchasedPhotoService.listOwnPurchasedPhotoList(req.user.id);
 			res.status(200).json(instanceList);
 			return;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -120,10 +137,40 @@ class PhotoFacade {
 
 	public async listWaitingPhotos(_req: Request, res: Response): Promise<void> {
 		try {
-			const waitingPhotos = await this.photoService.listPhotosByStatus(StatusEnum.WAIT);
+			const waitingPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.WAIT, null);
 			sendJsonBigint(res, waitingPhotos, 200);
 			return;
-		} catch (error: any) {
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
+	public async listPublicPurchasablePhotos(_req: Request, res: Response): Promise<void> {
+		try {
+			const purchasablePhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.PURCHASABLE, null);
+			sendJsonBigint(res, purchasablePhotos, 200);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
+	public async listPublicAuctionPhotos(_req: Request, res: Response): Promise<void> {
+		try {
+			const auctionPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.AUCTION, null);
+			sendJsonBigint(res, auctionPhotos, 200);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
+	public async listPublicVotingPhotos(_req: Request, res: Response): Promise<void> {
+		try {
+			const votingPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.VOTE, null);
+			sendJsonBigint(res, votingPhotos, 200);
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -154,7 +201,7 @@ class PhotoFacade {
 				},
 				200
 			);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -166,7 +213,7 @@ class PhotoFacade {
 		// get valid body from request
 		try {
 			getPhotoRequestDto = await this.photoValidation.getPhotoRequest(req);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -175,7 +222,7 @@ class PhotoFacade {
 			const photoPath = await this.photoService.getPhotoPath(getPhotoRequestDto.photoId);
 			res.sendFile(photoPath);
 			return;
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -197,7 +244,7 @@ class PhotoFacade {
 		try {
 			await this.photoService.deletePhoto(parseInt(req.params.photoId));
 			sendJsonBigint(res, { message: "Photo deleted successfully" }, 200);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -215,7 +262,7 @@ class PhotoFacade {
 
 		try {
 			({ photoId, price } = await this.photoValidation.updatePhotoPurchaseNowPriceRequest(req));
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -226,7 +273,7 @@ class PhotoFacade {
 				CustomError.handleError(res, CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build());
 				return;
 			}
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -251,12 +298,68 @@ class PhotoFacade {
 
 		try {
 			await this.photoService.updatePhotoPurchaseNowPrice(photoId, price);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 
 		sendJsonBigint(res, { message: "Photo purchase now price updated successfully" }, 200);
+	}
+
+	public async updatePhotoAuctionableStatus(req: Request, res: Response): Promise<void> {
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		let photoId: number;
+		let auctionable: boolean;
+		let photo;
+
+		try {
+			({ photoId, auctionable } = await this.photoValidation.updatePhotoAuctionableStatusRequest(req));
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		try {
+			photo = await this.photoService.getPhotoById(photoId);
+			if (!photo) {
+				CustomError.handleError(res, CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build());
+				return;
+			}
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		if (photo.user_id !== req.user.id) {
+			CustomError.handleError(res, CustomError.builder().setMessage("You are not authorized to update this photo").setErrorType("Unauthorized").setStatusCode(403).build());
+			return;
+		}
+
+		const soldStatus = await this.statusService.getStatusFromName("sold");
+		if (photo.status_id === soldStatus.id) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Photo is already sold").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
+		const approveStatus = await this.statusService.getStatusFromName("approve");
+		const purchasableStatus = await this.statusService.getStatusFromName("purchasable");
+		if (![approveStatus.id, purchasableStatus.id].includes(photo.status_id)) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Photo needs to be approved first to update purchase now price").setErrorType("Bad Request").setStatusCode(400).build());
+			return;
+		}
+
+		try {
+			await this.photoService.updatePhotoAuctionableStatus(photoId, auctionable);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		sendJsonBigint(res, { message: "Photo auctionable status updated successfully" }, 200);
 	}
 }
 

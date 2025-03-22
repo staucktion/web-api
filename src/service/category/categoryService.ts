@@ -4,7 +4,7 @@ import CategoryDto from "src/dto/category/CategoryDto";
 import { StatusEnum } from "src/types/statusEnum";
 import PrismaUtil from "src/util/PrismaUtil";
 import handlePrismaType from "src/util/handlePrismaType";
-
+import handlePrismaError from "src/util/handlePrismaError";
 class CategoryService {
 	private prisma: PrismaClient;
 
@@ -24,9 +24,9 @@ class CategoryService {
 				},
 			});
 
-			return handlePrismaType(instanceListTmp).map(({ location_id, status_id, ...rest }) => rest);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+			return handlePrismaType(instanceListTmp).map(({ location_id: _location_id, status_id: _status_id, ...rest }) => rest);
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -52,11 +52,15 @@ class CategoryService {
 					is_deleted: false,
 					status_id: Number(statusId),
 				},
+				include: {
+					location: true,
+					status: true,
+				},
 			});
 
 			return categories;
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot get categories by status").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -66,7 +70,7 @@ class CategoryService {
 		const newCategory = await this.prisma.category.create({
 			data: {
 				name: category.name,
-				status_id: category.status_id,
+				status_id: StatusEnum.WAIT,
 				address: category.address,
 				location_id: category.location_id,
 				valid_radius: category.valid_radius,
@@ -99,7 +103,7 @@ class CategoryService {
 		return updatedCategory;
 	}
 
-	async updateCategoryStatus(id: bigint, newStatus: StatusEnum, reason?: string): Promise<CategoryDto> {
+	async updateCategoryStatus(id: bigint, newStatus: StatusEnum, _reason?: string): Promise<CategoryDto> {
 		try {
 			// Check if category exists
 			const existingCategory = await this.prisma.category.findUnique({
@@ -121,10 +125,10 @@ class CategoryService {
 			});
 
 			return updatedCategory;
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) throw error;
 
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot update category status").build().throwError();
+			handlePrismaError(error);
 		}
 	}
 
@@ -171,8 +175,8 @@ class CategoryService {
 			});
 
 			return categories;
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot get categories by location and status").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 

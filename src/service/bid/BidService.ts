@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
+import handlePrismaError from "src/util/handlePrismaError";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 
@@ -15,8 +15,8 @@ class BidService {
 		try {
 			const newInstanceTemp = await this.prisma.bid.create({ data: { ...data, created_at: DateUtil.getNowWithoutMs() } });
 			return handlePrismaType(newInstanceTemp);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -32,8 +32,8 @@ class BidService {
 			});
 
 			return handlePrismaType(instanceList);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 }

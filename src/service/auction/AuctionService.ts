@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import Config from "src/config/Config";
-import CustomError from "src/error/CustomError";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 import StatusService from "../status/StatusService";
+import handlePrismaError from "src/util/handlePrismaError";
 
 class AuctionService {
 	private prisma: PrismaClient;
@@ -31,8 +31,8 @@ class AuctionService {
 			});
 
 			return handlePrismaType(auction);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -51,8 +51,8 @@ class AuctionService {
 			});
 
 			return handlePrismaType(instanceTemp);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
@@ -72,17 +72,17 @@ class AuctionService {
 			});
 
 			return handlePrismaType(newAuctionTemp);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
 	public async updateAuction(auctionId: number, updateAuctionData: any): Promise<any> {
 		try {
-			const { category_id, status_id, id, photo_list, ...cleanData } = updateAuctionData;
+			const { category_id, status_id, id: _id, photo_list: _photo_list, ...cleanData } = updateAuctionData;
 
 			const updatedAuction = await this.prisma.auction.update({
-				where: { id:auctionId },
+				where: { id: auctionId },
 				data: {
 					...cleanData,
 					updated_at: DateUtil.getNowWithoutMs(),
@@ -96,8 +96,8 @@ class AuctionService {
 			});
 
 			return handlePrismaType(updatedAuction);
-		} catch (error: any) {
-			CustomError.builder().setErrorType("Prisma Error").setStatusCode(500).setDetailedMessage(error.message).setMessage("Cannot perform database operation.").build().throwError();
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 }

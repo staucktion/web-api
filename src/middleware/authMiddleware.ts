@@ -3,13 +3,11 @@ import UserDto from "src/dto/auth/UserDto";
 import AuthService from "src/service/auth/authService";
 import FormattedGoogleProfileDto from "src/dto/auth/FormattedGoogleProfileDto";
 
-declare global {
-	namespace Express {
-		interface Request {
-			user?: UserDto;
-			passportUser?: FormattedGoogleProfileDto;
-			sendTokenAsJson?: boolean;
-		}
+declare module "express" {
+	interface Request {
+		user?: UserDto;
+		passportUser?: FormattedGoogleProfileDto;
+		sendTokenAsJson?: boolean;
 	}
 }
 
@@ -44,7 +42,7 @@ export class AuthMiddleware {
 			} else {
 				res.status(403).json({ message: "Invalid token" });
 			}
-		} catch (error) {
+		} catch (_error) {
 			res.status(403).json({ message: "Invalid token" });
 		}
 	};

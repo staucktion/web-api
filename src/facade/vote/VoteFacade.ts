@@ -32,7 +32,7 @@ class VoteFacade {
 		try {
 			({ photoId } = await this.baseValidation.params(req, ["photoId"]));
 			photoId = Number(photoId);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -40,34 +40,34 @@ class VoteFacade {
 		// get photo
 		try {
 			photo = await this.photoService.getPhotoById(photoId);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 
 		// reject if photo not found
 		if (!photo) {
-			res.status(400).json({ message: `photo not found` });
+			res.status(400).json({ message: "Photo not found" });
 			return;
 		}
 
 		// reject if user try to vote own photo
 		if (req.user.id === photo.user_id) {
-			res.status(400).json({ message: `cannot vote to own photo` });
+			res.status(400).json({ message: "You cannot vote to your own photo" });
 			return;
 		}
 
 		// get auction
 		try {
 			auction = await this.auctionService.getAuctionById(photo.auction_id);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 
 		// check auction status
 		if (auction?.status?.status !== "vote" || photo?.status?.status !== "vote") {
-			res.status(400).json({ message: `photo not icluded in available auction` });
+			res.status(400).json({ message: "Photo is not included in available auction" });
 			return;
 		}
 
@@ -75,20 +75,20 @@ class VoteFacade {
 		try {
 			const userVoteList = await this.voteService.getVoteListByUserId(req.user.id);
 			filteredUserVoteList = userVoteList.filter((vote) => vote.auction_id == auction.id);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 
 		// reject if vote count is reach 10
 		if (filteredUserVoteList.length >= 10) {
-			res.status(400).json({ message: `vote count for specific auction has reached 10 already` });
+			res.status(400).json({ message: "Vote count for specific auction has reached 10 already" });
 			return;
 		}
 
 		// reject if photo is already voted by user
 		if (filteredUserVoteList?.some((vote) => vote.photo_id === photoId)) {
-			res.status(400).json({ message: `user has already voted that photo` });
+			res.status(400).json({ message: "You have already voted that photo" });
 			return;
 		}
 
@@ -96,7 +96,7 @@ class VoteFacade {
 		try {
 			const dataToUpdatePhoto = { ...photo, vote_count: photo.vote_count + 1 };
 			await this.photoService.updatePhoto(photoId, dataToUpdatePhoto);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -106,7 +106,7 @@ class VoteFacade {
 			const voteStatus = await this.statusService.getStatusFromName("vote");
 			const data = { user_id: req.user.id, photo_id: photoId, status_id: voteStatus.id, auction_id: auction.id };
 			await this.voteService.insertNewVote(data);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
@@ -118,7 +118,7 @@ class VoteFacade {
 		try {
 			const userVoteList = await this.voteService.getVoteListByUserId(req.user.id);
 			res.status(200).json(userVoteList);
-		} catch (error: any) {
+		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}

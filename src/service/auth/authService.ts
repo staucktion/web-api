@@ -54,7 +54,7 @@ class AuthService {
 	verifyJWT = (token: string): Pick<UserDto, "gmail_id"> | null => {
 		try {
 			return jwt.verify(token, Config.jwt.secret) as Pick<UserDto, "gmail_id">;
-		} catch (error) {
+		} catch (_error) {
 			return null;
 		}
 	};

@@ -1,5 +1,7 @@
 import BaseResponseDto from "../base/BaseResponseDto";
 
-export default interface StatusDto extends BaseResponseDto {
+interface StatusDto extends BaseResponseDto {
 	status: string;
 }
+
+export default StatusDto;

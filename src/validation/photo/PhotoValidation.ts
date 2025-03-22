@@ -18,14 +18,14 @@ class PhotoValidation {
 		// validate request body
 		try {
 			ValidationUtil.checkObjectExistence(uploadPhotoDto);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) CustomError.builder().setMessage("Request body is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		// validate required fields
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, uploadPhotoDto);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError)
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
@@ -42,14 +42,14 @@ class PhotoValidation {
 		// validate request body
 		try {
 			ValidationUtil.checkObjectExistence(req.params);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError) CustomError.builder().setMessage("Request body is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		// validate required fields
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, req.params);
-		} catch (error: any) {
+		} catch (error) {
 			if (error instanceof CustomError)
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
@@ -102,6 +102,24 @@ class PhotoValidation {
 		if (priceNumber !== null && priceNumber <= 0) CustomError.builder().setMessage("Price must be greater than 0.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 
 		return { photoId, price: priceNumber };
+	}
+
+	public async updatePhotoAuctionableStatusRequest(req: Request): Promise<{ photoId: number; auctionable: boolean }> {
+		const photoId = parseInt(req.params.photoId);
+		if (isNaN(photoId)) CustomError.builder().setMessage("Photo ID is invalid.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+
+		const auctionable = req.body.auctionable;
+		if (auctionable === undefined) CustomError.builder().setMessage("Auctionable is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+
+		let auctionableParsed: boolean;
+		try {
+			auctionableParsed = JSON.parse(auctionable);
+		} catch (_error) {
+			CustomError.builder().setMessage("Auctionable must be a boolean.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		}
+		if (typeof auctionableParsed !== "boolean") CustomError.builder().setMessage("Auctionable must be a boolean.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+
+		return { photoId, auctionable };
 	}
 }
 
