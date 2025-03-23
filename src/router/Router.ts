@@ -11,6 +11,7 @@ import PhotoEndpoint from "src/endpoint/photo/PhotoEndpoint";
 import UserEndpoint from "src/endpoint/user/UserEndpoint";
 import WebSocketManager from "src/websocket/WebSocketManager";
 import VoteEndpoint from "src/endpoint/vote/VoteEndpoint";
+import AuctionPhotoEndpoint from "src/endpoint/auctionPhoto/AuctionPhotoEndpoint";
 
 class Router {
 	private healthEndpoint: HealthEndpoint;
@@ -24,6 +25,7 @@ class Router {
 	private notificationEndpoint: NotificationEndpoint;
 	private bidEndpoint: BidEndpoint;
 	private voteEndpoint: VoteEndpoint;
+	private auctionPhotoEndpoint: AuctionPhotoEndpoint;
 
 	constructor(webSocketManager: WebSocketManager) {
 		this.healthEndpoint = new HealthEndpoint();
@@ -37,6 +39,7 @@ class Router {
 		this.notificationEndpoint = new NotificationEndpoint(webSocketManager);
 		this.bidEndpoint = new BidEndpoint();
 		this.voteEndpoint = new VoteEndpoint();
+		this.auctionPhotoEndpoint = new AuctionPhotoEndpoint();
 	}
 
 	public setupRoute(app: express.Application): void {
@@ -51,6 +54,7 @@ class Router {
 		app.use(this.notificationEndpoint.getRouter());
 		app.use(this.bidEndpoint.getRouter());
 		app.use(this.voteEndpoint.getRouter());
+		app.use(this.auctionPhotoEndpoint.getRouter());
 	}
 }
 
