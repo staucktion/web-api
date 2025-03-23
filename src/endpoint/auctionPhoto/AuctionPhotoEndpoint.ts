@@ -15,8 +15,14 @@ class AuctionPhotoEndpoint {
 	}
 
 	private initializeRoutes(): void {
-		this.router.get("/auctions", this.authMiddleware.authenticateJWT, async (req, res) => {
+		// Get All Auction Photos (Requires Auth)
+		this.router.get("/auctions/photos", this.authMiddleware.authenticateJWT, async (req, res) => {
 			await this.auctionPhotoFacade.getAuctionPhotoList(req, res);
+		});
+
+		// Get Auction Photo By Id (Requires Auth)
+		this.router.get("/auctions/photos/:photoId", this.authMiddleware.authenticateJWT, async (req, res) => {
+			await this.auctionPhotoFacade.getAuctionPhotoByPhotoId(req, res);
 		});
 	}
 

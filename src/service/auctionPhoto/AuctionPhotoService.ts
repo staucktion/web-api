@@ -43,6 +43,15 @@ class AuctionPhotoService {
 		}
 	}
 
+	public async getAuctionPhotoByPhotoIdPlain(photoId: number): Promise<AuctionPhotoDto> {
+		try {
+			const auctionPhoto = await this.prisma.auction_photo.findFirst({ where: { photo_id: photoId } });
+			return handlePrismaType(auctionPhoto);
+		} catch (error) {
+			handlePrismaError(error);
+		}
+	}
+
 	public async getAuctionPhotoByPhotoId(photoId: number): Promise<any> {
 		try {
 			const auctionPhoto = await this.prisma.auction_photo.findFirst({
