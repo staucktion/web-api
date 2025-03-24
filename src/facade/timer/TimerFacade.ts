@@ -6,6 +6,7 @@ import PhotoService from "src/service/photo/photoService";
 import StatusService from "src/service/status/StatusService";
 import TimerService from "src/service/timer/TimerService";
 import UserService from "src/service/user/userService";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 class TimerFacade {
 	private timerService: TimerService;
@@ -17,14 +18,14 @@ class TimerFacade {
 	private bidService: BidService;
 	private userService: UserService;
 
-	constructor() {
+	constructor(webSocketManager: WebSocketManager) {
 		this.timerService = new TimerService();
 		this.categoryService = new CategoryService();
 		this.auctionService = new AuctionService();
 		this.statusService = new StatusService();
 		this.photoService = new PhotoService();
 		this.auctionPhotoService = new AuctionPhotoService();
-		this.bidService = new BidService();
+		this.bidService = new BidService(webSocketManager);
 		this.userService = new UserService();
 	}
 

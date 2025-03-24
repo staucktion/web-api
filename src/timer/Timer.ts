@@ -1,15 +1,16 @@
 import cron from "node-cron";
 import TimerFacade from "src/facade/timer/TimerFacade";
 import TimerService from "src/service/timer/TimerService";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 export class Timer {
 	private task: cron.ScheduledTask | null = null;
 	private timerService: TimerService;
 	private timerFacade: TimerFacade;
 
-	constructor() {
+	constructor(webSocketManager: WebSocketManager) {
 		this.timerService = new TimerService();
-		this.timerFacade = new TimerFacade();
+		this.timerFacade = new TimerFacade(webSocketManager);
 	}
 
 	public async start() {
