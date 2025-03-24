@@ -73,9 +73,9 @@ class AuctionPhotoService {
 		}
 	}
 
-	public async getAuctionPhotoByAuctionId(auctionId: number): Promise<any> {
+	public async getAuctionPhotoListByAuctionId(auctionId: number): Promise<any> {
 		try {
-			const auctionPhoto = await this.prisma.auction_photo.findFirst({
+			const auctionPhoto = await this.prisma.auction_photo.findMany({
 				where: { auction_id: auctionId },
 				include: {
 					auction: true,
