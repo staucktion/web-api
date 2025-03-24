@@ -1,7 +1,9 @@
+import NotificationDto from "src/dto/notification/NotificationDto";
 import AuctionService from "src/service/auction/AuctionService";
 import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
 import BidService from "src/service/bid/BidService";
 import CategoryService from "src/service/category/categoryService";
+import NotificationService from "src/service/notification/NotificationService";
 import PhotoService from "src/service/photo/photoService";
 import StatusService from "src/service/status/StatusService";
 import TimerService from "src/service/timer/TimerService";
@@ -18,6 +20,7 @@ class TimerFacade {
 	private bidService: BidService;
 	private userService: UserService;
 	private webSocketManager: WebSocketManager;
+	private notificationService: NotificationService;
 
 	constructor(webSocketManager: WebSocketManager) {
 		this.timerService = new TimerService();
@@ -28,6 +31,7 @@ class TimerFacade {
 		this.auctionPhotoService = new AuctionPhotoService();
 		this.bidService = new BidService(webSocketManager);
 		this.userService = new UserService();
+		this.notificationService = new NotificationService(webSocketManager);
 		this.webSocketManager = webSocketManager;
 	}
 
@@ -152,7 +156,29 @@ class TimerFacade {
 											room: `auction_photo_id_${auctionPhoto.id}`,
 										});
 
-										// todo send email to winner
+										// send notification to winners
+										const winners = [
+											{ userId: updatedAuctionPhoto.winner_user_id_1, message: "You won the auction in the first place." },
+											{ userId: updatedAuctionPhoto.winner_user_id_2, message: "You won the auction in the second place." },
+											{ userId: updatedAuctionPhoto.winner_user_id_3, message: "You won the auction in the third place." },
+										];
+
+										for (const winner of winners) {
+											if (!winner.userId) continue;
+
+											const notificationDto: NotificationDto = {
+												userId: winner.userId,
+												type: "info",
+												message: winner.message,
+											};
+
+											try {
+												await this.notificationService.sendNotification(1, notificationDto);
+											} catch (error) {
+												console.error(error);
+												return;
+											}
+										}
 									}
 								}
 							}
