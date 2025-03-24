@@ -37,7 +37,7 @@ class Router {
 		this.categoryEndpoint = new CategoryEndpoint();
 		this.userEndpoint = new UserEndpoint();
 		this.notificationEndpoint = new NotificationEndpoint(webSocketManager);
-		this.bidEndpoint = new BidEndpoint();
+		this.bidEndpoint = new BidEndpoint(webSocketManager);
 		this.voteEndpoint = new VoteEndpoint();
 		this.auctionPhotoEndpoint = new AuctionPhotoEndpoint();
 	}

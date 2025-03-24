@@ -74,6 +74,18 @@ class WebSocketManager {
 			// Authenticate the socket connection
 			await this.authenticateSocket(socket);
 
+			// Allow clients to join rooms
+			socket.on("joinRoom", (room: string) => {
+				socket.join(room);
+				Logger.info(`Socket ${socket.id} joined room: ${room}`);
+			});
+
+			// Allow clients to leave rooms
+			socket.on("leaveRoom", (room: string) => {
+				socket.leave(room);
+				Logger.info(`Socket ${socket.id} left room: ${room}`);
+			});
+
 			socket.on("disconnect", () => {
 				Logger.info(`WebSocket client disconnected: ${socket.id}`);
 			});

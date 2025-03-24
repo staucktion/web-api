@@ -8,6 +8,7 @@ import UserService from "src/service/user/userService";
 import handlePrismaType from "src/util/handlePrismaType";
 import BaseValidation from "src/validation/base/BaseValidation";
 import BidValidation from "src/validation/bid/BidValidation";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 class BidFacade {
 	private bidService: BidService;
@@ -16,8 +17,8 @@ class BidFacade {
 	private userService: UserService;
 	private auctionPhotoService: AuctionPhotoService;
 
-	constructor() {
-		this.bidService = new BidService();
+	constructor(webSocketManager: WebSocketManager) {
+		this.bidService = new BidService(webSocketManager);
 		this.bidValidation = new BidValidation();
 		this.baseValidation = new BaseValidation();
 		this.userService = new UserService();

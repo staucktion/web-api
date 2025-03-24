@@ -1,14 +1,15 @@
 import express, { Router } from "express";
 import BidFacade from "src/facade/bid/BidFacade";
 import { AuthMiddleware } from "src/middleware/authMiddleware";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 class BidEndpoint {
 	private bidFacade: BidFacade;
 	private router: Router;
 	private authMiddleware: AuthMiddleware;
 
-	constructor() {
-		this.bidFacade = new BidFacade();
+	constructor(webSocketManager: WebSocketManager) {
+		this.bidFacade = new BidFacade(webSocketManager);
 		this.router = express.Router();
 		this.authMiddleware = new AuthMiddleware();
 		this.initializeRoutes();
