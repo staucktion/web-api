@@ -22,8 +22,10 @@ class App {
 		this.router = new Router(this.webSocketManager);
 		this.initializeMiddlewares();
 		this.initializeRoutes();
-		this.timer = new Timer();
-		this.timer.start();
+		if (Config.isTimerActive) {
+			this.timer = new Timer(this.webSocketManager);
+			this.timer.start();
+		}
 	}
 
 	private initializeMiddlewares(): void {
