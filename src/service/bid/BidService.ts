@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import BidResponseDto from "src/dto/bid/BidResponseDto";
 import DateUtil from "src/util/dateUtil";
 import handlePrismaError from "src/util/handlePrismaError";
 import handlePrismaType from "src/util/handlePrismaType";
@@ -28,6 +29,20 @@ class BidService {
 				},
 				include: {
 					user: true,
+				},
+			});
+
+			return handlePrismaType(instanceList);
+		} catch (error) {
+			handlePrismaError(error);
+		}
+	}
+
+	public async getBidsByAuctionPhotoIdPlain(auctionPhotoId: number): Promise<BidResponseDto> {
+		try {
+			const instanceList = await this.prisma.bid.findMany({
+				where: {
+					auction_photo_id: auctionPhotoId,
 				},
 			});
 

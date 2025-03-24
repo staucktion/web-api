@@ -18,6 +18,10 @@ class BidEndpoint {
 		this.router.post("/bids/:photoId", this.authMiddleware.authenticateJWT, async (req, res) => {
 			await this.bidFacade.bid(req, res);
 		});
+
+		this.router.get("/bids/:auctionPhotoId", this.authMiddleware.authenticateJWT, async (req, res) => {
+			await this.bidFacade.getBidsByAuctionPhotoId(req, res);
+		});
 	}
 
 	public getRouter(): Router {
