@@ -11,6 +11,7 @@ class Config {
 	static bankUrl = EnvVariables.bankUrl;
 	static provisionAmount = EnvVariables.provisionAmount;
 	static initialAuctionPrice = EnvVariables.initialAuctionPrice;
+	static isTimerActive = EnvVariables.isTimerActive;
 
 	static watermark = { ...EnvVariables.watermark };
 

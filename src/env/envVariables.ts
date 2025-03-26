@@ -4,12 +4,13 @@ dotenv.config();
 class EnvVariables {
 	static port: number = parseInt(process.env.PORT);
 	static mode: string = process.env.MODE;
-	static requestLog: boolean = Boolean(process.env.REQUEST_LOG);
-	static explicitErrorLog: boolean = Boolean(process.env.REQUEST_LOG);
+	static requestLog: boolean = process.env.REQUEST_LOG === "true";
+	static explicitErrorLog: boolean = process.env.EXPLICIT_ERROR_LOG === "true";
 	static multerFileSize = parseInt(process.env.MULTER_FILE_SIZE);
 	static bankUrl: string = process.env.BANK_URL;
 	static provisionAmount: number = parseInt(process.env.PROVISION);
 	static initialAuctionPrice: number = parseInt(process.env.INITIAL_AUCTION_PRICE);
+	static isTimerActive: boolean = process.env.IS_TIMER_ACTIVE === "true";
 
 	static watermark = {
 		fontSize: parseFloat(process.env.WATERMARK_FONT_SIZE),

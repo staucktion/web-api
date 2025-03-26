@@ -1,27 +1,24 @@
 import { Request, Response } from "express";
 import BidDto from "src/dto/bid/BidDto";
+import BidResponseDto from "src/dto/bid/BidResponseDto";
 import CustomError from "src/error/CustomError";
 import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
-import BankService from "src/service/bank/BankService";
 import BidService from "src/service/bid/BidService";
-import StatusService from "src/service/status/StatusService";
 import UserService from "src/service/user/userService";
 import handlePrismaType from "src/util/handlePrismaType";
 import BaseValidation from "src/validation/base/BaseValidation";
 import BidValidation from "src/validation/bid/BidValidation";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 class BidFacade {
-	private bankService: BankService;
 	private bidService: BidService;
 	private bidValidation: BidValidation;
 	private baseValidation: BaseValidation;
-	private statusService: StatusService;
 	private userService: UserService;
 	private auctionPhotoService: AuctionPhotoService;
 
-	constructor() {
-		this.bankService = new BankService();
-		this.bidService = new BidService();
+	constructor(webSocketManager: WebSocketManager) {
+		this.bidService = new BidService(webSocketManager);
 		this.bidValidation = new BidValidation();
 		this.baseValidation = new BaseValidation();
 		this.userService = new UserService();
@@ -113,6 +110,29 @@ class BidFacade {
 		}
 
 		res.status(204).send();
+	}
+
+	public async getBidsByAuctionPhotoId(req: Request, res: Response): Promise<void> {
+		let auctionPhotoId: number;
+
+		// get valid param from request
+		try {
+			({ auctionPhotoId } = await this.baseValidation.params(req, ["auctionPhotoId"]));
+			if (isNaN(auctionPhotoId)) throw new Error("Invalid auctionPhotoId: It must be a number.");
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// get and return bids
+		try {
+			const bidList: BidResponseDto = await this.bidService.getBidsByAuctionPhotoIdPlain(auctionPhotoId);
+			res.status(200).json(bidList);
+			return;
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
 	}
 }
 

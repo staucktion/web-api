@@ -1,11 +1,14 @@
+import NotificationDto from "src/dto/notification/NotificationDto";
 import AuctionService from "src/service/auction/AuctionService";
 import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
 import BidService from "src/service/bid/BidService";
 import CategoryService from "src/service/category/categoryService";
+import NotificationService from "src/service/notification/NotificationService";
 import PhotoService from "src/service/photo/photoService";
 import StatusService from "src/service/status/StatusService";
 import TimerService from "src/service/timer/TimerService";
 import UserService from "src/service/user/userService";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 class TimerFacade {
 	private timerService: TimerService;
@@ -16,16 +19,20 @@ class TimerFacade {
 	private auctionPhotoService: AuctionPhotoService;
 	private bidService: BidService;
 	private userService: UserService;
+	private webSocketManager: WebSocketManager;
+	private notificationService: NotificationService;
 
-	constructor() {
+	constructor(webSocketManager: WebSocketManager) {
 		this.timerService = new TimerService();
 		this.categoryService = new CategoryService();
 		this.auctionService = new AuctionService();
 		this.statusService = new StatusService();
 		this.photoService = new PhotoService();
 		this.auctionPhotoService = new AuctionPhotoService();
-		this.bidService = new BidService();
+		this.bidService = new BidService(webSocketManager);
 		this.userService = new UserService();
+		this.notificationService = new NotificationService(webSocketManager);
+		this.webSocketManager = webSocketManager;
 	}
 
 	public async cronJob() {
@@ -96,52 +103,83 @@ class TimerFacade {
 				else if (category.auction_list?.some((auction) => auction.status?.status === "auction")) {
 					for (const auction of category.auction_list) {
 						if (auction.status?.status === "auction") {
-							// get auction photo
-							const auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByAuctionId(auction.id);
+							// get auction photo list
+							const auctionPhotoList = await this.auctionPhotoService.getAuctionPhotoListByAuctionId(auction.id);
+							for (const auctionPhoto of auctionPhotoList) {
+								if (auctionPhoto?.status?.status === "auction") {
+									// get bid list
+									const bidlist = await this.bidService.getBidsByAuctionPhotoId(auctionPhoto.id);
 
-							if (auctionPhoto?.status?.status === "auction") {
-								// get bid list
-								const bidlist = await this.bidService.getBidsByAuctionPhotoId(auctionPhoto.id);
+									// if there is no bid make status finish
+									if (bidlist.length === 0) {
+										console.log("[INFO] Auction Decision: change 'auction' status to 'finish'");
+										const updateDataAuctionPhoto = { ...auctionPhoto, status_id: finishStatus.id };
+										await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateDataAuctionPhoto);
 
-								// if there is no bid make status finish
-								if (bidlist.length === 0) {
-									console.log("[INFO] Auction Decision: change 'auction' status to 'finish'");
-									const updateDataAuctionPhoto = { ...auctionPhoto, status_id: finishStatus.id };
-									await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateDataAuctionPhoto);
+										const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: finishStatus.id };
+										await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
 
-									const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: finishStatus.id };
-									await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
+										const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
+										await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
+									} else {
+										console.log("[INFO] Auction Decision: change 'auction' status to 'wait_purchase_after_auction'");
+										let updateData = { ...auctionPhoto, status_id: waitPurchaseStatus.id, current_winner_order: 1 };
 
-									const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
-									await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
-								} else {
-									console.log("[INFO] Auction Decision: change 'auction' status to 'wait_purchase_after_auction'");
-									let updateData = { ...auctionPhoto, status_id: waitPurchaseStatus.id, current_winner_order: 1 };
+										// sort bidlist according to bid amount
+										bidlist.sort((a, b) => b.bid_amount - a.bid_amount);
 
-									// sort bidlist according to bid amount
-									bidlist.sort((a, b) => b.bid_amount - a.bid_amount);
+										// prepare winner list
+										const winnerList = [];
+										let i = 0;
+										while (i < bidlist.length && winnerList.length < 3) {
+											if (!winnerList.includes(bidlist[i].user.id)) winnerList.push(bidlist[i].user.id);
+											i++;
+										}
 
-									// prepare winner list
-									const winnerList = [];
-									let i = 0;
-									while (i < bidlist.length && winnerList.length < 3) {
-										if (!winnerList.includes(bidlist[i].user.id)) winnerList.push(bidlist[i].user.id);
-										i++;
+										// prepare update data
+										for (let i = 0; i < winnerList.length; i++) {
+											updateData = { ...updateData, [`winner_user_id_${i + 1}`]: winnerList[i] };
+										}
+
+										// update table
+										const updatedAuctionPhoto = await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateData);
+
+										const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: waitPurchaseStatus.id };
+										await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
+
+										const dataToUpdateAuction = { ...auction, status_id: waitPurchaseStatus.id };
+										await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
+
+										// send ws message to rooms
+										this.webSocketManager.sendToRoom(`auction_photo_id_${auctionPhoto.id}`, "finish_auction", {
+											aucitonPhoto: updatedAuctionPhoto,
+											room: `auction_photo_id_${auctionPhoto.id}`,
+										});
+
+										// send notification to winners
+										const winners = [
+											{ userId: updatedAuctionPhoto.winner_user_id_1, message: "You won the auction in the first place." },
+											{ userId: updatedAuctionPhoto.winner_user_id_2, message: "You won the auction in the second place." },
+											{ userId: updatedAuctionPhoto.winner_user_id_3, message: "You won the auction in the third place." },
+										];
+
+										for (const winner of winners) {
+											if (!winner.userId) continue;
+
+											const notificationDto: NotificationDto = {
+												userId: winner.userId,
+												type: "info",
+												message: winner.message,
+											};
+
+											try {
+												await this.notificationService.sendNotification(1, notificationDto);
+											} catch (error) {
+												console.error(error);
+												return;
+											}
+										}
 									}
-
-									// prepare update data
-									for (let i = 0; i < winnerList.length; i++) {
-										updateData = { ...updateData, [`winner_user_id_${i + 1}`]: winnerList[i] };
-									}
-
-									// update table
-									await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, updateData);
-
-									const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: waitPurchaseStatus.id };
-									await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
-
-									const dataToUpdateAuction = { ...auction, status_id: waitPurchaseStatus.id };
-									await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
 								}
 							}
 
@@ -160,33 +198,35 @@ class TimerFacade {
 					for (const auction of category.auction_list) {
 						if (auction.status?.status === "wait_purchase_after_auction") {
 							// get auction photo
-							const auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByAuctionId(auction.id);
+							const auctionPhotoList = await this.auctionPhotoService.getAuctionPhotoListByAuctionId(auction.id);
 
-							// if current order is user 1 set status banned
-							if (auctionPhoto.current_winner_order === 1) {
-								const dataToUpdateUser = { status_id: bannedStatus.id };
-								await this.userService.updateUser(auctionPhoto.winner_user_1.id, dataToUpdateUser);
-							}
+							for (const auctionPhoto of auctionPhotoList) {
+								// if current order is user 1 set status banned
+								if (auctionPhoto.current_winner_order === 1) {
+									const dataToUpdateUser = { status_id: bannedStatus.id };
+									await this.userService.updateUser(auctionPhoto.winner_user_1.id, dataToUpdateUser);
+								}
 
-							// if next winner not exists set status to finish
-							if (!auctionPhoto[`winner_user_id_${auctionPhoto.current_winner_order + 1}`]) {
-								console.log("[INFO] Auction Decision: change 'wait_purchase_after_auction' to 'finish'");
+								// if next winner not exists set status to finish
+								if (!auctionPhoto[`winner_user_id_${auctionPhoto.current_winner_order + 1}`]) {
+									console.log("[INFO] Auction Decision: change 'wait_purchase_after_auction' to 'finish'");
 
-								const dataToUpdateAuctionPhoto = { ...auctionPhoto, status_id: finishStatus.id };
-								await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, dataToUpdateAuctionPhoto);
+									const dataToUpdateAuctionPhoto = { ...auctionPhoto, status_id: finishStatus.id };
+									await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, dataToUpdateAuctionPhoto);
 
-								const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: finishStatus.id };
-								await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
+									const dataToUpdatePhoto = { ...auctionPhoto.photo, status_id: finishStatus.id };
+									await this.photoService.updatePhoto(auctionPhoto.photo.id, dataToUpdatePhoto);
 
-								const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
-								await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
-							}
+									const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
+									await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
+								}
 
-							// if next winner exists
-							else {
-								console.log(`[INFO] Auction Decision: stay 'wait_purchase_after_auction' and wait for next winner : ${auctionPhoto.current_winner_order + 1}`);
-								const dataToUpdateAuctionPhoto = { ...auctionPhoto, current_winner_order: auctionPhoto.current_winner_order + 1 };
-								await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, dataToUpdateAuctionPhoto);
+								// if next winner exists
+								else {
+									console.log(`[INFO] Auction Decision: stay 'wait_purchase_after_auction' and wait for next winner : ${auctionPhoto.current_winner_order + 1}`);
+									const dataToUpdateAuctionPhoto = { ...auctionPhoto, current_winner_order: auctionPhoto.current_winner_order + 1 };
+									await this.auctionPhotoService.updateAuctionPhoto(auctionPhoto.id, dataToUpdateAuctionPhoto);
+								}
 							}
 						}
 					}

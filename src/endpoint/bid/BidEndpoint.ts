@@ -1,14 +1,15 @@
 import express, { Router } from "express";
 import BidFacade from "src/facade/bid/BidFacade";
 import { AuthMiddleware } from "src/middleware/authMiddleware";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 class BidEndpoint {
 	private bidFacade: BidFacade;
 	private router: Router;
 	private authMiddleware: AuthMiddleware;
 
-	constructor() {
-		this.bidFacade = new BidFacade();
+	constructor(webSocketManager: WebSocketManager) {
+		this.bidFacade = new BidFacade(webSocketManager);
 		this.router = express.Router();
 		this.authMiddleware = new AuthMiddleware();
 		this.initializeRoutes();
@@ -17,6 +18,10 @@ class BidEndpoint {
 	private initializeRoutes(): void {
 		this.router.post("/bids/:photoId", this.authMiddleware.authenticateJWT, async (req, res) => {
 			await this.bidFacade.bid(req, res);
+		});
+
+		this.router.get("/bids/:auctionPhotoId", this.authMiddleware.authenticateJWT, async (req, res) => {
+			await this.bidFacade.getBidsByAuctionPhotoId(req, res);
 		});
 	}
 

@@ -229,6 +229,25 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get Bids By Auction Photo Id (Requires Auth) Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/bids/:auctionPhotoId",
+							"host": ["{{BASE_URL}}"],
+							"path": ["bids", ":auctionPhotoId"],
+							"variable": [
+								{
+									"key": "auctionPhotoId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -960,6 +979,43 @@
 				}
 			],
 			"description": "Endpoints for managing real-time notifications via WebSocket"
+		},
+		{
+			"name": "auction",
+			"item": [
+				{
+					"name": "Get All Auction Photos (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/auctions/photos",
+							"host": ["{{BASE_URL}}"],
+							"path": ["auctions", "photos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Auction Photo By Id (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/auctions/photos/:photoId",
+							"host": ["{{BASE_URL}}"],
+							"path": ["auctions", "photos", ":photoId"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [

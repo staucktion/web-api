@@ -4,12 +4,22 @@ import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 import handlePrismaError from "src/util/handlePrismaError";
+import AuctionPhotoDto from "src/dto/auctionPhoto/AuctionPhotoDto";
 
 class AuctionPhotoService {
 	private prisma: PrismaClient;
 
 	constructor() {
 		this.prisma = PrismaUtil.getPrismaClient();
+	}
+
+	public async getAuctionPhotoListByStatus(statusId: number): Promise<AuctionPhotoDto> {
+		try {
+			const auctionPhoto = await this.prisma.auction_photo.findMany({ where: { status_id: statusId } });
+			return handlePrismaType(auctionPhoto);
+		} catch (error) {
+			handlePrismaError(error);
+		}
 	}
 
 	public async insertNewPhotoAuction(auctionId: number, photoId: number, statusId): Promise<any> {
@@ -28,6 +38,15 @@ class AuctionPhotoService {
 			});
 
 			return handlePrismaType(newTempInstance);
+		} catch (error) {
+			handlePrismaError(error);
+		}
+	}
+
+	public async getAuctionPhotoByPhotoIdPlain(photoId: number): Promise<AuctionPhotoDto> {
+		try {
+			const auctionPhoto = await this.prisma.auction_photo.findFirst({ where: { photo_id: photoId } });
+			return handlePrismaType(auctionPhoto);
 		} catch (error) {
 			handlePrismaError(error);
 		}
@@ -54,9 +73,9 @@ class AuctionPhotoService {
 		}
 	}
 
-	public async getAuctionPhotoByAuctionId(auctionId: number): Promise<any> {
+	public async getAuctionPhotoListByAuctionId(auctionId: number): Promise<any> {
 		try {
-			const auctionPhoto = await this.prisma.auction_photo.findFirst({
+			const auctionPhoto = await this.prisma.auction_photo.findMany({
 				where: { auction_id: auctionId },
 				include: {
 					auction: true,

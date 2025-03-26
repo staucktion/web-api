@@ -94,18 +94,18 @@ class TimerService {
 		}
 	}
 
-	public async didCronRun(): Promise<boolean> {
-		try {
-			const cronDto: CronDto = await this.getCronInformation();
-			const currentTime = DateUtil.getNowWithoutMs();
-			const lastTriggerTime = cronDto.lastTriggerTime;
-			Config.cronInterval = this.convertCronToMilliseconds(cronDto);
+	// public async didCronRun(): Promise<boolean> {
+	// 	try {
+	// 		const cronDto: CronDto = await this.getCronInformation();
+	// 		const currentTime = DateUtil.getNowWithoutMs();
+	// 		const lastTriggerTime = cronDto.lastTriggerTime;
+	// 		Config.cronInterval = this.convertCronToMilliseconds(cronDto);
 
-			return currentTime.getTime() - lastTriggerTime.getTime() > Config.cronInterval;
-		} catch (error) {
-			handlePrismaError(error);
-		}
-	}
+	// 		return currentTime.getTime() - lastTriggerTime.getTime() > Config.cronInterval;
+	// 	} catch (error) {
+	// 		handlePrismaError(error);
+	// 	}
+	// }
 }
 
 export default TimerService;

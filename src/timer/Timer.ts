@@ -1,15 +1,16 @@
 import cron from "node-cron";
 import TimerFacade from "src/facade/timer/TimerFacade";
 import TimerService from "src/service/timer/TimerService";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 export class Timer {
 	private task: cron.ScheduledTask | null = null;
 	private timerService: TimerService;
 	private timerFacade: TimerFacade;
 
-	constructor() {
+	constructor(webSocketManager: WebSocketManager) {
 		this.timerService = new TimerService();
-		this.timerFacade = new TimerFacade();
+		this.timerFacade = new TimerFacade(webSocketManager);
 	}
 
 	public async start() {
@@ -29,14 +30,14 @@ export class Timer {
 		console.info(`🕑 Timer started with cron expression: ${cronExpression}`);
 		console.info("🕑🕑🕑");
 
-		const didCronRun = await this.timerService.didCronRun();
-		if (didCronRun) {
-			console.info("🕑🕑🕑");
-			console.info("🕑 Cron job did not previously run in the defined interval.");
-			console.info("🕑 Running it now...");
-			console.info("🕑🕑🕑");
-			await this.cronJob();
-		}
+		// const didCronRun = await this.timerService.didCronRun();
+		// if (didCronRun) {
+		// 	console.info("🕑🕑🕑");
+		// 	console.info("🕑 Cron job did not previously run in the defined interval.");
+		// 	console.info("🕑 Running it now...");
+		// 	console.info("🕑🕑🕑");
+		// 	await this.cronJob();
+		// }
 	}
 
 	public stop() {
