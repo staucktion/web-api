@@ -1,10 +1,10 @@
 import { Request } from "express";
-import NotificationDto from "src/dto/notification/NotificationDto";
+import SendNotificationDto from "src/dto/notification/SendNotificationDto";
 import CustomError from "src/error/CustomError";
 import ValidationUtil from "src/util/ValidationUtil";
 
 class NotificationValidation {
-	public async validateNotificationRequest(req: Request): Promise<NotificationDto> {
+	public async validateNotificationRequest(req: Request): Promise<SendNotificationDto> {
 		const notificationDto = req.body;
 		const requiredFields: string[] = ["userId", "type", "message"];
 		const validTypes = ["success", "warning", "info"];
@@ -29,6 +29,27 @@ class NotificationValidation {
 		}
 
 		return notificationDto;
+	}
+
+	public async validateNotificationSeenRequest(req: Request): Promise<{ notification_id: number }> {
+		const reqBody = req.body;
+		const requiredFields: string[] = ["notification_id"];
+
+		// validate request body
+		try {
+			ValidationUtil.checkObjectExistence(reqBody);
+		} catch (_error) {
+			CustomError.builder().setMessage("Request body is required.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		}
+
+		// validate required fields
+		try {
+			ValidationUtil.checkRequiredFields(requiredFields, reqBody);
+		} catch (error) {
+			CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		}
+
+		return reqBody;
 	}
 }
 

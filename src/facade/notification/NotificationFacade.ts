@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import NotificationDto from "src/dto/notification/NotificationDto";
+import SendNotificationDto from "src/dto/notification/SendNotificationDto";
 import CustomError from "src/error/CustomError";
 import NotificationService from "src/service/notification/NotificationService";
 import sendJsonBigint from "src/util/sendJsonBigint";
@@ -19,7 +19,7 @@ class NotificationFacade {
 			return res.status(401).send({ message: "Access Denied! No token provided." });
 		}
 
-		let notificationDto: NotificationDto;
+		let notificationDto: SendNotificationDto;
 
 		try {
 			notificationDto = await this.notificationValidation.validateNotificationRequest(req);
@@ -51,6 +51,30 @@ class NotificationFacade {
 			CustomError.handleError(res, error);
 			return;
 		}
+	}
+
+	public async markNotificationAsSeen(req: Request, res: Response): Promise<Response> {
+		if (!req.user) {
+			return res.status(401).send({ message: "Access Denied! No token provided." });
+		}
+
+		let notificationSeenDto: { notification_id: number };
+
+		try {
+			notificationSeenDto = await this.notificationValidation.validateNotificationSeenRequest(req);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		try {
+			await this.notificationService.markNotificationAsSeen(req.user.id, notificationSeenDto.notification_id);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		return res.status(204).send();
 	}
 }
 
