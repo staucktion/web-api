@@ -1,4 +1,4 @@
-import NotificationDto from "src/dto/notification/NotificationDto";
+import SendNotificationDto from "src/dto/notification/SendNotificationDto";
 import AuctionService from "src/service/auction/AuctionService";
 import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
 import BidService from "src/service/bid/BidService";
@@ -166,7 +166,7 @@ class TimerFacade {
 										for (const winner of winners) {
 											if (!winner.userId) continue;
 
-											const notificationDto: NotificationDto = {
+											const notificationDto: SendNotificationDto = {
 												userId: winner.userId,
 												type: "info",
 												message: winner.message,

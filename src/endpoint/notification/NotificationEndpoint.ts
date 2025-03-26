@@ -23,6 +23,11 @@ class NotificationEndpoint {
 			await this.notificationFacade.sendNotification(req, res);
 		});
 
+		// Mark notification as seen (authenticated)
+		this.router.post("/notifications/seen", this.authMiddleware.authenticateJWT, async (req, res) => {
+			await this.notificationFacade.markNotificationAsSeen(req, res);
+		});
+
 		// Get notifications (authenticated)
 		this.router.get("/notifications", this.authMiddleware.authenticateJWT, async (req, res) => {
 			await this.notificationFacade.getNotifications(req, res);
