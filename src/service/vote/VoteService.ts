@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import handlePrismaType from "src/util/handlePrismaType";
+import VoteDto from "src/dto/vote/VoteDto";
 import handlePrismaError from "src/util/handlePrismaError";
+import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 
 class VoteService {
@@ -27,6 +28,21 @@ class VoteService {
 				},
 				include: {
 					status: true,
+				},
+			});
+
+			return handlePrismaType(instanceList);
+		} catch (error) {
+			handlePrismaError(error);
+		}
+	}
+
+	public async getVoteListByUserIdAndStatusId(userId: number, statusId: number): Promise<VoteDto[]> {
+		try {
+			const instanceList = await this.prisma.vote.findMany({
+				where: {
+					user_id: userId,
+					status_id: statusId,
 				},
 			});
 
