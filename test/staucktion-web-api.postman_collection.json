@@ -1016,6 +1016,52 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "Set Comission Config (Admin Only)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"voterComissionPercentage\": 10,\r\n    \"photographerComissionPercentage\": 60\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/admin/config/comission",
+							"host": ["{{BASE_URL}}"],
+							"path": ["admin", "config", "comission"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Comission Config (Admin Only)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/admin/config/comission",
+							"host": ["{{BASE_URL}}"],
+							"path": ["admin", "config", "comission"]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
