@@ -31,8 +31,8 @@ class Config {
 		cvv: "123",
 	};
 
-	static voterPercentage = 10;
-	static photographerPercentage = 70;
+	static voterComissionPercentage = 10;
+	static photographerComissionPercentage = 70;
 }
 
 export default Config;
