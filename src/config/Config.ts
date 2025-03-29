@@ -30,6 +30,9 @@ class Config {
 		expirationDate: "12/34",
 		cvv: "123",
 	};
+
+	static voterPercentage = 10;
+	static photographerPercentage = 70;
 }
 
 export default Config;
