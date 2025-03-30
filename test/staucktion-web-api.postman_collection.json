@@ -1016,6 +1016,27 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "profit",
+			"item": [
+				{
+					"name": "Show Own Profits (Requires Auth)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/profits/own",
+							"host": ["{{BASE_URL}}"],
+							"path": ["profits", "own"]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
