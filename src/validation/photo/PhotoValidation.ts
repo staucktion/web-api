@@ -4,12 +4,6 @@ import UploadPhotoDto from "src/dto/photo/UploadPhotoDto";
 import CustomError from "src/error/CustomError";
 import ValidationUtil from "src/util/ValidationUtil";
 
-declare module "express" {
-	interface Request {
-		file?: { destination: string; filename: string };
-	}
-}
-
 class PhotoValidation {
 	public async uploadPhotoRequest(req: Request): Promise<UploadPhotoDto> {
 		const uploadPhotoDto: UploadPhotoDto = { ...req.file, categoryId: req.body.categoryId, deviceInfo: req.body.deviceInfo };

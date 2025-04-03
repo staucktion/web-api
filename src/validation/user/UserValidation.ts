@@ -2,12 +2,6 @@ import { Request } from "express";
 import UpdateUserDto from "src/dto/user/UpdateUserDto";
 import CustomError from "src/error/CustomError";
 
-declare module "express" {
-	interface Request {
-		file?: { destination: string; filename: string };
-	}
-}
-
 class UserValidation {
 	public async validateUpdateUserRequest(req: Request): Promise<UpdateUserDto> {
 		// Combine body data with file data if present

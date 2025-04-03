@@ -7,6 +7,7 @@ import { ORIGINAL_PHOTO_DIR } from "src/constants/photoConstants";
 import CustomError from "src/error/CustomError";
 import { MailAction } from "src/types/mailTypes";
 import PrismaUtil from "src/util/PrismaUtil";
+import { hasKey } from "src/util/tsUtil";
 
 let transporter: nodemailer.Transporter | null = null;
 
@@ -89,7 +90,13 @@ class MailService {
 				},
 			});
 		} catch (error) {
-			CustomError.builder().setMessage("Cannot send email.").setDetailedMessage(error.message).setErrorType("Email Error").setStatusCode(500).build().throwError();
+			CustomError.builder()
+				.setMessage("Cannot send email.")
+				.setDetailedMessage(hasKey(error, "message") && typeof error.message === "string" ? error.message : "Unknown error")
+				.setErrorType("Email Error")
+				.setStatusCode(500)
+				.build()
+				.throwError();
 		}
 	}
 }

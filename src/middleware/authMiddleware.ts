@@ -3,11 +3,14 @@ import UserDto from "src/dto/auth/UserDto";
 import AuthService from "src/service/auth/authService";
 import FormattedGoogleProfileDto from "src/dto/auth/FormattedGoogleProfileDto";
 
-declare module "express" {
-	interface Request {
-		user?: UserDto;
-		passportUser?: FormattedGoogleProfileDto;
-		sendTokenAsJson?: boolean;
+declare global {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace Express {
+		interface Request {
+			user?: UserDto;
+			passportUser?: FormattedGoogleProfileDto;
+			sendTokenAsJson?: boolean;
+		}
 	}
 }
 

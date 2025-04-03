@@ -20,7 +20,12 @@ class NotificationValidation {
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, notificationDto);
 		} catch (error) {
-			CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			CustomError.builder()
+				.setMessage(`Request body is invalid. ${error instanceof CustomError ? error.getDetailedMessage() : "Unknown error"}`)
+				.setErrorType("Input Validation")
+				.setStatusCode(400)
+				.build()
+				.throwError();
 		}
 
 		// validate notification type
@@ -46,7 +51,12 @@ class NotificationValidation {
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, reqBody);
 		} catch (error) {
-			CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			CustomError.builder()
+				.setMessage(`Request body is invalid. ${error instanceof CustomError ? error.getDetailedMessage() : "Unknown error"}`)
+				.setErrorType("Input Validation")
+				.setStatusCode(400)
+				.build()
+				.throwError();
 		}
 
 		return reqBody;
