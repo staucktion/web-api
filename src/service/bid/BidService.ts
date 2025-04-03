@@ -15,6 +15,7 @@ class BidService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async insertNewBid(data: any): Promise<any> {
 		let instance;
 		try {
@@ -30,6 +31,7 @@ class BidService {
 		return instance;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async getBidsByAuctionPhotoId(auctionPhotoId: number): Promise<any> {
 		try {
 			const instanceList = await this.prisma.bid.findMany({

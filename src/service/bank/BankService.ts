@@ -6,6 +6,7 @@ import CustomError from "src/error/CustomError";
 class BankService {
 	constructor() {}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async addProvision(data: any): Promise<boolean> {
 		try {
 			await axios.put(`${Config.bankUrl}/provisions/add`, data, {
@@ -29,6 +30,7 @@ class BankService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async removeProvision(data: any): Promise<boolean> {
 		try {
 			await axios.put(`${Config.bankUrl}/provisions/remove`, data, {
@@ -52,6 +54,7 @@ class BankService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async transfer(data: any): Promise<boolean> {
 		try {
 			await axios.post(`${Config.bankUrl}/transactions`, data, {

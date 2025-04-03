@@ -93,21 +93,25 @@ class WebSocketManager {
 	}
 
 	// Method to broadcast a message to all connected clients
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public broadcast(event: string, data: any): void {
 		this.io.emit(event, data);
 	}
 
 	// Method to send a message to a specific client
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public sendToClient(socketId: string, event: string, data: any): void {
 		this.io.to(socketId).emit(event, data);
 	}
 
 	// Method to send a message to a specific user by their user ID
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public sendToUser(userId: number, event: string, data: any): void {
 		this.io.to(`user:${userId}`).emit(event, data);
 	}
 
 	// Method to send a message to a specific room
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public sendToRoom(room: string, event: string, data: any): void {
 		this.io.to(room).emit(event, data);
 	}

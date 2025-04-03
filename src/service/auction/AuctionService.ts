@@ -15,6 +15,7 @@ class AuctionService {
 		this.statusService = new StatusService();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async getAuctionById(auctionId: number): Promise<any> {
 		try {
 			const auction = await this.prisma.auction.findUnique({
@@ -36,6 +37,7 @@ class AuctionService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async getAuctionList(): Promise<any> {
 		try {
 			const instanceTemp = await this.prisma.auction.findMany({
@@ -56,6 +58,7 @@ class AuctionService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async insertNewAuction(categoryId: number): Promise<any> {
 		try {
 			const voteStatus = await this.statusService.getStatusFromName("vote");
@@ -77,6 +80,7 @@ class AuctionService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async updateAuction(auctionId: number, updateAuctionData: any): Promise<any> {
 		try {
 			const { category_id, status_id, id: _id, photo_list: _photo_list, ...cleanData } = updateAuctionData;

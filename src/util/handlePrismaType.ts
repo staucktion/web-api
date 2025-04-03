@@ -1,5 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/library";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handlePrismaType = (obj: any): any => {
 	if (typeof obj === "bigint") {
 		return Number(obj);

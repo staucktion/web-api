@@ -5,6 +5,7 @@ import { Response } from "express";
  * @param param Any JavaScript object that might contain BigInt values
  * @returns A JSON string with BigInt values converted to strings
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const jsonStringifyBigint = (param: any): string => {
 	return JSON.stringify(
 		param,
@@ -18,6 +19,7 @@ const jsonStringifyBigint = (param: any): string => {
  * @param data Any JavaScript object that might contain BigInt values
  * @param status HTTP status code (defaults to 200)
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sendJsonBigint = (res: Response, data: any, status: number = 200): void => {
 	res.setHeader("Content-Type", "application/json; charset=utf-8");
 	res.status(status).send(jsonStringifyBigint(data));
