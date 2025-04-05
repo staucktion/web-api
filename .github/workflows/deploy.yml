@@ -1,0 +1,45 @@
+name: Auto Deploy to Production
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy and Health Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy app to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            echo "🔐 Writing .env.prod file..."
+            echo "${{ secrets.ENV_PROD_FILE }}" > ${{ secrets.PROJECT_DIR }}/.env.prod
+
+            echo "📦 Pulling latest code..."
+            cd ${{ secrets.PROJECT_DIR }}
+            git pull origin master
+
+            echo "🐳 Rebuilding and restarting Docker Compose service..."
+            cd ../docker-config
+            docker compose -p st up -d --build ${{ github.event.repository.name }}
+
+            echo "🩺 Scheduling background health check in 5 minute..."
+            cd ${{secrets.PROJECT_DIR}}
+            nohup bash -c '
+            sleep 300
+            SHA="${{ github.sha }}"
+            echo "[health-check] Commit SHA: $SHA" >> ./health-check.log
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ secrets.PRODUCTION_HOSTNAME }}/${{ github.event.repository.name }}/health?sha=$SHA)
+            if [ "$STATUS" -eq 200 ]; then
+                echo "[health-check] ✅ Passed for $SHA" >> ./health-check.log
+            else
+                echo "[health-check] ❌ Failed for $SHA (status $STATUS)" >> ./health-check.log
+            fi
+            ' > /dev/null 2>&1 &
