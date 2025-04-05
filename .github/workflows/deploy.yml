@@ -31,7 +31,7 @@ jobs:
             docker compose -p st up -d --build ${{ github.event.repository.name }}
 
             echo "🩺 Scheduling background health check in 5 minute..."
-            cd ${{secrets.PROJECT_DIR}}
+            cd ${{ secrets.PROJECT_DIR }}
             nohup bash -c '
             sleep 300
             SHA="${{ github.sha }}"
