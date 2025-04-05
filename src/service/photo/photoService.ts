@@ -12,7 +12,7 @@ import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 import handlePrismaError from "src/util/handlePrismaError";
-import { hasKey } from "src/util/tsUtil";
+import { getErrorMessage } from "src/util/getErrorMessage";
 
 class PhotoService {
 	private prisma: PrismaClient;
@@ -98,13 +98,7 @@ class PhotoService {
 				.composite([{ input: svgBuffer, top: 0, left: 0 }])
 				.toFile(outputPath);
 		} catch (error) {
-			CustomError.builder()
-				.setMessage("Could not watermark photo")
-				.setDetailedMessage(hasKey(error, "message") && typeof error.message === "string" ? error.message : "Unknown error")
-				.setErrorType("Watermark Error")
-				.setStatusCode(500)
-				.build()
-				.throwError();
+			CustomError.builder().setMessage("Could not watermark photo").setDetailedMessage(getErrorMessage(error)).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
 		}
 	}
 
@@ -260,13 +254,7 @@ class PhotoService {
 			if (!fs.existsSync(resolvedPath)) throw new Error();
 			return resolvedPath;
 		} catch (error) {
-			CustomError.builder()
-				.setMessage("Error reading photo file")
-				.setDetailedMessage(hasKey(error, "message") && typeof error.message === "string" ? error.message : "Unknown error")
-				.setErrorType("Server Error")
-				.setStatusCode(500)
-				.build()
-				.throwError();
+			CustomError.builder().setMessage("Error reading photo file").setDetailedMessage(getErrorMessage(error)).setErrorType("Server Error").setStatusCode(500).build().throwError();
 		}
 	}
 
@@ -281,13 +269,7 @@ class PhotoService {
 				CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build().throwError();
 			}
 		} catch (error) {
-			CustomError.builder()
-				.setMessage("Photo not found")
-				.setDetailedMessage(hasKey(error, "message") && typeof error.message === "string" ? error.message : "Unknown error")
-				.setErrorType("Server Error")
-				.setStatusCode(404)
-				.build()
-				.throwError();
+			CustomError.builder().setMessage("Photo not found").setDetailedMessage(getErrorMessage(error)).setErrorType("Server Error").setStatusCode(404).build().throwError();
 		}
 
 		try {

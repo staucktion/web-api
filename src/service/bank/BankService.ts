@@ -2,7 +2,8 @@ import axios from "axios";
 import https from "https";
 import Config from "src/config/Config";
 import CustomError from "src/error/CustomError";
-import { hasKey } from "src/util/tsUtil";
+import { getErrorMessage } from "src/util/getErrorMessage";
+import { getResponseErrorMessage } from "src/util/getResponseErrorMessage";
 
 class BankService {
 	constructor() {}
@@ -24,14 +25,8 @@ class BankService {
 			CustomError.builder()
 				.setErrorType("Bank Error")
 				.setStatusCode(400)
-				.setDetailedMessage(hasKey(error, "message") && typeof error.message === "string" ? error.message : "Unknown error")
-				.setMessage(
-					`Cannot perform bank api operation. ${
-						hasKey(error, "response") && hasKey(error.response, "data") && hasKey(error.response.data, "message") && typeof error.response.data.message === "string"
-							? error.response.data.message
-							: "Unknown error"
-					}`
-				)
+				.setDetailedMessage(getErrorMessage(error))
+				.setMessage(`Cannot perform bank api operation. ${getResponseErrorMessage(error)}`)
 				.build()
 				.throwError();
 		}
@@ -54,14 +49,8 @@ class BankService {
 			CustomError.builder()
 				.setErrorType("Bank Error")
 				.setStatusCode(400)
-				.setDetailedMessage(hasKey(error, "message") && typeof error.message === "string" ? error.message : "Unknown error")
-				.setMessage(
-					`Cannot perform bank api operation. ${
-						hasKey(error, "response") && hasKey(error.response, "data") && hasKey(error.response.data, "message") && typeof error.response.data.message === "string"
-							? error.response.data.message
-							: "Unknown error"
-					}`
-				)
+				.setDetailedMessage(getErrorMessage(error))
+				.setMessage(`Cannot perform bank api operation. ${getResponseErrorMessage(error)}`)
 				.build()
 				.throwError();
 		}
@@ -84,14 +73,8 @@ class BankService {
 			CustomError.builder()
 				.setErrorType("Bank Error")
 				.setStatusCode(400)
-				.setDetailedMessage(hasKey(error, "message") && typeof error.message === "string" ? error.message : "Unknown error")
-				.setMessage(
-					`Cannot perform bank api operation. ${
-						hasKey(error, "response") && hasKey(error.response, "data") && hasKey(error.response.data, "message") && typeof error.response.data.message === "string"
-							? error.response.data.message
-							: "Unknown error"
-					}`
-				)
+				.setDetailedMessage(getErrorMessage(error))
+				.setMessage(`Cannot perform bank api operation. ${getResponseErrorMessage(error)}`)
 				.build()
 				.throwError();
 		}
