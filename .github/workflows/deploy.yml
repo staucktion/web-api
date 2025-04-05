@@ -20,18 +20,18 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             echo "🔐 Writing .env.prod file..."
-            echo "${{ secrets.ENV_PROD_FILE }}" > ${{ secrets.PROJECT_DIR }}/.env.prod
+            echo "${{ secrets.ENV_PROD_FILE }}" > ${{ secrets.PROJECT_ROOT_DIR }}/${{ github.event.repository.name }}/.env.prod
 
             echo "📦 Pulling latest code..."
-            cd ${{ secrets.PROJECT_DIR }}
+            cd ${{ secrets.PROJECT_ROOT_DIR }}/${{ github.event.repository.name }}
             git pull origin master
 
             echo "🐳 Rebuilding and restarting Docker Compose service..."
-            cd ../docker-config
+            cd ${{ secrets.PROJECT_ROOT_DIR }}/docker-config
             docker compose -p st up -d --build ${{ github.event.repository.name }}
 
             echo "🩺 Scheduling background health check in 5 minute..."
-            cd ${{ secrets.PROJECT_DIR }}
+            cd ${{ secrets.PROJECT_ROOT_DIR }}/${{ github.event.repository.name }}
             nohup bash -c '
             sleep 300
             SHA="${{ github.sha }}"
