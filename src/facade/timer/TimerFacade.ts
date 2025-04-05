@@ -39,6 +39,7 @@ class TimerFacade {
 		console.log("[INFO] 🕑 Job is running at:", new Date().toISOString());
 		this.timerService.saveLastTriggerTimeToDb();
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const categoryList: any = await this.categoryService.getAllCategories();
 
 		const waitPurchaseStatus = await this.statusService.getStatusFromName("wait_purchase_after_auction");

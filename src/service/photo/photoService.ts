@@ -12,6 +12,7 @@ import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 import handlePrismaError from "src/util/handlePrismaError";
+import { getErrorMessage } from "src/util/getErrorMessage";
 
 class PhotoService {
 	private prisma: PrismaClient;
@@ -97,7 +98,7 @@ class PhotoService {
 				.composite([{ input: svgBuffer, top: 0, left: 0 }])
 				.toFile(outputPath);
 		} catch (error) {
-			CustomError.builder().setMessage("cannot watermark photo").setDetailedMessage(error.message).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
+			CustomError.builder().setMessage("Could not watermark photo").setDetailedMessage(getErrorMessage(error)).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
 		}
 	}
 
@@ -134,6 +135,7 @@ class PhotoService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async getPhotoById(photoId: number): Promise<any> {
 		try {
 			const instance = await this.prisma.photo.findUnique({
@@ -201,6 +203,7 @@ class PhotoService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async updatePhotoStatus(photoId: number, newStatus: StatusEnum, _reason?: string): Promise<any> {
 		try {
 			// First check if the photo exists
@@ -251,7 +254,7 @@ class PhotoService {
 			if (!fs.existsSync(resolvedPath)) throw new Error();
 			return resolvedPath;
 		} catch (error) {
-			CustomError.builder().setMessage("Error reading photo file").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
+			CustomError.builder().setMessage("Error reading photo file").setDetailedMessage(getErrorMessage(error)).setErrorType("Server Error").setStatusCode(500).build().throwError();
 		}
 	}
 
@@ -266,7 +269,7 @@ class PhotoService {
 				CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build().throwError();
 			}
 		} catch (error) {
-			CustomError.builder().setMessage(error.message).setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(error.statusCode).build().throwError();
+			CustomError.builder().setMessage("Photo not found").setDetailedMessage(getErrorMessage(error)).setErrorType("Server Error").setStatusCode(404).build().throwError();
 		}
 
 		try {
@@ -282,6 +285,7 @@ class PhotoService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async updatePhoto(id: number, updateInstanceData: any): Promise<ReadAllPhotoResponseDto[]> {
 		try {
 			const { user_id, auction_id, category_id, location_id, status_id, auction_photo_list: _auction_photo_list, vote_list: _vote_list, ...cleanData } = updateInstanceData;

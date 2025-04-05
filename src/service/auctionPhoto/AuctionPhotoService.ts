@@ -22,6 +22,7 @@ class AuctionPhotoService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async insertNewPhotoAuction(auctionId: number, photoId: number, statusId): Promise<any> {
 		try {
 			const newTempInstance = await this.prisma.auction_photo.create({
@@ -52,6 +53,7 @@ class AuctionPhotoService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async getAuctionPhotoByPhotoId(photoId: number): Promise<any> {
 		try {
 			const auctionPhoto = await this.prisma.auction_photo.findFirst({
@@ -73,6 +75,7 @@ class AuctionPhotoService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async getAuctionPhotoListByAuctionId(auctionId: number): Promise<any> {
 		try {
 			const auctionPhoto = await this.prisma.auction_photo.findMany({
@@ -94,6 +97,7 @@ class AuctionPhotoService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async updateAuctionPhoto(id: number, updateData: any): Promise<any> {
 		try {
 			const { photo_id, auction_id, status_id, winner_user_id_1, winner_user_id_2, winner_user_id_3, bid_list: _bid_list, ...cleanData } = updateData;

@@ -3,6 +3,7 @@ import CustomError from "src/error/CustomError";
 import ValidationUtil from "src/util/ValidationUtil";
 
 class BaseValidation {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async params(req: Request, requiredFields: string[]): Promise<any> {
 		const input = req.params;
 

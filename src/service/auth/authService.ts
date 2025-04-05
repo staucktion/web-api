@@ -44,7 +44,7 @@ class AuthService {
 			},
 		});
 
-		return createdUser;
+		return handlePrismaType(createdUser);
 	}
 
 	generateJWT(gmail_id: string): string {

@@ -11,6 +11,7 @@ class VoteService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async insertNewVote(data: any): Promise<any> {
 		try {
 			const newInstanceTemp = await this.prisma.vote.create({ data });
@@ -20,6 +21,7 @@ class VoteService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async getVoteListByUserId(userId: number): Promise<any> {
 		try {
 			const instanceList = await this.prisma.vote.findMany({
@@ -52,6 +54,7 @@ class VoteService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async updateVote(id, data: any): Promise<any> {
 		try {
 			const { auction: _auction, photo: _photo, status: _status, user: _user, ...cleanData } = data;

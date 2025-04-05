@@ -11,6 +11,7 @@ class PurchasedPhotoService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async insertNewPurchasedPhoto(data: any): Promise<any> {
 		try {
 			const newInstance = await this.prisma.purchased_photo.create({ data });
