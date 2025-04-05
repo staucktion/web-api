@@ -26,7 +26,9 @@ class PhotoService {
 		try {
 			// Read image metadata
 			const image = sharp(inputPath);
-			let { width, height } = await image.metadata();
+			const metadata = await image.metadata();
+			let { width, height } = metadata;
+			const { orientation } = metadata;
 
 			// Fallback dimensions if metadata is missing
 			if (!width || !height) {
@@ -47,41 +49,53 @@ class PhotoService {
 			const textColor = `rgba(237, 237, 237, ${opacity})`; // Light watermark text
 			const shadowColor = "rgba(0, 0, 0, 0.3)"; // Subtle shadow for contrast
 
+			let svgWidth = width;
+			let svgHeight = height;
+
+			// If image is rotated to portrait
+			if (orientation && [5, 6, 7, 8].includes(orientation)) {
+				svgWidth = height;
+				svgHeight = width;
+			}
+
 			// Generate SVG for the watermark
 			const svgText = `
-        <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="4" dy="4" stdDeviation="3" flood-color="${shadowColor}" />
-            </filter>
-          </defs>
-          <style>
-            .watermark {
-              fill: ${textColor};
-              font-size: ${fontSize}px;
-              font-family: Arial, sans-serif;
-              font-weight: bold;
-              text-anchor: middle;
-              alignment-baseline: middle;
-              filter: url(#shadow); /* Add subtle shadow for better visibility */
-            }
-          </style>
-          <text
-            x="50%"
-            y="50%"
-            class="watermark"
-            transform="rotate(-45 ${width / 2} ${height / 2})"
-          >
-            ${watermarkText}
-          </text>
-        </svg>
+				<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
+					<defs>
+						<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+						<feDropShadow dx="4" dy="4" stdDeviation="3" flood-color="${shadowColor}" />
+						</filter>
+					</defs>
+					<style>
+						.watermark {
+						fill: ${textColor};
+						font-size: ${fontSize}px;
+						font-family: Arial, sans-serif;
+						font-weight: bold;
+						text-anchor: middle;
+						alignment-baseline: middle;
+						filter: url(#shadow); /* Add subtle shadow for better visibility */
+						}
+					</style>
+					<text
+						x="50%"
+						y="50%"
+						class="watermark"
+						transform="rotate(-45 ${svgWidth / 2} ${svgHeight / 2})"
+					>
+						${watermarkText}
+					</text>
+				</svg>
       `;
 
 			// Convert SVG to buffer
 			const svgBuffer = Buffer.from(svgText);
 
 			// Overlay the watermark on the image
-			await image.composite([{ input: svgBuffer, top: 0, left: 0 }]).toFile(outputPath);
+			await image
+				.rotate()
+				.composite([{ input: svgBuffer, top: 0, left: 0 }])
+				.toFile(outputPath);
 		} catch (error) {
 			CustomError.builder().setMessage("cannot watermark photo").setDetailedMessage(error.message).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
 		}
