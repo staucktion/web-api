@@ -4,3 +4,4 @@ dist
 .env.dev
 .env.prod
 database/staucktion-temp-db.json
+*.log

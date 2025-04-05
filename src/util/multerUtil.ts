@@ -24,11 +24,11 @@ class MulterUtil {
 			storage: this.multerStorage,
 			limits: { fileSize: Config.multerFileSize },
 			fileFilter: function (req, file, cb) {
-				const allowedMimeTypes = ["image/jpeg", "image/png"];
+				const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png"];
 				if (allowedMimeTypes.includes(file.mimetype)) {
 					cb(null, true);
 				} else {
-					cb(new Error("Invalid file type. Only JPEG and PNG are allowed."));
+					cb(new Error("Invalid file type. Only JPEG, JPG and PNG are allowed."));
 				}
 			},
 		});
