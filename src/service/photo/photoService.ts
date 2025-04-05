@@ -27,8 +27,9 @@ class PhotoService {
 		try {
 			// Read image metadata
 			const image = sharp(inputPath);
-			let { width, height } = await image.metadata();
-			const { orientation } = await image.metadata();
+			const metadata = await image.metadata();
+			let { width, height } = metadata;
+			const { orientation } = metadata;
 
 			// Fallback dimensions if metadata is missing
 			if (!width || !height) {
