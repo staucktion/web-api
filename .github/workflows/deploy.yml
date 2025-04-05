@@ -36,7 +36,7 @@ jobs:
             sleep 300
             SHA="${{ github.sha }}"
             echo "[health-check] Commit SHA: $SHA" >> ./health-check.log
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ secrets.PRODUCTION_HOSTNAME }}/${{ github.event.repository.name }}/health?sha=$SHA)
+            STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" https://${{ secrets.PRODUCTION_HOSTNAME }}/${{ github.event.repository.name }}/health?sha=$SHA)
             if [ "$STATUS" -eq 200 ]; then
                 echo "[health-check] ✅ Passed for $SHA" >> ./health-check.log
             else
