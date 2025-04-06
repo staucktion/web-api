@@ -68,9 +68,11 @@ class AdminFacade {
 	public async getAllUsers(req: Request, res: Response): Promise<void> {
 		try {
 			const users = await this.userService.getAllUsers();
-			users.map((user) => {
+
+			for (const user of users) {
 				user.password = "---REDACTED---";
-			});
+			}
+
 			sendJsonBigint(res, users, 200);
 		} catch (error) {
 			CustomError.handleError(res, error);
@@ -85,7 +87,9 @@ class AdminFacade {
 			}
 
 			const user = await this.userService.getAdminUserById(userId);
+
 			user.password = "---REDACTED---";
+
 			sendJsonBigint(res, user, 200);
 		} catch (error) {
 			CustomError.handleError(res, error);
