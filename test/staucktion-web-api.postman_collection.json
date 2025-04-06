@@ -231,7 +231,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Bids By Auction Photo Id (Requires Auth) Copy",
+					"name": "Get Bids By Auction Photo Id (Requires Auth)",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1021,7 +1021,7 @@
 			"name": "admin",
 			"item": [
 				{
-					"name": "Set Comission Config (Admin Only)",
+					"name": "Set Config (Admin Only)",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -1030,7 +1030,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"voterComissionPercentage\": 10,\r\n    \"photographerComissionPercentage\": 60\r\n}",
+							"raw": "{\r\n    \"voter_comission_percentage\": 5,\r\n    \"photographer_comission_percentage\": 40,\r\n    \"is_timer_job_active\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1038,15 +1038,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASE_URL}}/admin/config/comission",
+							"raw": "{{BASE_URL}}/admin/config",
 							"host": ["{{BASE_URL}}"],
-							"path": ["admin", "config", "comission"]
+							"path": ["admin", "config"]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get Comission Config (Admin Only)",
+					"name": "Get Config (Admin Only)",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -1054,9 +1054,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL}}/admin/config/comission",
+							"raw": "{{BASE_URL}}/admin/config",
 							"host": ["{{BASE_URL}}"],
-							"path": ["admin", "config", "comission"]
+							"path": ["admin", "config"]
 						}
 					},
 					"response": []
