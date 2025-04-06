@@ -1,13 +1,17 @@
 import { Request, Response } from "express";
 import Config from "src/config/Config";
 import ComissionDto from "src/dto/comission/ComissionDto";
+import DbConfigDto from "src/dto/dbConfig/DbConfigDto";
 import CustomError from "src/error/CustomError";
 import AdminValidation from "src/validation/admin/AdminValidation";
+import DbConfigFacade from "../dbConfig/DbConfigFacade";
 class AdminFacade {
 	private adminValidation: AdminValidation;
+	private dbConfigFacade: DbConfigFacade;
 
 	constructor() {
 		this.adminValidation = new AdminValidation();
+		this.dbConfigFacade = new DbConfigFacade();
 	}
 
 	public async getComissionConfig(req: Request, res: Response): Promise<void> {
@@ -34,9 +38,37 @@ class AdminFacade {
 			return;
 		}
 
-		// set new amounts
-		Config.voterComissionPercentage = comissionDto.voterComissionPercentage;
-		Config.photographerComissionPercentage = comissionDto.photographerComissionPercentage;
+		// fetch existing data
+		let oldDbConfigDto: DbConfigDto;
+		try {
+			oldDbConfigDto = await this.dbConfigFacade.getDbConfig();
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// create new data
+		const newDbConfigDto = {
+			...oldDbConfigDto,
+			voter_comission_percentage: comissionDto.voterComissionPercentage,
+			photographer_comission_percentage: comissionDto.photographerComissionPercentage,
+		};
+
+		// save new data
+		try {
+			await this.dbConfigFacade.setDbConfig(newDbConfigDto);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// sync data
+		try {
+			await this.dbConfigFacade.syncDbConfig();
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
 
 		res.status(204).send();
 	}

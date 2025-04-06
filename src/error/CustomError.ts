@@ -65,6 +65,12 @@ class CustomError {
 		res.status(isCustomError ? error.getStatusCode() : 500).send(isCustomError ? error.getResponseMessage() : { message: "no message" });
 	}
 
+	public static handleSystemError(error: unknown): void {
+		const isCustomError = error instanceof CustomError;
+		if (isCustomError) error.log();
+		else console.error("[ERROR] ", error);
+	}
+
 	// nested builder class
 	private static Builder = class {
 		private errorType: string;
