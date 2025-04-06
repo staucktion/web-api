@@ -1,12 +1,13 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application } from "express";
-import cookieParser from "cookie-parser";
 import { createServer, Server as HttpServer } from "http";
 import Config from "src/config/Config";
+import DbConfigFacade from "src/facade/dbConfig/DbConfigFacade";
 import Logger from "src/log/Logger";
 import Router from "src/router/Router";
-import WebSocketManager from "src/websocket/WebSocketManager";
 import { Timer } from "src/timer/Timer";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 class App {
 	private app: Application;
@@ -14,12 +15,19 @@ class App {
 	private httpServer: HttpServer;
 	private webSocketManager: WebSocketManager;
 	private timer: Timer;
+	private dbConfigFacade: DbConfigFacade;
 
 	constructor() {
 		this.app = express();
 		this.httpServer = createServer(this.app);
 		this.webSocketManager = new WebSocketManager(this.httpServer);
 		this.router = new Router(this.webSocketManager);
+		this.dbConfigFacade = new DbConfigFacade();
+	}
+
+	public async init(): Promise<void> {
+		console.log("[INFO] initializing application...");
+		await this.dbConfigFacade.syncDbConfig();
 		this.initializeMiddlewares();
 		this.initializeRoutes();
 		if (Config.isTimerActive) {

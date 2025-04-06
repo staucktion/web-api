@@ -1,4 +1,6 @@
 import express from "express";
+import AdminEndpoint from "src/endpoint/admin/AdminEndpoint";
+import AuctionPhotoEndpoint from "src/endpoint/auctionPhoto/AuctionPhotoEndpoint";
 import AuthEndpoint from "src/endpoint/auth/AuthEndpoint";
 import BankEndpoint from "src/endpoint/bank/BankEndpoint";
 import BidEndpoint from "src/endpoint/bid/BidEndpoint";
@@ -9,9 +11,8 @@ import MailEndpoint from "src/endpoint/mail/MailEndpoint";
 import NotificationEndpoint from "src/endpoint/notification/NotificationEndpoint";
 import PhotoEndpoint from "src/endpoint/photo/PhotoEndpoint";
 import UserEndpoint from "src/endpoint/user/UserEndpoint";
-import WebSocketManager from "src/websocket/WebSocketManager";
 import VoteEndpoint from "src/endpoint/vote/VoteEndpoint";
-import AuctionPhotoEndpoint from "src/endpoint/auctionPhoto/AuctionPhotoEndpoint";
+import WebSocketManager from "src/websocket/WebSocketManager";
 import ProfitEndpoint from "src/endpoint/profit/ProfitEndpoint";
 
 class Router {
@@ -27,6 +28,7 @@ class Router {
 	private bidEndpoint: BidEndpoint;
 	private voteEndpoint: VoteEndpoint;
 	private auctionPhotoEndpoint: AuctionPhotoEndpoint;
+	private adminEndpoint: AdminEndpoint;
 	private profitEndpoint: ProfitEndpoint;
 
 	constructor(webSocketManager: WebSocketManager) {
@@ -42,6 +44,7 @@ class Router {
 		this.bidEndpoint = new BidEndpoint(webSocketManager);
 		this.voteEndpoint = new VoteEndpoint();
 		this.auctionPhotoEndpoint = new AuctionPhotoEndpoint();
+		this.adminEndpoint = new AdminEndpoint();
 		this.profitEndpoint = new ProfitEndpoint();
 	}
 
@@ -58,6 +61,7 @@ class Router {
 		app.use(this.bidEndpoint.getRouter());
 		app.use(this.voteEndpoint.getRouter());
 		app.use(this.auctionPhotoEndpoint.getRouter());
+		app.use(this.adminEndpoint.getRouter());
 		app.use(this.profitEndpoint.getRouter());
 	}
 }

@@ -180,6 +180,16 @@ CREATE TABLE "notification" (
     CONSTRAINT "notification_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "config" (
+    "id" SERIAL NOT NULL,
+    "voter_comission_percentage" DECIMAL(10,2) NOT NULL,
+    "photographer_comission_percentage" DECIMAL(10,2) NOT NULL,
+    "is_timer_job_active" BOOLEAN NOT NULL,
+
+    CONSTRAINT "config_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
 

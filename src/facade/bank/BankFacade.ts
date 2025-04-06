@@ -179,7 +179,10 @@ class BankFacade {
 		}
 
 		// calculate amount to distribute voters
-		const paymentToVoter = auctionPhoto.last_bid_amount / (10 * photo.vote_list.length);
+		const paymentToVoter = (auctionPhoto.last_bid_amount * Config.voterComissionPercentage) / (100 * photo.vote_list.length);
+
+		// calculate amount to pay photographer
+		const paymentToPhotographer = (auctionPhoto.last_bid_amount * Config.photographerComissionPercentage) / 100;
 
 		// update votes
 		const waitStatus = await this.statusService.getStatusFromName("wait");
@@ -192,9 +195,6 @@ class BankFacade {
 				return;
 			}
 		}
-
-		// calculate amount to pay photographer
-		const paymentToPhotographer = (auctionPhoto.last_bid_amount * 8) / 10;
 
 		// add record to photographer payment
 		try {
