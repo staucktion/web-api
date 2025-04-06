@@ -74,6 +74,55 @@ class UserService {
 			handlePrismaError(error);
 		}
 	}
+
+	async getAllUsers(): Promise<UserDto[]> {
+		try {
+			const users = await this.prisma.user.findMany({
+				where: {
+					is_deleted: false,
+				},
+				include: {
+					user_role: true,
+					status: true,
+				},
+			});
+
+			return handlePrismaType(users);
+		} catch (error) {
+			if (error instanceof CustomError) {
+				throw error;
+			}
+
+			handlePrismaError(error);
+		}
+	}
+
+	async getAdminUserById(userId: number): Promise<UserDto> {
+		try {
+			const user = await this.prisma.user.findFirst({
+				where: {
+					id: BigInt(userId),
+					is_deleted: false,
+				},
+				include: {
+					user_role: true,
+					status: true,
+				},
+			});
+
+			if (!user) {
+				CustomError.builder().setMessage("User not found.").setErrorType("Not Found").setStatusCode(404).build().throwError();
+			}
+
+			return handlePrismaType(user);
+		} catch (error) {
+			if (error instanceof CustomError) {
+				throw error;
+			}
+
+			handlePrismaError(error);
+		}
+	}
 }
 
 export default UserService;
