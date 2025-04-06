@@ -11,6 +11,7 @@ class PhotographerPaymentService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async insertNewPhotographerPayment(data: any): Promise<any> {
 		try {
 			const newInstance = await this.prisma.photographer_payment.create({ data });
@@ -35,6 +36,7 @@ class PhotographerPaymentService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async updatePhotographerPayment(id: number, data: any): Promise<any> {
 		try {
 			const { status: _status, user: _user, ...cleanData } = data;

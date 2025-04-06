@@ -12,6 +12,7 @@ import DateUtil from "src/util/dateUtil";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 import handlePrismaError from "src/util/handlePrismaError";
+import { getErrorMessage } from "src/util/getErrorMessage";
 
 class PhotoService {
 	private prisma: PrismaClient;
@@ -26,7 +27,9 @@ class PhotoService {
 		try {
 			// Read image metadata
 			const image = sharp(inputPath);
-			let { width, height } = await image.metadata();
+			const metadata = await image.metadata();
+			let { width, height } = metadata;
+			const { orientation } = metadata;
 
 			// Fallback dimensions if metadata is missing
 			if (!width || !height) {
@@ -47,43 +50,55 @@ class PhotoService {
 			const textColor = `rgba(237, 237, 237, ${opacity})`; // Light watermark text
 			const shadowColor = "rgba(0, 0, 0, 0.3)"; // Subtle shadow for contrast
 
+			let svgWidth = width;
+			let svgHeight = height;
+
+			// If image is rotated to portrait
+			if (orientation && [5, 6, 7, 8].includes(orientation)) {
+				svgWidth = height;
+				svgHeight = width;
+			}
+
 			// Generate SVG for the watermark
 			const svgText = `
-        <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="4" dy="4" stdDeviation="3" flood-color="${shadowColor}" />
-            </filter>
-          </defs>
-          <style>
-            .watermark {
-              fill: ${textColor};
-              font-size: ${fontSize}px;
-              font-family: Arial, sans-serif;
-              font-weight: bold;
-              text-anchor: middle;
-              alignment-baseline: middle;
-              filter: url(#shadow); /* Add subtle shadow for better visibility */
-            }
-          </style>
-          <text
-            x="50%"
-            y="50%"
-            class="watermark"
-            transform="rotate(-45 ${width / 2} ${height / 2})"
-          >
-            ${watermarkText}
-          </text>
-        </svg>
+				<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
+					<defs>
+						<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+						<feDropShadow dx="4" dy="4" stdDeviation="3" flood-color="${shadowColor}" />
+						</filter>
+					</defs>
+					<style>
+						.watermark {
+						fill: ${textColor};
+						font-size: ${fontSize}px;
+						font-family: Arial, sans-serif;
+						font-weight: bold;
+						text-anchor: middle;
+						alignment-baseline: middle;
+						filter: url(#shadow); /* Add subtle shadow for better visibility */
+						}
+					</style>
+					<text
+						x="50%"
+						y="50%"
+						class="watermark"
+						transform="rotate(-45 ${svgWidth / 2} ${svgHeight / 2})"
+					>
+						${watermarkText}
+					</text>
+				</svg>
       `;
 
 			// Convert SVG to buffer
 			const svgBuffer = Buffer.from(svgText);
 
 			// Overlay the watermark on the image
-			await image.composite([{ input: svgBuffer, top: 0, left: 0 }]).toFile(outputPath);
+			await image
+				.rotate()
+				.composite([{ input: svgBuffer, top: 0, left: 0 }])
+				.toFile(outputPath);
 		} catch (error) {
-			CustomError.builder().setMessage("cannot watermark photo").setDetailedMessage(error.message).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
+			CustomError.builder().setMessage("Could not watermark photo").setDetailedMessage(getErrorMessage(error)).setErrorType("Watermark Error").setStatusCode(500).build().throwError();
 		}
 	}
 
@@ -120,6 +135,7 @@ class PhotoService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async getPhotoById(photoId: number): Promise<any> {
 		try {
 			const instance = await this.prisma.photo.findUnique({
@@ -187,6 +203,7 @@ class PhotoService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async updatePhotoStatus(photoId: number, newStatus: StatusEnum, _reason?: string): Promise<any> {
 		try {
 			// First check if the photo exists
@@ -237,7 +254,7 @@ class PhotoService {
 			if (!fs.existsSync(resolvedPath)) throw new Error();
 			return resolvedPath;
 		} catch (error) {
-			CustomError.builder().setMessage("Error reading photo file").setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(500).build().throwError();
+			CustomError.builder().setMessage("Error reading photo file").setDetailedMessage(getErrorMessage(error)).setErrorType("Server Error").setStatusCode(500).build().throwError();
 		}
 	}
 
@@ -252,7 +269,7 @@ class PhotoService {
 				CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build().throwError();
 			}
 		} catch (error) {
-			CustomError.builder().setMessage(error.message).setDetailedMessage(error.message).setErrorType("Server Error").setStatusCode(error.statusCode).build().throwError();
+			CustomError.builder().setMessage("Photo not found").setDetailedMessage(getErrorMessage(error)).setErrorType("Server Error").setStatusCode(404).build().throwError();
 		}
 
 		try {
@@ -268,6 +285,7 @@ class PhotoService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async updatePhoto(id: number, updateInstanceData: any): Promise<ReadAllPhotoResponseDto[]> {
 		try {
 			const { user_id, auction_id, category_id, location_id, status_id, auction_photo_list: _auction_photo_list, vote_list: _vote_list, ...cleanData } = updateInstanceData;

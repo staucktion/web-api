@@ -1,6 +1,7 @@
 import { Request } from "express";
 import SendNotificationDto from "src/dto/notification/SendNotificationDto";
 import CustomError from "src/error/CustomError";
+import { getErrorMessage } from "src/util/getErrorMessage";
 import ValidationUtil from "src/util/ValidationUtil";
 
 class NotificationValidation {
@@ -20,7 +21,12 @@ class NotificationValidation {
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, notificationDto);
 		} catch (error) {
-			CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			CustomError.builder()
+				.setMessage(`Request body is invalid. ${getErrorMessage(error)}`)
+				.setErrorType("Input Validation")
+				.setStatusCode(400)
+				.build()
+				.throwError();
 		}
 
 		// validate notification type
@@ -46,7 +52,12 @@ class NotificationValidation {
 		try {
 			ValidationUtil.checkRequiredFields(requiredFields, reqBody);
 		} catch (error) {
-			CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			CustomError.builder()
+				.setMessage(`Request body is invalid. ${getErrorMessage(error)}`)
+				.setErrorType("Input Validation")
+				.setStatusCode(400)
+				.build()
+				.throwError();
 		}
 
 		return reqBody;

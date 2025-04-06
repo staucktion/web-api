@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import handlePrismaType from "src/util/handlePrismaType";
+import VoteDto from "src/dto/vote/VoteDto";
 import handlePrismaError from "src/util/handlePrismaError";
+import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
 
 class VoteService {
@@ -10,6 +11,7 @@ class VoteService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async insertNewVote(data: any): Promise<any> {
 		try {
 			const newInstanceTemp = await this.prisma.vote.create({ data });
@@ -19,6 +21,7 @@ class VoteService {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async getVoteListByUserId(userId: number): Promise<any> {
 		try {
 			const instanceList = await this.prisma.vote.findMany({
@@ -36,6 +39,22 @@ class VoteService {
 		}
 	}
 
+	public async getVoteListByUserIdAndStatusId(userId: number, statusId: number): Promise<VoteDto[]> {
+		try {
+			const instanceList = await this.prisma.vote.findMany({
+				where: {
+					user_id: userId,
+					status_id: statusId,
+				},
+			});
+
+			return handlePrismaType(instanceList);
+		} catch (error) {
+			handlePrismaError(error);
+		}
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public async updateVote(id, data: any): Promise<any> {
 		try {
 			const { auction: _auction, photo: _photo, status: _status, user: _user, ...cleanData } = data;

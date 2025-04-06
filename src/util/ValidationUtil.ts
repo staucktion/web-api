@@ -21,6 +21,7 @@ class ValidationUtil {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public static compareObjectProperties(obj1: any, obj2: any, fields: string[]) {
 		const unmatchedFields = fields.filter((field) => obj1[field] !== obj2[field]);
 
