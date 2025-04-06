@@ -14,7 +14,7 @@ class AdminFacade {
 	}
 
 	public async getConfig(req: Request, res: Response): Promise<void> {
-		let responseDto: Omit<DbConfigDto, "id"> = {
+		const responseDto: Omit<DbConfigDto, "id"> = {
 			voter_comission_percentage: Config.voterComissionPercentage,
 			photographer_comission_percentage: Config.photographerComissionPercentage,
 			is_timer_job_active: Config.isTimerActive,
