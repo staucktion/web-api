@@ -206,3 +206,10 @@ model notification {
 
   @@index([sent_to_user_id, seen_at])
 }
+
+model config {
+  id                                Int     @id @default(autoincrement())
+  voter_comission_percentage        Decimal @db.Decimal(10, 2)
+  photographer_comission_percentage Decimal @db.Decimal(10, 2)
+  is_timer_job_active               Boolean
+}
