@@ -24,6 +24,16 @@ class AdminEndpoint {
 		this.router.get("/admin/config", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
 			await this.adminFacade.getConfig(req, res);
 		});
+
+		// get all users (authenticated) - admin only
+		this.router.get("/admin/users", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
+			await this.adminFacade.getAllUsers(req, res);
+		});
+
+		// get specific user (authenticated) - admin only
+		this.router.get("/admin/users/:userId", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
+			await this.adminFacade.getUserById(req, res);
+		});
 	}
 
 	public getRouter(): Router {

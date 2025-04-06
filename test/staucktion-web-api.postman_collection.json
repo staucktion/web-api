@@ -1081,6 +1081,41 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get All Users (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/admin/users",
+							"host": ["{{BASE_URL}}"],
+							"path": ["admin", "users"]
+						},
+						"description": "Retrieves a list of all users in the system. Requires authentication. Only accessible to admins."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By ID (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/admin/users/:userId",
+							"host": ["{{BASE_URL}}"],
+							"path": ["admin", "users", ":userId"],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "1",
+									"description": "ID of the user to retrieve"
+								}
+							]
+						},
+						"description": "Retrieves detailed information about a specific user. Requires authentication. Only accessible to admins."
+					},
+					"response": []
 				}
 			]
 		}
