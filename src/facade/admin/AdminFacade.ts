@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Config from "src/config/Config";
-import ComissionDto from "src/dto/comission/ComissionDto";
 import DbConfigDto from "src/dto/dbConfig/DbConfigDto";
 import CustomError from "src/error/CustomError";
 import AdminValidation from "src/validation/admin/AdminValidation";
@@ -14,17 +13,21 @@ class AdminFacade {
 		this.dbConfigFacade = new DbConfigFacade();
 	}
 
-	public async getComissionConfig(req: Request, res: Response): Promise<void> {
-		let responseDto: ComissionDto = { voterComissionPercentage: Config.voterComissionPercentage, photographerComissionPercentage: Config.photographerComissionPercentage };
+	public async getConfig(req: Request, res: Response): Promise<void> {
+		let responseDto: Omit<DbConfigDto, "id"> = {
+			voter_comission_percentage: Config.voterComissionPercentage,
+			photographer_comission_percentage: Config.photographerComissionPercentage,
+			is_timer_job_active: Config.isTimerActive,
+		};
 		res.status(200).json(responseDto);
 	}
 
-	public async changeComissionConfig(req: Request, res: Response): Promise<void> {
-		let comissionDto: ComissionDto;
+	public async setConfig(req: Request, res: Response): Promise<void> {
+		let dbConfigDto: Omit<DbConfigDto, "id">;
 
 		// get valid body from request
 		try {
-			comissionDto = await this.adminValidation.validateComissionRequest(req);
+			dbConfigDto = await this.adminValidation.validateConfigRequest(req);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
@@ -32,31 +35,15 @@ class AdminFacade {
 
 		// validate comission amount
 		try {
-			await this.adminValidation.validateComissionAmount(comissionDto);
+			await this.adminValidation.validateComissionAmount(dbConfigDto);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
 		}
 
-		// fetch existing data
-		let oldDbConfigDto: DbConfigDto;
+		// save data
 		try {
-			oldDbConfigDto = await this.dbConfigFacade.getDbConfig();
-		} catch (error) {
-			CustomError.handleError(res, error);
-			return;
-		}
-
-		// create new data
-		const newDbConfigDto = {
-			...oldDbConfigDto,
-			voter_comission_percentage: comissionDto.voterComissionPercentage,
-			photographer_comission_percentage: comissionDto.photographerComissionPercentage,
-		};
-
-		// save new data
-		try {
-			await this.dbConfigFacade.setDbConfig(newDbConfigDto);
+			await this.dbConfigFacade.setDbConfig(dbConfigDto);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;

@@ -19,7 +19,7 @@ class DbConfigFacade {
 		}
 	}
 
-	public async setDbConfig(data: DbConfigDto): Promise<void> {
+	public async setDbConfig(data: Omit<DbConfigDto, "id">): Promise<void> {
 		try {
 			await this.dbConfigService.setDbConfig(data);
 		} catch (error) {
@@ -32,7 +32,6 @@ class DbConfigFacade {
 		try {
 			// fetch configs from db
 			const dbConfig: DbConfigDto = await this.dbConfigService.fetchDbConfig();
-
 			// set db configs as static to use in app
 			Config.voterComissionPercentage = dbConfig.voter_comission_percentage;
 			Config.photographerComissionPercentage = dbConfig.photographer_comission_percentage;

@@ -20,10 +20,12 @@ class DbConfigService {
 		}
 	}
 
-	public async setDbConfig(dbConfigDto: DbConfigDto): Promise<DbConfigDto> {
+	public async setDbConfig(dbConfigDto: Omit<DbConfigDto, "id">): Promise<DbConfigDto> {
 		try {
+			console.log("try to update data");
+			console.log(dbConfigDto);
 			const updatedConfig = await this.prisma.config.update({
-				where: { id: dbConfigDto.id },
+				where: { id: 1 },
 				data: {
 					voter_comission_percentage: dbConfigDto.voter_comission_percentage,
 					photographer_comission_percentage: dbConfigDto.photographer_comission_percentage,

@@ -1,14 +1,13 @@
 import { Request } from "express";
-import CardDto from "src/dto/bank/CardDto";
-import ComissionDto from "src/dto/comission/ComissionDto";
+import DbConfigDto from "src/dto/dbConfig/DbConfigDto";
 import CustomError from "src/error/CustomError";
 import ValidationUtil from "src/util/ValidationUtil";
 
 class AdminValidation {
-	public async validateComissionRequest(req: Request): Promise<ComissionDto> {
+	public async validateConfigRequest(req: Request): Promise<Omit<DbConfigDto, "id">> {
 		const input = req.body;
-		const requiredFields: string[] = ["voterComissionPercentage", "photographerComissionPercentage"];
-		const numericFields: string[] = ["voterComissionPercentage", "photographerComissionPercentage"];
+		const requiredFields: string[] = ["voter_comission_percentage", "photographer_comission_percentage", "is_timer_job_active"];
+		const numericFields: string[] = ["voter_comission_percentage", "photographer_comission_percentage"];
 
 		// validate request body
 		try {
@@ -41,12 +40,12 @@ class AdminValidation {
 				CustomError.builder().setMessage(`Request body is invalid. ${error.getDetailedMessage()}`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
-		const comissionDto: ComissionDto = req.body;
-		return comissionDto;
+		const dbConfigDto: Omit<DbConfigDto, "id"> = req.body;
+		return dbConfigDto;
 	}
-	
-	public async validateComissionAmount(comisisonDto: ComissionDto): Promise<void> {
-		if (comisisonDto.photographerComissionPercentage + comisisonDto.voterComissionPercentage > 100)
+
+	public async validateComissionAmount(dbConfigDto: Omit<DbConfigDto, "id">): Promise<void> {
+		if (dbConfigDto.photographer_comission_percentage + dbConfigDto.voter_comission_percentage > 100)
 			CustomError.builder().setMessage(`Total comission amount is cannot be higher than 100`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
 	}
 }

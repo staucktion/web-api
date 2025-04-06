@@ -15,14 +15,14 @@ class AdminEndpoint {
 	}
 
 	private initializeRoutes(): void {
-		// change comission configuration (authenticated) - admin only
-		this.router.post("/admin/config/comission", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
-			await this.adminFacade.changeComissionConfig(req, res);
+		// set configuration (authenticated) - admin only
+		this.router.post("/admin/config", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
+			await this.adminFacade.setConfig(req, res);
 		});
 
-		// get comission configuration (authenticated) - admin only
-		this.router.get("/admin/config/comission", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
-			await this.adminFacade.getComissionConfig(req, res);
+		// get configuration (authenticated) - admin only
+		this.router.get("/admin/config", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
+			await this.adminFacade.getConfig(req, res);
 		});
 	}
 
