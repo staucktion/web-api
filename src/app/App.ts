@@ -27,9 +27,9 @@ class App {
 
 	public async init(): Promise<void> {
 		console.log("[INFO] initializing application...");
+		await this.dbConfigFacade.syncDbConfig();
 		this.initializeMiddlewares();
 		this.initializeRoutes();
-		await this.dbConfigFacade.syncDbConfig();
 		if (Config.isTimerActive) {
 			this.timer = new Timer(this.webSocketManager);
 			this.timer.start();

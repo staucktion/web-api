@@ -10,7 +10,6 @@ class EnvVariables {
 	static bankUrl: string = process.env.BANK_URL;
 	static provisionAmount: number = parseInt(process.env.PROVISION);
 	static initialAuctionPrice: number = parseInt(process.env.INITIAL_AUCTION_PRICE);
-	static isTimerActive: boolean = process.env.IS_TIMER_ACTIVE === "true";
 
 	static watermark = {
 		fontSize: parseFloat(process.env.WATERMARK_FONT_SIZE),

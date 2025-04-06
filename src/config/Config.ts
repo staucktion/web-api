@@ -11,7 +11,6 @@ class Config {
 	static bankUrl = EnvVariables.bankUrl;
 	static provisionAmount = EnvVariables.provisionAmount;
 	static initialAuctionPrice = EnvVariables.initialAuctionPrice;
-	static isTimerActive = EnvVariables.isTimerActive;
 
 	static watermark = { ...EnvVariables.watermark };
 
@@ -31,8 +30,10 @@ class Config {
 		cvv: "123",
 	};
 
+	// db configs
 	static voterComissionPercentage: number;
 	static photographerComissionPercentage: number;
+	static isTimerActive: boolean;
 }
 
 export default Config;
