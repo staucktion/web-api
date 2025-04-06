@@ -22,8 +22,6 @@ class DbConfigService {
 
 	public async setDbConfig(dbConfigDto: Omit<DbConfigDto, "id">): Promise<DbConfigDto> {
 		try {
-			console.log("try to update data");
-			console.log(dbConfigDto);
 			const updatedConfig = await this.prisma.config.update({
 				where: { id: 1 },
 				data: {
