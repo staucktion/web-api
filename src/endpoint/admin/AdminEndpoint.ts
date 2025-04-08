@@ -34,6 +34,11 @@ class AdminEndpoint {
 		this.router.get("/admin/users/:userId", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
 			await this.adminFacade.getUserById(req, res);
 		});
+
+		// update user (authenticated) - admin only
+		this.router.put("/admin/users/:userId", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
+			await this.adminFacade.updateUser(req, res);
+		});
 	}
 
 	public getRouter(): Router {

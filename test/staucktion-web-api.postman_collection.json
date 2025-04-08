@@ -1116,6 +1116,36 @@
 						"description": "Retrieves detailed information about a specific user. Requires authentication. Only accessible to admins."
 					},
 					"response": []
+				},
+				{
+					"name": "Update User (Admin Only)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status_id\": 12,\n    \"role_id\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/admin/users/:userId",
+							"host": ["{{BASE_URL}}"],
+							"path": ["admin", "users", ":userId"],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "1",
+									"description": "ID of the user to update"
+								}
+							]
+						},
+						"description": "Updates a user's status and/or role. Only accessible to admins. At least one of status_id or role_id must be provided. Values must be valid enum values from StatusEnum and RoleEnum."
+					},
+					"response": []
 				}
 			]
 		}
