@@ -126,6 +126,8 @@ model cron {
   unit              String    @db.Char(1)
   interval          Int
   last_trigger_time DateTime? @db.Timestamp(6)
+  name              String    @db.VarChar
+  next_trigger_time DateTime? @db.Timestamp(6)
 }
 
 model auction_photo {

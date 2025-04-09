@@ -100,6 +100,8 @@ CREATE TABLE "cron" (
     "unit" CHAR(1) NOT NULL,
     "interval" INTEGER NOT NULL,
     "last_trigger_time" TIMESTAMP(6),
+    "name" VARCHAR NOT NULL,
+    "next_trigger_time" TIMESTAMP(6),
 
     CONSTRAINT "cron_pkey" PRIMARY KEY ("id")
 );
