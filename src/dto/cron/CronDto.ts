@@ -1,9 +1,11 @@
 import BaseResponseDto from "../base/BaseResponseDto";
 
 interface CronDto extends BaseResponseDto {
+	name: string;
 	unit: string;
 	interval: number;
-	lastTriggerTime: Date;
+	last_trigger_time: Date;
+	next_trigger_time: Date;
 }
 
 export default CronDto;
