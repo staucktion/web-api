@@ -1120,7 +1120,7 @@
 				{
 					"name": "Update User (Admin Only)",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",

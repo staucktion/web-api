@@ -36,7 +36,7 @@ class AdminEndpoint {
 		});
 
 		// update user (authenticated) - admin only
-		this.router.put("/admin/users/:userId", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
+		this.router.patch("/admin/users/:userId", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
 			await this.adminFacade.updateUser(req, res);
 		});
 	}
