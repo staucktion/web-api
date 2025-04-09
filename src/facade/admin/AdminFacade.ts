@@ -6,14 +6,17 @@ import AdminValidation from "src/validation/admin/AdminValidation";
 import DbConfigFacade from "../dbConfig/DbConfigFacade";
 import UserService from "src/service/user/userService";
 import sendJsonBigint from "src/util/sendJsonBigint";
+import AdminUserValidation from "src/validation/admin/AdminUserValidation";
 
 class AdminFacade {
 	private adminValidation: AdminValidation;
+	private adminUserValidation: AdminUserValidation;
 	private dbConfigFacade: DbConfigFacade;
 	private userService: UserService;
 
 	constructor() {
 		this.adminValidation = new AdminValidation();
+		this.adminUserValidation = new AdminUserValidation();
 		this.dbConfigFacade = new DbConfigFacade();
 		this.userService = new UserService();
 	}
@@ -91,6 +94,29 @@ class AdminFacade {
 			user.password = "---REDACTED---";
 
 			sendJsonBigint(res, user, 200);
+		} catch (error) {
+			CustomError.handleError(res, error);
+		}
+	}
+
+	public async updateUser(req: Request, res: Response): Promise<void> {
+		try {
+			const userId = parseInt(req.params.userId);
+			if (isNaN(userId)) {
+				CustomError.builder().setMessage("Invalid user ID").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+
+			// Validate request
+			const updateUserDto = await this.adminUserValidation.validateAdminUpdateUserRequest(req);
+
+			// Update user
+			const updatedUser = await this.userService.updateUser(userId, updateUserDto);
+
+			// Redact sensitive information
+			updatedUser.password = "---REDACTED---";
+
+			// Send response
+			sendJsonBigint(res, updatedUser, 200);
 		} catch (error) {
 			CustomError.handleError(res, error);
 		}
