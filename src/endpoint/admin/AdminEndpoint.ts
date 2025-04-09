@@ -44,7 +44,7 @@ class AdminEndpoint {
 		});
 
 		// update crons (authenticated) - admin only
-		this.router.put("/admin/crons", this.authMiddleware.authenticateJWT, async (req, res) => {
+		this.router.put("/admin/crons", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, async (req, res) => {
 			await this.cronFacade.updateCronList(req, res);
 		});
 	}
