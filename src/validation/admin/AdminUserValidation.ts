@@ -16,7 +16,13 @@ class AdminUserValidation {
 		// Validate status_id if provided
 		if (updateData.status_id !== undefined) {
 			if (![StatusEnum.BANNED, StatusEnum.ACTIVE].includes(updateData.status_id)) {
-				CustomError.builder().setMessage(`Invalid status_id. Must be either BANNED (${StatusEnum.BANNED}) or ACTIVE (${StatusEnum.ACTIVE}).`).setErrorType("Input Validation").setStatusCode(400).build().throwError();
+				CustomError.builder()
+					.setMessage(`Invalid status_id. Must be either BANNED (${StatusEnum.BANNED}) or ACTIVE (${StatusEnum.ACTIVE}).`)
+					.setErrorType("Input Validation")
+					.setStatusCode(400)
+					.build()
+					.throwError();
+			}
 		}
 
 		// Validate role_id if provided
