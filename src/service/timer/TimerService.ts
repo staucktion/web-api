@@ -21,7 +21,7 @@ class TimerService {
 				throw CustomError.builder().setErrorType("Not Found").setStatusCode(404).setMessage("No cron data found.").build();
 			}
 
-			const cronDto: CronDto = {
+			const cronDto: any = {
 				id: Number(instance.id),
 				unit: instance.unit,
 				interval: instance.interval,
