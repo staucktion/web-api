@@ -17,7 +17,7 @@ class CronEndpoint {
 	private initializeRoutes(): void {
 		// get crons (authenticated)
 		this.router.get("/crons", this.authMiddleware.authenticateJWT, async (req, res) => {
-			await this.cronFacade.getCrons(req, res);
+			await this.cronFacade.getCronList(req, res);
 		});
 	}
 
