@@ -11,6 +11,7 @@ export class Timer {
 	private timerFacade: TimerFacade;
 	private cronService: CronService;
 	private timeoutId: NodeJS.Timeout | null = null;
+	private cronDto: CronDto;
 
 	constructor(webSocketManager: WebSocketManager, cronId: number) {
 		this.cronId = cronId;
@@ -24,12 +25,11 @@ export class Timer {
 			return;
 		}
 
-		let cronDto: CronDto;
 		let timeoutInterval: number;
 
 		// get cron dto
 		try {
-			cronDto = await this.cronService.getCronById(this.cronId);
+			this.cronDto = await this.cronService.getCronById(this.cronId);
 		} catch (error) {
 			CustomError.handleSystemError(error);
 			return;
@@ -37,7 +37,7 @@ export class Timer {
 
 		// convert corresponding time to ms
 		try {
-			timeoutInterval = DateUtil.convertToMilliseconds(cronDto.interval, cronDto.unit);
+			timeoutInterval = DateUtil.convertToMilliseconds(this.cronDto.interval, this.cronDto.unit);
 		} catch (error) {
 			CustomError.handleSystemError(error);
 			return;
@@ -45,8 +45,18 @@ export class Timer {
 
 		this.scheduleNextRun(timeoutInterval);
 
+		// update next trigger time
+		const nextTrigger = DateUtil.stripMilliseconds(new Date(Date.now() + timeoutInterval));
+		this.cronDto.next_trigger_time = nextTrigger;
+		try {
+			await this.cronService.updateCronList([this.cronDto]);
+		} catch (error) {
+			CustomError.handleSystemError(error);
+			return;
+		}
+
 		console.info("\n🕑🕑🕑");
-		console.info(`🕑 Timer ${cronEnum[this.cronId]} started with schedule: [${cronDto.interval}${cronDto.unit}]`);
+		console.info(`🕑 Timer ${cronEnum[this.cronId]} started with schedule: [${this.cronDto.interval}${this.cronDto.unit}]`);
 		console.info("🕑🕑🕑");
 	}
 
@@ -58,7 +68,7 @@ export class Timer {
 		}
 	}
 
-	private scheduleNextRun(interval: number) {
+	private scheduleNextRun(timeoutInterval: number) {
 		this.timeoutId = setTimeout(async () => {
 			// run job
 			try {
@@ -67,7 +77,19 @@ export class Timer {
 				CustomError.handleSystemError(error);
 			}
 
-			this.scheduleNextRun(interval);
-		}, interval);
+			// update next trigger time and last trigger time
+			const lastTrigger = DateUtil.stripMilliseconds(new Date(Date.now()));
+			const nextTrigger = DateUtil.stripMilliseconds(new Date(Date.now() + timeoutInterval));
+			this.cronDto.next_trigger_time = nextTrigger;
+			this.cronDto.last_trigger_time = lastTrigger;
+			try {
+				await this.cronService.updateCronList([this.cronDto]);
+			} catch (error) {
+				CustomError.handleSystemError(error);
+				return;
+			}
+
+			this.scheduleNextRun(timeoutInterval);
+		}, timeoutInterval);
 	}
 }

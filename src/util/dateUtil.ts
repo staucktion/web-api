@@ -16,6 +16,12 @@ class DateUtil {
 		return new Date(new Date().toISOString().replace(/\.\d{3}Z$/, "Z"));
 	}
 
+	public static stripMilliseconds(date: Date): Date {
+		const noMs = new Date(date);
+		noMs.setMilliseconds(0);
+		return noMs;
+	}
+
 	public static convertToMilliseconds(interval: number, unit: string): number {
 		switch (unit) {
 			case "s":
