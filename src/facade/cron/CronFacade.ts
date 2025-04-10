@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import App from "src/app/App";
 import CronDto from "src/dto/cron/CronDto";
 import CronUpdateDto from "src/dto/cron/CronUpdateDto";
 import CustomError from "src/error/CustomError";
@@ -48,6 +49,9 @@ class CronFacade {
 			CustomError.handleError(res, error);
 			return;
 		}
+
+		// restart timers
+		App.restartTimers();
 
 		res.status(200).json(updatedCronDtoList);
 		return;

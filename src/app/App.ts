@@ -16,10 +16,7 @@ class App {
 	private httpServer: HttpServer;
 	private webSocketManager: WebSocketManager;
 	private dbConfigFacade: DbConfigFacade;
-	private timerStarter: Timer;
-	private timerVote: Timer;
-	private timerAuction: Timer;
-	private timerPurchaseAfterAuction: Timer;
+	private static timers: Timer[] = [];
 
 	constructor() {
 		this.app = express();
@@ -35,16 +32,19 @@ class App {
 		this.initializeMiddlewares();
 		this.initializeRoutes();
 		if (Config.isTimerActive) {
-			this.timerStarter = new Timer(this.webSocketManager, cronEnum.STARTER);
-			this.timerVote = new Timer(this.webSocketManager, cronEnum.VOTE);
-			this.timerAuction = new Timer(this.webSocketManager, cronEnum.AUCTION);
-			this.timerPurchaseAfterAuction = new Timer(this.webSocketManager, cronEnum.PURCHASE_AFTER_AUCTION);
-
-			this.timerStarter.start();
-			this.timerVote.start();
-			this.timerAuction.start();
-			this.timerPurchaseAfterAuction.start();
+			App.timers = [
+				new Timer(this.webSocketManager, cronEnum.STARTER),
+				new Timer(this.webSocketManager, cronEnum.VOTE),
+				new Timer(this.webSocketManager, cronEnum.AUCTION),
+				new Timer(this.webSocketManager, cronEnum.PURCHASE_AFTER_AUCTION),
+			];
+			App.timers.forEach((timer) => timer.start());
 		}
+	}
+
+	public static restartTimers() {
+		App.timers.forEach((timer) => timer.stop());
+		App.timers.forEach((timer) => timer.start());
 	}
 
 	private initializeMiddlewares(): void {
