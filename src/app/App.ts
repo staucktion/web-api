@@ -7,6 +7,7 @@ import DbConfigFacade from "src/facade/dbConfig/DbConfigFacade";
 import Logger from "src/log/Logger";
 import Router from "src/router/Router";
 import { Timer } from "src/timer/Timer";
+import { cronEnum } from "src/types/cronEnum";
 import WebSocketManager from "src/websocket/WebSocketManager";
 
 class App {
@@ -14,8 +15,11 @@ class App {
 	private router: Router;
 	private httpServer: HttpServer;
 	private webSocketManager: WebSocketManager;
-	private timer: Timer;
 	private dbConfigFacade: DbConfigFacade;
+	private timerStarter: Timer;
+	private timerVote: Timer;
+	private timerAuction: Timer;
+	private timerPurchaseAfterAuction: Timer;
 
 	constructor() {
 		this.app = express();
@@ -31,8 +35,15 @@ class App {
 		this.initializeMiddlewares();
 		this.initializeRoutes();
 		if (Config.isTimerActive) {
-			this.timer = new Timer(this.webSocketManager);
-			this.timer.start();
+			this.timerStarter = new Timer(this.webSocketManager, cronEnum.STARTER);
+			this.timerVote = new Timer(this.webSocketManager, cronEnum.VOTE);
+			this.timerAuction = new Timer(this.webSocketManager, cronEnum.AUCTION);
+			this.timerPurchaseAfterAuction = new Timer(this.webSocketManager, cronEnum.PURCHASE_AFTER_AUCTION);
+
+			this.timerStarter.start();
+			this.timerVote.start();
+			this.timerAuction.start();
+			this.timerPurchaseAfterAuction.start();
 		}
 	}
 
