@@ -11,6 +11,15 @@ class CronService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
+	public async getCronById(cronId: number): Promise<CronDto> {
+		try {
+			const cron = await this.prisma.cron.findUnique({ where: { id: cronId } });
+			return handlePrismaType(cron);
+		} catch (error) {
+			handlePrismaError(error);
+		}
+	}
+
 	public async getCronList(): Promise<CronDto[]> {
 		try {
 			const instanceList = await this.prisma.cron.findMany({});
