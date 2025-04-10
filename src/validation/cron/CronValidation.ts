@@ -2,6 +2,7 @@ import { Request } from "express";
 import CronUpdateDto from "src/dto/cron/CronUpdateDto";
 import CustomError from "src/error/CustomError";
 import { cronEnum } from "src/types/cronEnum";
+import DateUtil from "src/util/dateUtil";
 import ValidationUtil from "src/util/ValidationUtil";
 
 class CronValidation {
@@ -69,6 +70,17 @@ class CronValidation {
 			if (cronUpdateDto.interval <= 0)
 				CustomError.builder()
 					.setMessage(`Invalid interval: ${cronUpdateDto.interval}, it cannot be lower or equal to zero`)
+					.setErrorType("Input Validation")
+					.setStatusCode(400)
+					.build()
+					.throwError();
+
+			// validate input is not bigger than 23 day because set interval not accept it
+			const MAX_TIMEOUT = 2147483647;
+			const currentMs = DateUtil.convertToMilliseconds(cronUpdateDto.interval, cronUpdateDto.unit);
+			if (currentMs > MAX_TIMEOUT)
+				CustomError.builder()
+					.setMessage(`Invalid interval: ${currentMs}, it exceeds the maximum allowed value of ${MAX_TIMEOUT} milliseconds`)
 					.setErrorType("Input Validation")
 					.setStatusCode(400)
 					.build()
