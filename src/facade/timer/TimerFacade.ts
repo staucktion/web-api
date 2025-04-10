@@ -34,10 +34,8 @@ class TimerFacade {
 	}
 
 	public async cronJob(cronId: number) {
-		if (cronId == cronEnum.STARTER) console.log("starter");
-		else console.log("not starter");
 
-		console.log("[INFO] 🕑 Job is running at:", new Date().toISOString());
+		console.log(`[INFO] 🕑 Job is running for ${cronEnum[cronId]} at: , ${new Date().toISOString()}`);
 		// this.timerService.saveLastTriggerTimeToDb();
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
