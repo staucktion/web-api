@@ -6,12 +6,11 @@ import CategoryService from "src/service/category/categoryService";
 import NotificationService from "src/service/notification/NotificationService";
 import PhotoService from "src/service/photo/photoService";
 import StatusService from "src/service/status/StatusService";
-import TimerService from "src/service/timer/TimerService";
 import UserService from "src/service/user/userService";
+import { cronEnum } from "src/types/cronEnum";
 import WebSocketManager from "src/websocket/WebSocketManager";
 
 class TimerFacade {
-	private timerService: TimerService;
 	private categoryService: CategoryService;
 	private auctionService: AuctionService;
 	private statusService: StatusService;
@@ -23,7 +22,6 @@ class TimerFacade {
 	private notificationService: NotificationService;
 
 	constructor(webSocketManager: WebSocketManager) {
-		this.timerService = new TimerService();
 		this.categoryService = new CategoryService();
 		this.auctionService = new AuctionService();
 		this.statusService = new StatusService();
@@ -35,9 +33,12 @@ class TimerFacade {
 		this.webSocketManager = webSocketManager;
 	}
 
-	public async cronJob() {
+	public async cronJob(cronId: number) {
+		if (cronId == cronEnum.STARTER) console.log("starter");
+		else console.log("not starter");
+
 		console.log("[INFO] 🕑 Job is running at:", new Date().toISOString());
-		this.timerService.saveLastTriggerTimeToDb();
+		// this.timerService.saveLastTriggerTimeToDb();
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const categoryList: any = await this.categoryService.getAllCategories();
