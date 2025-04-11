@@ -45,6 +45,16 @@ class AdminValidation {
 	}
 
 	public async validateComissionAmount(dbConfigDto: Omit<DbConfigDto, "id">): Promise<void> {
+		if (dbConfigDto.photographer_comission_percentage < 0 || dbConfigDto.voter_comission_percentage < 0)
+			CustomError.builder()
+				.setMessage(
+					`Commission amount cannot be lower than 0 current values are: photographer ${dbConfigDto.photographer_comission_percentage}, voter ${dbConfigDto.voter_comission_percentage}`
+				)
+				.setErrorType("Input Validation")
+				.setStatusCode(400)
+				.build()
+				.throwError();
+
 		if (dbConfigDto.photographer_comission_percentage + dbConfigDto.voter_comission_percentage > 100)
 			CustomError.builder()
 				.setMessage(`Total comission amount is cannot be higher than 100, current is ${dbConfigDto.photographer_comission_percentage + dbConfigDto.voter_comission_percentage}`)
