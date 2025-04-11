@@ -31,15 +31,14 @@ class App {
 		await this.dbConfigFacade.syncDbConfig();
 		this.initializeMiddlewares();
 		this.initializeRoutes();
-		if (Config.isTimerActive) {
-			App.timers = [
-				new Timer(this.webSocketManager, cronEnum.STARTER),
-				new Timer(this.webSocketManager, cronEnum.VOTE),
-				new Timer(this.webSocketManager, cronEnum.AUCTION),
-				new Timer(this.webSocketManager, cronEnum.PURCHASE_AFTER_AUCTION),
-			];
-			App.timers.forEach((timer) => timer.start());
-		}
+
+		App.timers = [
+			new Timer(this.webSocketManager, cronEnum.STARTER),
+			new Timer(this.webSocketManager, cronEnum.VOTE),
+			new Timer(this.webSocketManager, cronEnum.AUCTION),
+			new Timer(this.webSocketManager, cronEnum.PURCHASE_AFTER_AUCTION),
+		];
+		App.timers.forEach((timer) => timer.start());
 	}
 
 	public static restartTimers() {

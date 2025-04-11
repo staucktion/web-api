@@ -5,6 +5,7 @@ import WebSocketManager from "src/websocket/WebSocketManager";
 import CronService from "src/service/cron/CronService";
 import DateUtil from "src/util/dateUtil";
 import { cronEnum } from "src/types/cronEnum";
+import Config from "src/config/Config";
 
 export class Timer {
 	private cronId: number;
@@ -20,6 +21,8 @@ export class Timer {
 	}
 
 	public async start() {
+		if (!Config.isTimerActive) return;
+
 		if (this.timeoutId) {
 			console.log("Timer is already running.");
 			return;
@@ -69,6 +72,8 @@ export class Timer {
 	}
 
 	private scheduleNextRun(timeoutInterval: number) {
+		if (!Config.isTimerActive) return;
+		
 		this.timeoutId = setTimeout(async () => {
 			// run job
 			try {
