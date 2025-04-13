@@ -34,7 +34,7 @@ class TimerFacade {
 	}
 
 	public async cronJob(cronId: number) {
-		console.log(`[INFO] 🕑 Job is running for ${cronEnum[cronId]} at: , ${new Date().toISOString()}`);
+		console.log(`[INFO] 🕑 Job is running for ${cronEnum[cronId]} at: ${new Date().toISOString()}`);
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const categoryList: any = await this.categoryService.getAllCategories();
