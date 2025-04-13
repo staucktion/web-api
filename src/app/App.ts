@@ -7,6 +7,7 @@ import DbConfigFacade from "src/facade/dbConfig/DbConfigFacade";
 import Logger from "src/log/Logger";
 import Router from "src/router/Router";
 import { Timer } from "src/timer/Timer";
+import { cronEnum } from "src/types/cronEnum";
 import WebSocketManager from "src/websocket/WebSocketManager";
 
 class App {
@@ -14,8 +15,8 @@ class App {
 	private router: Router;
 	private httpServer: HttpServer;
 	private webSocketManager: WebSocketManager;
-	private timer: Timer;
 	private dbConfigFacade: DbConfigFacade;
+	private static timers: Timer[] = [];
 
 	constructor() {
 		this.app = express();
@@ -30,10 +31,19 @@ class App {
 		await this.dbConfigFacade.syncDbConfig();
 		this.initializeMiddlewares();
 		this.initializeRoutes();
-		if (Config.isTimerActive) {
-			this.timer = new Timer(this.webSocketManager);
-			this.timer.start();
-		}
+
+		App.timers = [
+			new Timer(this.webSocketManager, cronEnum.STARTER),
+			new Timer(this.webSocketManager, cronEnum.VOTE),
+			new Timer(this.webSocketManager, cronEnum.AUCTION),
+			new Timer(this.webSocketManager, cronEnum.PURCHASE_AFTER_AUCTION),
+		];
+		App.timers.forEach((timer) => timer.start());
+	}
+
+	public static restartTimers() {
+		App.timers.forEach((timer) => timer.stop());
+		App.timers.forEach((timer) => timer.start());
 	}
 
 	private initializeMiddlewares(): void {

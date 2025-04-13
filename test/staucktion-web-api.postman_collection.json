@@ -1067,6 +1067,31 @@
 					"response": []
 				},
 				{
+					"name": "Set Cron List (Admin Only)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"id\": 1,\r\n        \"unit\": \"d\",\r\n        \"interval\": 1,\r\n        \"name\": \"timer-starter\"\r\n    },\r\n     {\r\n        \"id\": 2,\r\n        \"unit\": \"d\",\r\n        \"interval\": 10,\r\n        \"name\": \"timer-vote\"\r\n    },\r\n    {\r\n        \"id\": 3,\r\n        \"unit\": \"d\",\r\n        \"interval\": 10,\r\n        \"name\": \"timer-auction\"\r\n    },\r\n    {\r\n        \"id\": 4,\r\n        \"unit\": \"h\",\r\n        \"interval\": 6,\r\n        \"name\": \"timer-purchase-after-auction\"\r\n    }   \r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/admin/crons",
+							"host": ["{{BASE_URL}}"],
+							"path": ["admin", "crons"]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get Config (Admin Only)",
 					"request": {
 						"auth": {
@@ -1144,6 +1169,27 @@
 							]
 						},
 						"description": "Updates a user's status and/or role. Only accessible to admins. At least one of status_id or role_id must be provided. Values must be valid enum values from StatusEnum and RoleEnum."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "cron",
+			"item": [
+				{
+					"name": "Get Cron List (Requires Auth)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/crons",
+							"host": ["{{BASE_URL}}"],
+							"path": ["crons"]
+						}
 					},
 					"response": []
 				}
