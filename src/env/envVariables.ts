@@ -24,6 +24,11 @@ class EnvVariables {
 		smtp: process.env.EMAIL_SMTP,
 	};
 
+	static onesignal = {
+		appId: process.env.ONESIGNAL_APP_ID,
+		apiKey: process.env.ONESIGNAL_API_KEY,
+	};
+
 	static appUrl = process.env.VITE_APP_URL;
 
 	static jwt = {

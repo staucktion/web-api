@@ -16,6 +16,8 @@ class Config {
 
 	static email = { ...EnvVariables.email };
 
+	static onesignal = { ...EnvVariables.onesignal };
+
 	static appUrl = EnvVariables.appUrl;
 
 	static jwt = { ...EnvVariables.jwt };
