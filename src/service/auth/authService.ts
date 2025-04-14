@@ -4,6 +4,7 @@ import Config from "src/config/Config";
 import { PrismaClient } from "@prisma/client";
 import PrismaUtil from "src/util/PrismaUtil";
 import handlePrismaType from "src/util/handlePrismaType";
+import { StatusEnum } from "src/types/statusEnum";
 
 class AuthService {
 	private prisma: PrismaClient;
@@ -12,7 +13,7 @@ class AuthService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
-	async getUser({ gmail_id }: Pick<UserDto, "gmail_id">): Promise<UserDto | undefined> {
+	async getUser({ gmail_id }: Pick<UserDto, "gmail_id">, fetchBannedUsers = false): Promise<UserDto | undefined> {
 		const user = await this.prisma.user.findFirst({
 			where: {
 				gmail_id,
@@ -20,8 +21,13 @@ class AuthService {
 			},
 			include: {
 				user_role: true,
+				status: true,
 			},
 		});
+
+		if (!fetchBannedUsers && user && user.status_id === StatusEnum.BANNED) {
+			return undefined;
+		}
 
 		return handlePrismaType(user);
 	}

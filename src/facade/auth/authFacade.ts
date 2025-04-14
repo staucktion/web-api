@@ -6,6 +6,7 @@ import { redirectWithHost } from "src/util/authUtil";
 import sendJsonBigint from "src/util/sendJsonBigint";
 import { OAuth2Client } from "google-auth-library";
 import Config from "src/config/Config";
+import { StatusEnum } from "src/types/statusEnum";
 
 class AuthFacade {
 	private authService: AuthService;
@@ -22,9 +23,12 @@ class AuthFacade {
 		let user: UserDto | undefined;
 		const email = gmailProfileData.email.toLowerCase();
 		try {
-			user = await this.authService.getUser({
-				gmail_id: gmailProfileData.gmail_id,
-			});
+			user = await this.authService.getUser(
+				{
+					gmail_id: gmailProfileData.gmail_id,
+				},
+				true
+			);
 
 			if (!user) {
 				user = await this.authService.createUser({
@@ -35,6 +39,9 @@ class AuthFacade {
 					first_name: gmailProfileData.name.givenName,
 					last_name: gmailProfileData.name.familyName,
 				});
+			} else if (user.status_id === StatusEnum.BANNED) {
+				redirectWithHost(res, `/?error=${encodeURIComponent("You have been banned from the platform. Please contact support. Thank you!")}`);
+				return;
 			}
 
 			const token = this.authService.generateJWT(gmailProfileData.gmail_id);
@@ -111,7 +118,7 @@ class AuthFacade {
 
 			if (tokenContent) {
 				const user = await this.authService.getUser({ gmail_id: tokenContent.gmail_id });
-				sendJsonBigint(res, { user });
+				sendJsonBigint(res, { user: user ?? null });
 			} else {
 				res.clearCookie("token");
 				res.status(200).json({ user: null });

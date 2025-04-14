@@ -12,6 +12,11 @@ interface UserDto {
 		id: number | bigint;
 		role: string;
 	};
+	status_id: number | bigint | null;
+	status?: {
+		id: number | bigint;
+		status: string;
+	} | null;
 }
 
 export default UserDto;
