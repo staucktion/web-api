@@ -9,7 +9,7 @@ import LocationDto from "src/dto/location/LocationDto";
 import PurchasedPhotoDto from "src/dto/photo/PurchasedPhotoDto";
 import UploadPhotoDto from "src/dto/photo/UploadPhotoDto";
 import CustomError from "src/error/CustomError";
-import AndroidNotificationService from "src/service/android/notification/androidNotificationService";
+import AndroidNotificationService from "src/service/android/notification/AndroidNotificationService";
 import CategoryService from "src/service/category/categoryService";
 import LocationService from "src/service/location/locationService";
 import PhotoService from "src/service/photo/photoService";
