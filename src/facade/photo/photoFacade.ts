@@ -9,6 +9,7 @@ import LocationDto from "src/dto/location/LocationDto";
 import PurchasedPhotoDto from "src/dto/photo/PurchasedPhotoDto";
 import UploadPhotoDto from "src/dto/photo/UploadPhotoDto";
 import CustomError from "src/error/CustomError";
+import AndroidNotificationService from "src/service/android/notification/AndroidNotificationService";
 import CategoryService from "src/service/category/categoryService";
 import LocationService from "src/service/location/locationService";
 import PhotoService from "src/service/photo/photoService";
@@ -25,6 +26,7 @@ class PhotoFacade {
 	private categoryService: CategoryService;
 	private purchasedPhotoService: PurchasedPhotoService;
 	private statusService: StatusService;
+	private androidNotificationService: AndroidNotificationService;
 
 	constructor() {
 		this.photoValidation = new PhotoValidation();
@@ -33,6 +35,7 @@ class PhotoFacade {
 		this.categoryService = new CategoryService();
 		this.purchasedPhotoService = new PurchasedPhotoService();
 		this.statusService = new StatusService();
+		this.androidNotificationService = new AndroidNotificationService();
 	}
 
 	public async uploadPhoto(req: Request, res: Response): Promise<void> {
@@ -200,6 +203,16 @@ class PhotoFacade {
 					photo: updatedPhoto,
 				},
 				200
+			);
+
+			// Send notification to the user (void so no need to handle error)
+			void this.androidNotificationService.sendAndroidNotification(
+				updatedPhoto.user_id,
+				`Your Photo Has Been ${action === "approve" ? "Approved" : "Rejected"}`,
+				newStatus === StatusEnum.APPROVE ? "Please decide whether to auction your photo or not." : `Your photo has been rejected with the following reason: ${reason}`,
+				{
+					photo_id: updatedPhoto.id.toString(),
+				}
 			);
 		} catch (error) {
 			CustomError.handleError(res, error);
