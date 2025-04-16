@@ -1194,6 +1194,72 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "External",
+			"item": [
+				{
+					"name": "OneSignal",
+					"item": [
+						{
+							"name": "Send Android Push Notification to User",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"app_id\": \"{{OneSignal_APP_ID}}\",\n  \"include_aliases\": {\n    \"external_id\": [\"102306011047288363783\"]\n  },\n  \"target_channel\": \"push\",\n  \"headings\": {\n    \"en\": \"Approval Message\"\n  },\n  \"contents\": {\n    \"en\": \"Your message here\"\n  },\n  \"data\": {\n    \"photo_id\": 1\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://onesignal.com/api/v1/notifications",
+									"protocol": "https",
+									"host": ["onesignal", "com"],
+									"path": ["api", "v1", "notifications"]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "apikey",
+						"apikey": [
+							{
+								"key": "value",
+								"value": "Basic {{OneSignal_API_KEY}}",
+								"type": "string"
+							},
+							{
+								"key": "key",
+								"value": "Authorization",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [""]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [""]
+							}
+						}
+					]
+				}
+			]
 		}
 	],
 	"event": [
@@ -1223,6 +1289,16 @@
 			"key": "AUTH_TOKEN",
 			"value": "",
 			"type": "default"
+		},
+		{
+			"key": "OneSignal_APP_ID",
+			"value": "5dafc689-25b8-4756-8c78-a31e6a541e51",
+			"type": "string"
+		},
+		{
+			"key": "OneSignal_API_KEY",
+			"value": "",
+			"type": "string"
 		}
 	]
 }
