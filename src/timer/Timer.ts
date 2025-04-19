@@ -1,11 +1,10 @@
 import CronDto from "src/dto/cron/CronDto";
 import CustomError from "src/error/CustomError";
 import TimerFacade from "src/facade/timer/TimerFacade";
-import WebSocketManager from "src/websocket/WebSocketManager";
 import CronService from "src/service/cron/CronService";
-import DateUtil from "src/util/dateUtil";
 import { cronEnum } from "src/types/cronEnum";
-import Config from "src/config/Config";
+import DateUtil from "src/util/dateUtil";
+import WebSocketManager from "src/websocket/WebSocketManager";
 
 export class Timer {
 	private cronId: number;

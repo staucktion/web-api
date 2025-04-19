@@ -381,7 +381,7 @@ class PhotoFacade {
 
 	public async listOwnPendingPurchasePhotos(req: Request, res: Response): Promise<void> {
 		let allPhotoList: ReadAllPhotoResponseDto[];
-		let filteredPhotoList: ReadAllPhotoResponseDto[] = [];
+		const filteredPhotoList: ReadAllPhotoResponseDto[] = [];
 		// check if user authenticated
 		if (!req.user) {
 			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
