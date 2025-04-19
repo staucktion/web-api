@@ -632,6 +632,19 @@
 					"response": []
 				},
 				{
+					"name": "Get All Pending Purchase Photos (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/my/pending-purchase",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "my", "pending-purchase"]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get All Own Photos (Requires Auth)",
 					"request": {
 						"method": "GET",
