@@ -16,6 +16,7 @@ import BaseValidation from "src/validation/base/BaseValidation";
 import { hasKey } from "src/util/tsUtil";
 import MailService from "src/service/mail/mailService";
 import { MailAction } from "src/types/mailTypes";
+import { StatusEnum } from "src/types/statusEnum";
 class BankFacade {
 	private bankService: BankService;
 	private bankValidation: BankValidation;
@@ -205,7 +206,8 @@ class BankFacade {
 			return;
 		}
 
-		// update auction, auction photo and photo
+		// update auction photo and photo
+
 		const soldStatus = await this.statusService.getStatusFromName("sold");
 		const finishStatus = await this.statusService.getStatusFromName("finish");
 		try {
@@ -216,18 +218,29 @@ class BankFacade {
 			return;
 		}
 		try {
-			const data = { ...auctionPhoto.auction, status_id: finishStatus.id };
-			await this.auctionService.updateAuction(auctionPhoto.auction.id, data);
-		} catch (error) {
-			CustomError.handleError(res, error);
-			return;
-		}
-		try {
 			const data = { ...photo, status_id: soldStatus.id };
 			await this.photoService.updatePhoto(photoId, data);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
+		}
+
+		// check other purchases and if there is no another purchase pending, make auction finish
+		let auction;
+		try {
+			auction = await this.auctionService.getAuctionById(auctionPhoto.auction.id);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+		if (auction.auction_photo_list.every((photo) => photo.status_id === finishStatus.id)) {
+			try {
+				const data = { ...auctionPhoto.auction, status_id: finishStatus.id };
+				await this.auctionService.updateAuction(auctionPhoto.auction.id, data);
+			} catch (error) {
+				CustomError.handleError(res, error);
+				return;
+			}
 		}
 
 		res.status(204).send();
