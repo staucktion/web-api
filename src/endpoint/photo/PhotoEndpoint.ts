@@ -82,6 +82,11 @@ class PhotoEndpoint {
 		this.router.post("/photos/:photoId/auctionable", this.authMiddleware.authenticateJWT, (req, res) => {
 			this.photoFacade.updatePhotoAuctionableStatus(req, res);
 		});
+
+		// Get own pending purchase photos (authenticated)
+		this.router.get("/photos/my/pending-purchase", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.listOwnPendingPurchasePhotos(req, res);
+		});
 	}
 
 	public getRouter(): Router {

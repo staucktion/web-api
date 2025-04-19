@@ -7,9 +7,11 @@ import CategoryDto from "src/dto/category/CategoryDto";
 import GetPhotoRequestDto from "src/dto/error/GetPhotoRequestDto";
 import LocationDto from "src/dto/location/LocationDto";
 import PurchasedPhotoDto from "src/dto/photo/PurchasedPhotoDto";
+import ReadAllPhotoResponseDto from "src/dto/photo/ReadAllPhotoResponseDto";
 import UploadPhotoDto from "src/dto/photo/UploadPhotoDto";
 import CustomError from "src/error/CustomError";
 import AndroidNotificationService from "src/service/android/notification/AndroidNotificationService";
+import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
 import CategoryService from "src/service/category/categoryService";
 import LocationService from "src/service/location/locationService";
 import PhotoService from "src/service/photo/photoService";
@@ -27,6 +29,7 @@ class PhotoFacade {
 	private purchasedPhotoService: PurchasedPhotoService;
 	private statusService: StatusService;
 	private androidNotificationService: AndroidNotificationService;
+	private auctionPhotoService: AuctionPhotoService;
 
 	constructor() {
 		this.photoValidation = new PhotoValidation();
@@ -36,6 +39,7 @@ class PhotoFacade {
 		this.purchasedPhotoService = new PurchasedPhotoService();
 		this.statusService = new StatusService();
 		this.androidNotificationService = new AndroidNotificationService();
+		this.auctionPhotoService = new AuctionPhotoService();
 	}
 
 	public async uploadPhoto(req: Request, res: Response): Promise<void> {
@@ -373,6 +377,38 @@ class PhotoFacade {
 		}
 
 		sendJsonBigint(res, { message: "Photo auctionable status updated successfully" }, 200);
+	}
+
+	public async listOwnPendingPurchasePhotos(req: Request, res: Response): Promise<void> {
+		let allPhotoList: ReadAllPhotoResponseDto[];
+		let filteredPhotoList: ReadAllPhotoResponseDto[] = [];
+		// check if user authenticated
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		// get all photos with status wait purchase after auction
+		try {
+			allPhotoList = await this.photoService.listPhotosByStatus([StatusEnum.WAIT_PURCHASE_AFTER_AUCTION]);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+
+		// filter photos by winner
+		for (const photo of allPhotoList) {
+			try {
+				const auctionPhoto = await this.auctionPhotoService.getAuctionPhotoByPhotoIdPlain(photo.id);
+				if (auctionPhoto[`winner_user_id_${auctionPhoto.current_winner_order}`] == req.user.id) filteredPhotoList.push(photo);
+			} catch (error) {
+				CustomError.handleError(res, error);
+				return;
+			}
+		}
+
+		sendJsonBigint(res, filteredPhotoList, 200);
+		return;
 	}
 }
 
