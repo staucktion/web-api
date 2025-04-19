@@ -21,8 +21,6 @@ export class Timer {
 	}
 
 	public async start() {
-		if (!Config.isTimerActive) return;
-
 		if (this.timeoutId) {
 			console.log("Timer is already running.");
 			return;
@@ -72,8 +70,6 @@ export class Timer {
 	}
 
 	private scheduleNextRun(timeoutInterval: number) {
-		if (!Config.isTimerActive) return;
-		
 		this.timeoutId = setTimeout(async () => {
 			// run job
 			try {

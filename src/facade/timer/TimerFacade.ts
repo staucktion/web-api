@@ -34,6 +34,7 @@ class TimerFacade {
 	}
 
 	public async cronJob(cronId: number) {
+		if (!Config.isTimerActive) return;
 		console.log(`[INFO] 🕑 Job is running for ${cronEnum[cronId]} at: ${new Date().toISOString()}`);
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
