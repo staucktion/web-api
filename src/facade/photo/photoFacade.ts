@@ -390,7 +390,7 @@ class PhotoFacade {
 
 		// get all photos with status wait purchase after auction
 		try {
-			allPhotoList = await this.photoService.listPhotosByStatus([StatusEnum.WAIT_PURCHASE_AFTER_AUCTION]);
+			allPhotoList = await this.photoService.listPhotosByStatusAndUserId([StatusEnum.WAIT_PURCHASE_AFTER_AUCTION], null);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
