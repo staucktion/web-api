@@ -1,3 +1,4 @@
+import Config from "src/config/Config";
 import SendNotificationDto from "src/dto/notification/SendNotificationDto";
 import AuctionService from "src/service/auction/AuctionService";
 import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
@@ -34,6 +35,7 @@ class TimerFacade {
 	}
 
 	public async cronJob(cronId: number) {
+		if (!Config.isTimerActive) return;
 		console.log(`[INFO] 🕑 Job is running for ${cronEnum[cronId]} at: ${new Date().toISOString()}`);
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -80,7 +82,7 @@ class TimerFacade {
 								const dataToUpdateAuction = { ...auction, status_id: auctionStatus.id };
 								await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
 
-								const topPhotoCountWillBeAuctioned = Math.ceil(auction.photo_list.length / 10);
+								const topPhotoCountWillBeAuctioned = Math.ceil(auction.photo_list.length * (Config.percentageOfPhotosToAuction / 100));
 								auction.photo_list.sort((a, b) => b.vote_count - a.vote_count);
 
 								for (const [index, photo] of auction.photo_list.entries()) {
@@ -164,9 +166,18 @@ class TimerFacade {
 
 											// send notification to winners
 											const winners = [
-												{ userId: updatedAuctionPhoto.winner_user_id_1, message: "You won the auction in the first place." },
-												{ userId: updatedAuctionPhoto.winner_user_id_2, message: "You won the auction in the second place." },
-												{ userId: updatedAuctionPhoto.winner_user_id_3, message: "You won the auction in the third place." },
+												{
+													userId: updatedAuctionPhoto.winner_user_id_1,
+													message: "You won the auction in the first place. Please complete your purchase from the 'Pending Purchase' tab in your profile.",
+												},
+												{
+													userId: updatedAuctionPhoto.winner_user_id_2,
+													message: "You won the auction in the second place. Please complete your purchase from the 'Pending Purchase' tab in your profile.",
+												},
+												{
+													userId: updatedAuctionPhoto.winner_user_id_3,
+													message: "You won the auction in the third place. Please complete your purchase from the 'Pending Purchase' tab in your profile.",
+												},
 											];
 
 											for (const winner of winners) {

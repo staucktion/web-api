@@ -18,14 +18,9 @@ class PhotoEndpoint {
 	}
 
 	private initializeRoutes(): void {
-		// Upload a photo (authenticated)
-		this.router.post("/photos", this.authMiddleware.authenticateJWT, this.multerUtil.getUploader().single("photo"), (req, res) => {
-			this.photoFacade.uploadPhoto(req, res);
-		});
-
-		// Get all approved photos (public)
-		this.router.get("/photos", (req, res) => {
-			this.photoFacade.listPublicPhotos(req, res);
+		// Get own pending purchase photos (authenticated)
+		this.router.get("/photos/my/pending-purchase", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.listOwnPendingPurchasePhotos(req, res);
 		});
 
 		// Get all own photos (authenticated)
@@ -63,6 +58,16 @@ class PhotoEndpoint {
 			this.photoFacade.approveRejectPhoto(req, res);
 		});
 
+		// Update photo purchase now price (authenticated)
+		this.router.post("/photos/:photoId/price", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.updatePhotoPurchaseNowPrice(req, res);
+		});
+
+		// Update photo auctionable status (authenticated)
+		this.router.post("/photos/:photoId/auctionable", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.updatePhotoAuctionableStatus(req, res);
+		});
+
 		// Get a specific photo (public)
 		this.router.get("/photos/:photoId", (req, res) => {
 			this.photoFacade.getPhoto(req, res);
@@ -73,14 +78,14 @@ class PhotoEndpoint {
 			this.photoFacade.deletePhoto(req, res);
 		});
 
-		// Update photo purchase now price (authenticated)
-		this.router.post("/photos/:photoId/price", this.authMiddleware.authenticateJWT, (req, res) => {
-			this.photoFacade.updatePhotoPurchaseNowPrice(req, res);
+		// Upload a photo (authenticated)
+		this.router.post("/photos", this.authMiddleware.authenticateJWT, this.multerUtil.getUploader().single("photo"), (req, res) => {
+			this.photoFacade.uploadPhoto(req, res);
 		});
 
-		// Update photo auctionable status (authenticated)
-		this.router.post("/photos/:photoId/auctionable", this.authMiddleware.authenticateJWT, (req, res) => {
-			this.photoFacade.updatePhotoAuctionableStatus(req, res);
+		// Get all approved photos (public)
+		this.router.get("/photos", (req, res) => {
+			this.photoFacade.listPublicPhotos(req, res);
 		});
 	}
 

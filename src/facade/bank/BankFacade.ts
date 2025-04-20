@@ -5,17 +5,17 @@ import CustomError from "src/error/CustomError";
 import AuctionService from "src/service/auction/AuctionService";
 import AuctionPhotoService from "src/service/auctionPhoto/AuctionPhotoService";
 import BankService from "src/service/bank/BankService";
+import MailService from "src/service/mail/mailService";
 import PhotoService from "src/service/photo/photoService";
 import PhotographerPaymentService from "src/service/photographerPayment/PhotographerPaymentService";
 import PurchasedPhotoService from "src/service/purchasedPhoto/PurchasedPhotoService";
 import StatusService from "src/service/status/StatusService";
 import UserService from "src/service/user/userService";
 import VoteService from "src/service/vote/VoteService";
+import { MailAction } from "src/types/mailTypes";
+import { hasKey } from "src/util/tsUtil";
 import BankValidation from "src/validation/bank/BankValidation";
 import BaseValidation from "src/validation/base/BaseValidation";
-import { hasKey } from "src/util/tsUtil";
-import MailService from "src/service/mail/mailService";
-import { MailAction } from "src/types/mailTypes";
 class BankFacade {
 	private bankService: BankService;
 	private bankValidation: BankValidation;
@@ -205,7 +205,8 @@ class BankFacade {
 			return;
 		}
 
-		// update auction, auction photo and photo
+		// update auction photo and photo
+
 		const soldStatus = await this.statusService.getStatusFromName("sold");
 		const finishStatus = await this.statusService.getStatusFromName("finish");
 		try {
@@ -216,18 +217,29 @@ class BankFacade {
 			return;
 		}
 		try {
-			const data = { ...auctionPhoto.auction, status_id: finishStatus.id };
-			await this.auctionService.updateAuction(auctionPhoto.auction.id, data);
-		} catch (error) {
-			CustomError.handleError(res, error);
-			return;
-		}
-		try {
 			const data = { ...photo, status_id: soldStatus.id };
 			await this.photoService.updatePhoto(photoId, data);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
+		}
+
+		// check other purchases and if there is no another purchase pending, make auction finish
+		let auction;
+		try {
+			auction = await this.auctionService.getAuctionById(auctionPhoto.auction.id);
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+		if (auction.auction_photo_list.every((photo) => photo.status_id === finishStatus.id)) {
+			try {
+				const data = { ...auctionPhoto.auction, status_id: finishStatus.id };
+				await this.auctionService.updateAuction(auctionPhoto.auction.id, data);
+			} catch (error) {
+				CustomError.handleError(res, error);
+				return;
+			}
 		}
 
 		res.status(204).send();
