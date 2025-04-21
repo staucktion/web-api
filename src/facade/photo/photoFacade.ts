@@ -156,7 +156,10 @@ class PhotoFacade {
 
 	public async listPublicPurchasablePhotos(_req: Request, res: Response): Promise<void> {
 		try {
-			const purchasablePhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.PURCHASABLE, null);
+			let purchasablePhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.PURCHASABLE, null);
+
+			purchasablePhotos = purchasablePhotos.filter((photo) => !!photo.purchase_now_price && photo.purchase_now_price > 0);
+
 			sendJsonBigint(res, purchasablePhotos, 200);
 		} catch (error) {
 			CustomError.handleError(res, error);
