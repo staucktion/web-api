@@ -5,3 +5,6 @@ dist
 .env.prod
 database/staucktion-temp-db.json
 *.log
+.cursor
+.cursorignore
+.DS_Store
