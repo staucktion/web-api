@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import UserDto from "src/dto/auth/UserDto";
 import AuthService from "src/service/auth/authService";
 import FormattedGoogleProfileDto from "src/dto/auth/FormattedGoogleProfileDto";
+import { isRequestorAdmin, isRequestorValidator } from "src/util/authUtil";
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -50,6 +51,36 @@ export class AuthMiddleware {
 		}
 	};
 
+	/**
+	 * Same as authenticateJWT, but only adds the user to the request if the token exists, otherwise it does not interrupt anything
+	 * This is useful for endpoints that are not protected by authentication, but still need to check if a user is authenticated
+	 */
+	public addUserToRequestIfTokenExists = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+		const token = req.cookies?.token;
+		if (!token) {
+			next();
+			return;
+		}
+
+		try {
+			const tokenContent = this.authService.verifyJWT(token);
+			if (!tokenContent) {
+				next();
+				return;
+			}
+
+			const user = await this.authService.getUser({ gmail_id: tokenContent.gmail_id });
+			if (user) {
+				req.user = user;
+				next();
+			} else {
+				next();
+			}
+		} catch (_error) {
+			next();
+		}
+	};
+
 	public validateValidator = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		// Since this middleware runs after authMiddleware, we know req.user exists
 		// But we'll double check just to be safe
@@ -59,7 +90,7 @@ export class AuthMiddleware {
 		}
 
 		// Check if user has a role and if it's a validator (admin is also allowed)
-		if (!req.user.user_role || !["validator", "admin"].includes(req.user.user_role.role)) {
+		if (!isRequestorValidator(req)) {
 			res.status(403).json({ message: "Access Denied! User is not a validator." });
 			return;
 		}
@@ -76,7 +107,7 @@ export class AuthMiddleware {
 		}
 
 		// Check if user has a role and if it's an admin
-		if (!req.user.user_role || req.user.user_role.role !== "admin") {
+		if (!isRequestorAdmin(req)) {
 			res.status(403).json({ message: "Access Denied! User is not an admin." });
 			return;
 		}
