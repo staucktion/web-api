@@ -159,13 +159,30 @@ class PhotoService {
 		}
 	}
 
-	public async listPhotosByStatusAndUserId(statusId: number | number[], userId: number | null): Promise<ReadAllPhotoResponseDto[]> {
+	public async listPhotosByStatusAndUserId(
+		statusId: number | number[],
+		userId: number | null,
+		allowUnverifiedCategories: boolean = false,
+		allowDeletedCategories: boolean = false
+	): Promise<ReadAllPhotoResponseDto[]> {
+		const categoryWhereClause = {
+			...(!allowDeletedCategories || !allowUnverifiedCategories
+				? {
+						is: {
+							...(allowUnverifiedCategories ? {} : { status_id: StatusEnum.APPROVE }),
+							...(allowDeletedCategories ? {} : { is_deleted: false }),
+						},
+				  }
+				: {}),
+		};
+
 		try {
 			const photoList = await this.prisma.photo.findMany({
 				where: {
 					is_deleted: false,
 					status_id: { in: Array.isArray(statusId) ? statusId : [statusId] },
 					user_id: userId ?? undefined,
+					...(Object.keys(categoryWhereClause).length > 0 ? { category: categoryWhereClause } : {}),
 				},
 				include: {
 					category: {
