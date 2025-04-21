@@ -95,7 +95,7 @@ class TimerFacade {
 									} else {
 										// console.log(`photo will NOT be auctioned: `, photo);
 
-										const dataToUpdatePhoto = { ...photo, status_id: purchasableStatus.id };
+										const dataToUpdatePhoto = { ...photo, status_id: purchasableStatus.id, is_auctionable: false };
 										await this.photoService.updatePhoto(photo.id, dataToUpdatePhoto);
 									}
 								}
