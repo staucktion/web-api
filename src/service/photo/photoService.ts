@@ -264,7 +264,7 @@ class PhotoService {
 					...(isRequestorValidator
 						? {}
 						: {
-								status_id: StatusEnum.APPROVE,
+								status_id: { not: StatusEnum.WAIT },
 								category: {
 									is_deleted: false,
 									status_id: StatusEnum.APPROVE,
