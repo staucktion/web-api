@@ -92,11 +92,23 @@ class TimerFacade {
 										const dataToUpdatePhoto = { ...photo, status_id: auctionStatus.id };
 										await this.photoService.updatePhoto(photo.id, dataToUpdatePhoto);
 										await this.auctionPhotoService.insertNewPhotoAuction(auction.id, photo.id, auctionStatus.id);
+
+										await this.notificationService.sendNotification(1, {
+											userId: photo.user_id,
+											type: "info",
+											message: `Your photo with id ${photo.id} is selected to be auctioned! We wish you the best of luck!`,
+										});
 									} else {
 										// console.log(`photo will NOT be auctioned: `, photo);
 
 										const dataToUpdatePhoto = { ...photo, status_id: purchasableStatus.id };
 										await this.photoService.updatePhoto(photo.id, dataToUpdatePhoto);
+
+										await this.notificationService.sendNotification(1, {
+											userId: photo.user_id,
+											type: "info",
+											message: `Your photo with id ${photo.id} is not selected to be auctioned. If you wish to sell it for a fixed price, you can set a purchase price by going to your profile.`,
+										});
 									}
 								}
 							}
