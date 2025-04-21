@@ -159,13 +159,30 @@ class PhotoService {
 		}
 	}
 
-	public async listPhotosByStatusAndUserId(statusId: number | number[], userId: number | null): Promise<ReadAllPhotoResponseDto[]> {
+	public async listPhotosByStatusAndUserId(
+		statusId: number | number[],
+		userId: number | null,
+		allowUnverifiedCategories: boolean = false,
+		allowDeletedCategories: boolean = false
+	): Promise<ReadAllPhotoResponseDto[]> {
+		const categoryWhereClause = {
+			...(!allowDeletedCategories || !allowUnverifiedCategories
+				? {
+						is: {
+							...(allowUnverifiedCategories ? {} : { status_id: StatusEnum.APPROVE }),
+							...(allowDeletedCategories ? {} : { is_deleted: false }),
+						},
+				  }
+				: {}),
+		};
+
 		try {
 			const photoList = await this.prisma.photo.findMany({
 				where: {
 					is_deleted: false,
 					status_id: { in: Array.isArray(statusId) ? statusId : [statusId] },
 					user_id: userId ?? undefined,
+					...(Object.keys(categoryWhereClause).length > 0 ? { category: categoryWhereClause } : {}),
 				},
 				include: {
 					category: {
@@ -238,17 +255,30 @@ class PhotoService {
 		}
 	}
 
-	public async getPhotoPath(photoId: number): Promise<string> {
+	public async getPhotoPath(photoId: number, isRequestorValidator: boolean): Promise<string> {
 		try {
 			const instance = await this.prisma.photo.findUnique({
 				where: {
 					id: photoId,
 					is_deleted: false,
+					...(isRequestorValidator
+						? {}
+						: {
+								status_id: { not: StatusEnum.WAIT },
+								category: {
+									is_deleted: false,
+									status_id: StatusEnum.APPROVE,
+								},
+						  }),
 				},
 				select: {
 					file_path: true,
 				},
 			});
+
+			if (!instance) {
+				CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build().throwError();
+			}
 
 			const resolvedPath = path.resolve(WATERMARK_PHOTO_DIR, instance.file_path);
 			if (!fs.existsSync(resolvedPath)) throw new Error();

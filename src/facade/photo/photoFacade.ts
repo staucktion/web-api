@@ -19,6 +19,7 @@ import PurchasedPhotoService from "src/service/purchasedPhoto/PurchasedPhotoServ
 import StatusService from "src/service/status/StatusService";
 import { StatusEnum } from "src/types/statusEnum";
 import sendJsonBigint from "src/util/sendJsonBigint";
+import { isRequestorValidator } from "src/util/authUtil";
 import PhotoValidation from "src/validation/photo/PhotoValidation";
 
 class PhotoFacade {
@@ -144,7 +145,7 @@ class PhotoFacade {
 
 	public async listWaitingPhotos(_req: Request, res: Response): Promise<void> {
 		try {
-			const waitingPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.WAIT, null);
+			const waitingPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.WAIT, null, true);
 			sendJsonBigint(res, waitingPhotos, 200);
 			return;
 		} catch (error) {
@@ -236,7 +237,7 @@ class PhotoFacade {
 		}
 
 		try {
-			const photoPath = await this.photoService.getPhotoPath(getPhotoRequestDto.photoId);
+			const photoPath = await this.photoService.getPhotoPath(getPhotoRequestDto.photoId, isRequestorValidator(req));
 			res.sendFile(photoPath);
 			return;
 		} catch (error) {
