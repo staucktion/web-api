@@ -236,7 +236,7 @@ class PhotoFacade {
 		}
 
 		try {
-			const photoPath = await this.photoService.getPhotoPath(getPhotoRequestDto.photoId);
+			const photoPath = await this.photoService.getPhotoPath(getPhotoRequestDto.photoId, isRequestorValidator(req));
 			res.sendFile(photoPath);
 			return;
 		} catch (error) {

@@ -69,7 +69,7 @@ class PhotoEndpoint {
 		});
 
 		// Get a specific photo (public)
-		this.router.get("/photos/:photoId", (req, res) => {
+		this.router.get("/photos/:photoId", this.authMiddleware.addUserToRequestIfTokenExists, (req, res) => {
 			this.photoFacade.getPhoto(req, res);
 		});
 

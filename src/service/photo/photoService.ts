@@ -238,17 +238,30 @@ class PhotoService {
 		}
 	}
 
-	public async getPhotoPath(photoId: number): Promise<string> {
+	public async getPhotoPath(photoId: number, isRequestorValidator: boolean): Promise<string> {
 		try {
 			const instance = await this.prisma.photo.findUnique({
 				where: {
 					id: photoId,
 					is_deleted: false,
+					...(isRequestorValidator
+						? {}
+						: {
+								status_id: StatusEnum.APPROVE,
+								category: {
+									is_deleted: false,
+									status_id: StatusEnum.APPROVE,
+								},
+						  }),
 				},
 				select: {
 					file_path: true,
 				},
 			});
+
+			if (!instance) {
+				CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build().throwError();
+			}
 
 			const resolvedPath = path.resolve(WATERMARK_PHOTO_DIR, instance.file_path);
 			if (!fs.existsSync(resolvedPath)) throw new Error();
