@@ -1077,7 +1077,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"voter_comission_percentage\": 5,\r\n    \"photographer_comission_percentage\": 40,\r\n    \"is_timer_job_active\": true\r\n}",
+							"raw": "{\r\n    \"voter_comission_percentage\": 5,\r\n    \"photographer_comission_percentage\": 40,\r\n    \"photos_to_auction_percentage\": 100,\r\n    \"is_timer_job_active\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
