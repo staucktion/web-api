@@ -74,14 +74,6 @@ To use authenticated endpoints in Postman:
 -   Make changes on database.
 -   Use git bash as terminal to run following commands (do not use powershell as creating file in different format).
 
-#### All Prisma (It will re-create prisma completely. Generally not needed, following title could be more suitable to update prisma)
-
-```
-rm -r ./prisma
-npx prisma init
-npx prisma db pull
-```
-
 #### Change Migration (It will update prisma.schema and re-create migration which satisfy changes)
 
 ```
