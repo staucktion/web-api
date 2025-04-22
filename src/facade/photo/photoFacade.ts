@@ -115,6 +115,23 @@ class PhotoFacade {
 		}
 	}
 
+	public async listOwnPhotosAll(req: Request, res: Response): Promise<void> {
+		// check if user authenticated
+		if (!req.user) {
+			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
+			return;
+		}
+
+		try {
+			const instanceList = await this.photoService.listPhotosByStatusAndUserId(null, req.user.id);
+			sendJsonBigint(res, instanceList, 200);
+			return;
+		} catch (error) {
+			CustomError.handleError(res, error);
+			return;
+		}
+	}
+
 	public async listOwnPhotos(req: Request, res: Response): Promise<void> {
 		// check if user authenticated
 		if (!req.user) {
