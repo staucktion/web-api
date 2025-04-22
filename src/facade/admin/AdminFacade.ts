@@ -25,6 +25,7 @@ class AdminFacade {
 		const responseDto: Omit<DbConfigDto, "id"> = {
 			voter_comission_percentage: Config.voterComissionPercentage,
 			photographer_comission_percentage: Config.photographerComissionPercentage,
+			photos_to_auction_percentage: Config.photosToAuctionPercentage,
 			is_timer_job_active: Config.isTimerActive,
 		};
 		res.status(200).json(responseDto);
@@ -41,9 +42,9 @@ class AdminFacade {
 			return;
 		}
 
-		// validate comission amount
+		// validate percentage amount
 		try {
-			await this.adminValidation.validateComissionAmount(dbConfigDto);
+			await this.adminValidation.validatePercentageAmount(dbConfigDto);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;

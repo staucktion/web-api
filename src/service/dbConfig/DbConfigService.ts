@@ -27,6 +27,7 @@ class DbConfigService {
 				data: {
 					voter_comission_percentage: dbConfigDto.voter_comission_percentage,
 					photographer_comission_percentage: dbConfigDto.photographer_comission_percentage,
+					photos_to_auction_percentage: dbConfigDto.photos_to_auction_percentage,
 					is_timer_job_active: dbConfigDto.is_timer_job_active,
 				},
 			});

@@ -32,11 +32,10 @@ class Config {
 		cvv: "123",
 	};
 
-	static percentageOfPhotosToAuction = 50;
-
 	// db configs
 	static voterComissionPercentage: number;
 	static photographerComissionPercentage: number;
+	static photosToAuctionPercentage: number;
 	static isTimerActive: boolean;
 }
 
