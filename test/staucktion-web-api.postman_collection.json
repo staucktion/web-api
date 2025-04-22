@@ -658,6 +658,19 @@
 					"response": []
 				},
 				{
+					"name": "Get All Own All Photos (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/my/all",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "my", "all"]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get Photo By ID",
 					"request": {
 						"method": "GET",
