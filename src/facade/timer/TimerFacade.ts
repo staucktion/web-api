@@ -82,7 +82,7 @@ class TimerFacade {
 								const dataToUpdateAuction = { ...auction, status_id: auctionStatus.id };
 								await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
 
-								const topPhotoCountWillBeAuctioned = Math.ceil(auction.photo_list.length * (Config.percentageOfPhotosToAuction / 100));
+								const topPhotoCountWillBeAuctioned = Math.ceil(auction.photo_list.length * (Config.photosToAuctionPercentage / 100));
 								auction.photo_list.sort((a, b) => b.vote_count - a.vote_count);
 
 								for (const [index, photo] of auction.photo_list.entries()) {
