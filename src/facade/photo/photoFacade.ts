@@ -214,7 +214,24 @@ class PhotoFacade {
 	public async listPublicVotingPhotos(_req: Request, res: Response): Promise<void> {
 		try {
 			const votingPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.VOTE, null);
-			sendJsonBigint(res, votingPhotos, 200);
+
+			const votingPhotosGroupedByCategory: Record<number, PhotoDto[]> = votingPhotos.reduce((acc, photo) => {
+				const key = photo.category_id;
+				if (!key) return acc;
+
+				if (!acc[key]) {
+					acc[key] = [];
+				}
+				acc[key].push(photo);
+				return acc;
+			}, {});
+
+			const votingPhotosGroupedByCategoryRandomized = Object.keys(votingPhotosGroupedByCategory).reduce((obj, key) => {
+				obj[key] = votingPhotosGroupedByCategory[key].sort(() => Math.random() - 0.5);
+				return obj;
+			}, {});
+
+			sendJsonBigint(res, votingPhotosGroupedByCategoryRandomized, 200);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
