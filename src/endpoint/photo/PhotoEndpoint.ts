@@ -58,6 +58,11 @@ class PhotoEndpoint {
 			this.photoFacade.listOwnPurchasedPhotoList(req, res);
 		});
 
+		// Get finished photos (authenticated) - admin
+		this.router.get("/photos/finished", this.authMiddleware.authenticateJWT, this.authMiddleware.validateAdmin, (req, res) => {
+			this.photoFacade.listFinishedPhotos(req, res);
+		});
+
 		// Approve/reject a photo (authenticated) - validator
 		this.router.put("/photos/:photoId/status", this.authMiddleware.authenticateJWT, this.authMiddleware.validateValidator, (req, res) => {
 			this.photoFacade.approveRejectPhoto(req, res);

@@ -87,7 +87,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}",
+							"raw": "{\n    \"email\": \"admin@staucktion.com.tr\",\n    \"password\": \"password\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -109,7 +109,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"newuser@example.com\",\n    \"password\": \"password123\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\"\n}",
+							"raw": "{\n    \"email\": \"user@staucktion.com.tr\",\n    \"password\": \"password\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -131,7 +131,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}",
+							"raw": "{\n    \"email\": \"admin@staucktion.com.tr\",\n    \"password\": \"password\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -153,7 +153,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"newuser@example.com\",\n    \"password\": \"password123\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\"\n}",
+							"raw": "{\n    \"email\": \"user@staucktion.com.tr\",\n    \"password\": \"password\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -754,6 +754,45 @@
 							"raw": "{{BASE_URL}}/photos/my/all",
 							"host": ["{{BASE_URL}}"],
 							"path": ["photos", "my", "all"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Auctioning Photos (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/auction",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "auction"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Voting Photos (Requires Auth)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/vote",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "vote"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Finished Photos (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/photos/finished",
+							"host": ["{{BASE_URL}}"],
+							"path": ["photos", "finished"]
 						}
 					},
 					"response": []
