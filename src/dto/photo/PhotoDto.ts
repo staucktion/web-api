@@ -1,6 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/library";
 
-interface ReadAllPhotoResponseDto {
+interface PhotoDto {
 	id: number;
 	file_path: string;
 	title: string;
@@ -54,4 +54,4 @@ interface ReadAllPhotoResponseDto {
 	};
 }
 
-export default ReadAllPhotoResponseDto;
+export default PhotoDto;

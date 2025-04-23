@@ -4,7 +4,7 @@ import path from "path";
 import sharp from "sharp";
 import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
-import ReadAllPhotoResponseDto from "src/dto/photo/ReadAllPhotoResponseDto";
+import PhotoDto from "src/dto/photo/PhotoDto";
 import CustomError from "src/error/CustomError";
 import StatusService from "src/service/status/StatusService";
 import { StatusEnum } from "src/types/statusEnum";
@@ -164,7 +164,7 @@ class PhotoService {
 		userId: number | null,
 		allowUnverifiedCategories: boolean = false,
 		allowDeletedCategories: boolean = false
-	): Promise<ReadAllPhotoResponseDto[]> {
+	): Promise<PhotoDto[]> {
 		const categoryWhereClause = {
 			...(!allowDeletedCategories || !allowUnverifiedCategories
 				? {
@@ -316,7 +316,7 @@ class PhotoService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	public async updatePhoto(id: number, updateInstanceData: any): Promise<ReadAllPhotoResponseDto[]> {
+	public async updatePhoto(id: number, updateInstanceData: any): Promise<PhotoDto[]> {
 		try {
 			const { user_id, auction_id, category_id, location_id, status_id, auction_photo_list: _auction_photo_list, vote_list: _vote_list, ...cleanData } = updateInstanceData;
 
