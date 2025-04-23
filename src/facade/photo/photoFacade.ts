@@ -200,7 +200,7 @@ class PhotoFacade {
 			}, {});
 
 			const auctionPhotosGroupedByCategorySortedVoteCount = Object.keys(auctionPhotosGroupedByCategory).reduce((obj, key) => {
-				obj[key] = auctionPhotosGroupedByCategory[key].sort(async (a: PhotoDto, b: PhotoDto) => b.vote_count - a.vote_count);
+				obj[key] = auctionPhotosGroupedByCategory[key].sort((a: PhotoDto, b: PhotoDto) => b.vote_count - a.vote_count);
 				return obj;
 			}, {});
 
