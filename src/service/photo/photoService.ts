@@ -180,7 +180,7 @@ class PhotoService {
 			const photoList = await this.prisma.photo.findMany({
 				where: {
 					is_deleted: false,
-					status_id: { in: Array.isArray(statusId) ? statusId : [statusId] },
+					...(statusId !== null ? { status_id: { in: Array.isArray(statusId) ? statusId : [statusId] } } : {}),
 					user_id: userId ?? undefined,
 					...(Object.keys(categoryWhereClause).length > 0 ? { category: categoryWhereClause } : {}),
 				},

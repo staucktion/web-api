@@ -23,7 +23,12 @@ class PhotoEndpoint {
 			this.photoFacade.listOwnPendingPurchasePhotos(req, res);
 		});
 
-		// Get all own photos (authenticated)
+		// Get all own photos without status filter (authenticated)
+		this.router.get("/photos/my/all", this.authMiddleware.authenticateJWT, (req, res) => {
+			this.photoFacade.listOwnPhotosAll(req, res);
+		});
+
+		// Get all own photos with status filter (authenticated)
 		this.router.get("/photos/my", this.authMiddleware.authenticateJWT, (req, res) => {
 			this.photoFacade.listOwnPhotos(req, res);
 		});
