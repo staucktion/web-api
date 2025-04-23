@@ -1,6 +1,6 @@
 interface UserDto {
 	id: number;
-	gmail_id: string;
+	gmail_id: string | null;
 	email: string;
 	username: string;
 	password: string;

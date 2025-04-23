@@ -19,7 +19,26 @@ class AuthService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
-	async getUser({ gmail_id }: Pick<UserDto, "gmail_id">, fetchBannedUsers = false): Promise<UserDto | undefined> {
+	async getUserById(userId: number | bigint, fetchBannedUsers = false): Promise<UserDto | undefined> {
+		const user = await this.prisma.user.findFirst({
+			where: {
+				id: BigInt(userId),
+				is_deleted: false,
+			},
+			include: {
+				user_role: true,
+				status: true,
+			},
+		});
+
+		if (!fetchBannedUsers && user && user.status_id === StatusEnum.BANNED) {
+			return undefined;
+		}
+
+		return handlePrismaType(user);
+	}
+
+	async getUserByGmailId(gmail_id: string, fetchBannedUsers = false): Promise<UserDto | undefined> {
 		const user = await this.prisma.user.findFirst({
 			where: {
 				gmail_id,
@@ -94,14 +113,10 @@ class AuthService {
 		// Generate gravatar URL for profile picture
 		const gravatarUrl = this.getGravatarUrl(registerData.email);
 
-		// Generate a random gmail_id for email/password users - this is needed to maintain compatibility
-		// with the existing JWT token system that uses gmail_id
-		const randomGmailId = `local_${crypto.randomBytes(16).toString("hex")}`;
-
 		const createdUser = await this.prisma.user.create({
 			data: {
 				email: registerData.email.toLowerCase(),
-				gmail_id: randomGmailId,
+				gmail_id: null,
 				username,
 				password: hashedPassword,
 				first_name: registerData.first_name,
@@ -139,13 +154,13 @@ class AuthService {
 		return user;
 	}
 
-	generateJWT(gmail_id: string): string {
-		return jwt.sign({ gmail_id }, Config.jwt.secret, { expiresIn: Config.jwt.expiresIn });
+	generateJWT(userId: number | bigint): string {
+		return jwt.sign({ user_id: userId }, Config.jwt.secret, { expiresIn: Config.jwt.expiresIn });
 	}
 
-	verifyJWT = (token: string): Pick<UserDto, "gmail_id"> | null => {
+	verifyJWT = (token: string): { user_id: number | bigint } | null => {
 		try {
-			return jwt.verify(token, Config.jwt.secret) as Pick<UserDto, "gmail_id">;
+			return jwt.verify(token, Config.jwt.secret) as { user_id: number | bigint };
 		} catch (_error) {
 			return null;
 		}

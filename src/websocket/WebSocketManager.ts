@@ -54,7 +54,7 @@ class WebSocketManager {
 				return;
 			}
 
-			const user = await this.authService.getUser({ gmail_id: tokenContent.gmail_id });
+			const user = await this.authService.getUserById(tokenContent.user_id);
 
 			if (user) {
 				socket.user = user;

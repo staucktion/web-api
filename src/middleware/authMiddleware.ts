@@ -38,7 +38,7 @@ export class AuthMiddleware {
 				return;
 			}
 
-			const user = await this.authService.getUser({ gmail_id: tokenContent.gmail_id });
+			const user = await this.authService.getUserById(tokenContent.user_id);
 
 			if (user) {
 				req.user = user;
@@ -69,7 +69,7 @@ export class AuthMiddleware {
 				return;
 			}
 
-			const user = await this.authService.getUser({ gmail_id: tokenContent.gmail_id });
+			const user = await this.authService.getUserById(tokenContent.user_id);
 			if (user) {
 				req.user = user;
 				next();
