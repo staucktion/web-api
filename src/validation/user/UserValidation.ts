@@ -21,6 +21,34 @@ class UserValidation {
 			if (!tcRegex.test(updateUserDto.tc_identity_no)) {
 				CustomError.builder().setMessage("TC Identity number must be 11 digits.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 			}
+
+			if (parseInt(updateUserDto.tc_identity_no[0]) === 0) {
+				CustomError.builder().setMessage("TC Identity number cannot start with 0.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+
+			let oddSum = 0,
+				evenSum = 0,
+				totalSum = 0;
+			for (let i = 0; i <= 8; i++) {
+				if (i % 2 === 0) {
+					oddSum += parseInt(updateUserDto.tc_identity_no[i]);
+				} else {
+					evenSum += parseInt(updateUserDto.tc_identity_no[i]);
+				}
+				totalSum += parseInt(updateUserDto.tc_identity_no[i]);
+			}
+
+			oddSum = oddSum * 7;
+			const validationNumber = (oddSum - evenSum) % 10;
+
+			if (validationNumber !== parseInt(updateUserDto.tc_identity_no[9])) {
+				CustomError.builder().setMessage("TC Identity number is invalid.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+
+			totalSum += parseInt(updateUserDto.tc_identity_no[9]);
+			if (totalSum % 10 !== parseInt(updateUserDto.tc_identity_no[10])) {
+				CustomError.builder().setMessage("TC Identity number is invalid.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
 		}
 
 		// Validate name and surname if provided
