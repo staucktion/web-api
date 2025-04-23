@@ -102,6 +102,12 @@ class AuthEndpoint {
 			console.warn("Google OAuth configuration is not set up properly. Auth service will not work.");
 		}
 
+		// Email/password login and registration routes
+		this.router.post("/auth/login", this.authFacade.handleLogin);
+		this.router.post("/auth/register", this.authFacade.handleRegister);
+		this.router.post("/auth/login/android", this.authFacade.handleLoginAndroid);
+		this.router.post("/auth/register/android", this.authFacade.handleRegisterAndroid);
+
 		this.router.post("/auth/logout", this.authFacade.handleLogout);
 
 		this.router.post("/auth/info", this.authFacade.handleUserInfo);

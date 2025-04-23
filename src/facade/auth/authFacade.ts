@@ -7,13 +7,17 @@ import sendJsonBigint from "src/util/sendJsonBigint";
 import { OAuth2Client } from "google-auth-library";
 import Config from "src/config/Config";
 import { StatusEnum } from "src/types/statusEnum";
+import AuthValidation from "src/validation/auth/AuthValidation";
+import CustomError from "src/error/CustomError";
 
 class AuthFacade {
 	private authService: AuthService;
+	private authValidation: AuthValidation;
 	private googleClient: OAuth2Client;
 
 	constructor() {
 		this.authService = new AuthService();
+		this.authValidation = new AuthValidation();
 		this.googleClient = new OAuth2Client(Config.googleOAuth.clientID);
 	}
 
@@ -92,6 +96,80 @@ class AuthFacade {
 		} catch (error) {
 			console.error(error);
 			res.status(500).json({ error: "Token verification failed" });
+		}
+	};
+
+	handleLogin = async (req: Request, res: Response): Promise<void> => {
+		try {
+			// Validate request
+			const loginDto = await this.authValidation.validateLoginRequest(req);
+
+			// Login user
+			const user = await this.authService.loginUser(loginDto);
+
+			// Generate JWT
+			const token = this.authService.generateJWT(user.gmail_id);
+
+			// Set cookie and redirect
+			res.cookie("token", token, authCookieOptions);
+			redirectWithHost(res, "/");
+		} catch (error) {
+			CustomError.handleError(res, error);
+		}
+	};
+
+	handleRegister = async (req: Request, res: Response): Promise<void> => {
+		try {
+			// Validate request
+			const registerDto = await this.authValidation.validateRegisterRequest(req);
+
+			// Register user
+			const user = await this.authService.registerUser(registerDto);
+
+			// Generate JWT
+			const token = this.authService.generateJWT(user.gmail_id);
+
+			// Set cookie and redirect
+			res.cookie("token", token, authCookieOptions);
+			redirectWithHost(res, "/");
+		} catch (error) {
+			CustomError.handleError(res, error);
+		}
+	};
+
+	handleLoginAndroid = async (req: Request, res: Response): Promise<void> => {
+		try {
+			// Validate request
+			const loginDto = await this.authValidation.validateLoginRequest(req);
+
+			// Login user
+			const user = await this.authService.loginUser(loginDto);
+
+			// Generate JWT
+			const token = this.authService.generateJWT(user.gmail_id);
+
+			// Return token as JSON
+			res.json({ token });
+		} catch (error) {
+			CustomError.handleError(res, error);
+		}
+	};
+
+	handleRegisterAndroid = async (req: Request, res: Response): Promise<void> => {
+		try {
+			// Validate request
+			const registerDto = await this.authValidation.validateRegisterRequest(req);
+
+			// Register user
+			const user = await this.authService.registerUser(registerDto);
+
+			// Generate JWT
+			const token = this.authService.generateJWT(user.gmail_id);
+
+			// Return token as JSON
+			res.json({ token });
+		} catch (error) {
+			CustomError.handleError(res, error);
 		}
 	};
 
