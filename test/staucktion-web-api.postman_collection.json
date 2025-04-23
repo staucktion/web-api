@@ -95,7 +95,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"cardNumber\": \"4539187690234512\",\r\n    \"expirationDate\": \"04/29\",\r\n    \"cvv\": \"678\"\r\n}",
+							"raw": "{\r\n    \"cardNumber\": \"1234567890123457\",\r\n    \"expirationDate\": \"12/34\",\r\n    \"cvv\": \"123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -120,7 +120,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"cardNumber\": \"4539187690234512\",\r\n    \"expirationDate\": \"04/29\",\r\n    \"cvv\": \"678\"\r\n}",
+							"raw": "{\r\n    \"cardNumber\": \"1234567890123457\",\r\n    \"expirationDate\": \"12/34\",\r\n    \"cvv\": \"123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -148,7 +148,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"cardNumber\": \"4539187690234512\",\n    \"expirationDate\": \"04/29\",\n    \"cvv\": \"678\"\n}",
+							"raw": "{\n    \"cardNumber\": \"1234567890123457\",\n    \"expirationDate\": \"12/34\",\n    \"cvv\": \"123\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -179,7 +179,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"cardNumber\": \"4539187690234512\",\r\n    \"expirationDate\": \"04/29\",\r\n    \"cvv\": \"678\"\r\n}",
+							"raw": "{\r\n    \"cardNumber\": \"1234567890123457\",\r\n    \"expirationDate\": \"12/34\",\r\n    \"cvv\": \"123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1077,7 +1077,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"voter_comission_percentage\": 5,\r\n    \"photographer_comission_percentage\": 40,\r\n    \"is_timer_job_active\": true\r\n}",
+							"raw": "{\r\n    \"voter_comission_percentage\": 5,\r\n    \"photographer_comission_percentage\": 40,\r\n    \"photos_to_auction_percentage\": 100,\r\n    \"is_timer_job_active\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -6,8 +6,8 @@ import ValidationUtil from "src/util/ValidationUtil";
 class AdminValidation {
 	public async validateConfigRequest(req: Request): Promise<Omit<DbConfigDto, "id">> {
 		const input = req.body;
-		const requiredFields: string[] = ["voter_comission_percentage", "photographer_comission_percentage", "is_timer_job_active"];
-		const numericFields: string[] = ["voter_comission_percentage", "photographer_comission_percentage"];
+		const requiredFields: string[] = ["voter_comission_percentage", "photographer_comission_percentage", "photos_to_auction_percentage", "is_timer_job_active"];
+		const numericFields: string[] = ["voter_comission_percentage", "photographer_comission_percentage", "photos_to_auction_percentage"];
 
 		// validate request body
 		try {
@@ -44,11 +44,11 @@ class AdminValidation {
 		return dbConfigDto;
 	}
 
-	public async validateComissionAmount(dbConfigDto: Omit<DbConfigDto, "id">): Promise<void> {
-		if (dbConfigDto.photographer_comission_percentage < 0 || dbConfigDto.voter_comission_percentage < 0)
+	public async validatePercentageAmount(dbConfigDto: Omit<DbConfigDto, "id">): Promise<void> {
+		if (dbConfigDto.photographer_comission_percentage < 0 || dbConfigDto.voter_comission_percentage < 0 || dbConfigDto.photos_to_auction_percentage < 0)
 			CustomError.builder()
 				.setMessage(
-					`Commission amount cannot be lower than 0 current values are: photographer ${dbConfigDto.photographer_comission_percentage}, voter ${dbConfigDto.voter_comission_percentage}`
+					`Percentage value cannot be lower than 0, current values are: photographer ${dbConfigDto.photographer_comission_percentage}, voter ${dbConfigDto.voter_comission_percentage}, auction ${dbConfigDto.photos_to_auction_percentage}`
 				)
 				.setErrorType("Input Validation")
 				.setStatusCode(400)
@@ -58,6 +58,14 @@ class AdminValidation {
 		if (dbConfigDto.photographer_comission_percentage + dbConfigDto.voter_comission_percentage > 100)
 			CustomError.builder()
 				.setMessage(`Total comission amount is cannot be higher than 100, current is ${dbConfigDto.photographer_comission_percentage + dbConfigDto.voter_comission_percentage}`)
+				.setErrorType("Input Validation")
+				.setStatusCode(400)
+				.build()
+				.throwError();
+
+		if (dbConfigDto.photos_to_auction_percentage > 100)
+			CustomError.builder()
+				.setMessage(`Percentage of the photos which will be auctioned cannot be higher than 100, current is ${dbConfigDto.photos_to_auction_percentage}`)
 				.setErrorType("Input Validation")
 				.setStatusCode(400)
 				.build()

@@ -35,6 +35,7 @@ class DbConfigFacade {
 			// set db configs as static to use in app
 			Config.voterComissionPercentage = dbConfig.voter_comission_percentage;
 			Config.photographerComissionPercentage = dbConfig.photographer_comission_percentage;
+			Config.photosToAuctionPercentage = dbConfig.photos_to_auction_percentage;
 			Config.isTimerActive = dbConfig.is_timer_job_active;
 		} catch (error) {
 			CustomError.handleSystemError(error);
