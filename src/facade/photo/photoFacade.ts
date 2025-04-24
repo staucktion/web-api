@@ -7,7 +7,7 @@ import CategoryDto from "src/dto/category/CategoryDto";
 import GetPhotoRequestDto from "src/dto/error/GetPhotoRequestDto";
 import LocationDto from "src/dto/location/LocationDto";
 import PurchasedPhotoDto from "src/dto/photo/PurchasedPhotoDto";
-import ReadAllPhotoResponseDto from "src/dto/photo/ReadAllPhotoResponseDto";
+import PhotoDto from "src/dto/photo/PhotoDto";
 import UploadPhotoDto from "src/dto/photo/UploadPhotoDto";
 import CustomError from "src/error/CustomError";
 import AndroidNotificationService from "src/service/android/notification/AndroidNotificationService";
@@ -187,7 +187,24 @@ class PhotoFacade {
 	public async listPublicAuctionPhotos(_req: Request, res: Response): Promise<void> {
 		try {
 			const auctionPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.AUCTION, null);
-			sendJsonBigint(res, auctionPhotos, 200);
+
+			const auctionPhotosGroupedByCategory: Record<number, PhotoDto[]> = auctionPhotos.reduce((acc, photo) => {
+				const key = photo.category_id;
+				if (!key) return acc;
+
+				if (!acc[key]) {
+					acc[key] = [];
+				}
+				acc[key].push(photo);
+				return acc;
+			}, {});
+
+			const auctionPhotosGroupedByCategorySortedVoteCount = Object.keys(auctionPhotosGroupedByCategory).reduce((obj, key) => {
+				obj[key] = auctionPhotosGroupedByCategory[key].sort((a: PhotoDto, b: PhotoDto) => b.vote_count - a.vote_count);
+				return obj;
+			}, {});
+
+			sendJsonBigint(res, auctionPhotosGroupedByCategorySortedVoteCount, 200);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
@@ -197,7 +214,24 @@ class PhotoFacade {
 	public async listPublicVotingPhotos(_req: Request, res: Response): Promise<void> {
 		try {
 			const votingPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.VOTE, null);
-			sendJsonBigint(res, votingPhotos, 200);
+
+			const votingPhotosGroupedByCategory: Record<number, PhotoDto[]> = votingPhotos.reduce((acc, photo) => {
+				const key = photo.category_id;
+				if (!key) return acc;
+
+				if (!acc[key]) {
+					acc[key] = [];
+				}
+				acc[key].push(photo);
+				return acc;
+			}, {});
+
+			const votingPhotosGroupedByCategoryRandomized = Object.keys(votingPhotosGroupedByCategory).reduce((obj, key) => {
+				obj[key] = votingPhotosGroupedByCategory[key].sort(() => Math.random() - 0.5);
+				return obj;
+			}, {});
+
+			sendJsonBigint(res, votingPhotosGroupedByCategoryRandomized, 200);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
@@ -401,8 +435,8 @@ class PhotoFacade {
 	}
 
 	public async listOwnPendingPurchasePhotos(req: Request, res: Response): Promise<void> {
-		let allPhotoList: ReadAllPhotoResponseDto[];
-		const filteredPhotoList: ReadAllPhotoResponseDto[] = [];
+		let allPhotoList: PhotoDto[];
+		const filteredPhotoList: PhotoDto[] = [];
 		// check if user authenticated
 		if (!req.user) {
 			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
