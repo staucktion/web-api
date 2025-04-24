@@ -7,13 +7,17 @@ import sendJsonBigint from "src/util/sendJsonBigint";
 import { OAuth2Client } from "google-auth-library";
 import Config from "src/config/Config";
 import { StatusEnum } from "src/types/statusEnum";
+import AuthValidation from "src/validation/auth/AuthValidation";
+import CustomError from "src/error/CustomError";
 
 class AuthFacade {
 	private authService: AuthService;
+	private authValidation: AuthValidation;
 	private googleClient: OAuth2Client;
 
 	constructor() {
 		this.authService = new AuthService();
+		this.authValidation = new AuthValidation();
 		this.googleClient = new OAuth2Client(Config.googleOAuth.clientID);
 	}
 
@@ -23,12 +27,7 @@ class AuthFacade {
 		let user: UserDto | undefined;
 		const email = gmailProfileData.email.toLowerCase();
 		try {
-			user = await this.authService.getUser(
-				{
-					gmail_id: gmailProfileData.gmail_id,
-				},
-				true
-			);
+			user = await this.authService.getUserByGmailId(gmailProfileData.gmail_id, true);
 
 			if (!user) {
 				user = await this.authService.createUser({
@@ -44,7 +43,7 @@ class AuthFacade {
 				return;
 			}
 
-			const token = this.authService.generateJWT(gmailProfileData.gmail_id);
+			const token = this.authService.generateJWT(user.id);
 
 			if (req.sendTokenAsJson) {
 				res.json({ token });
@@ -54,7 +53,7 @@ class AuthFacade {
 				redirectWithHost(res, "/");
 			}
 		} catch (err) {
-			console.error("Unable to create session for user.gmail_id " + user?.gmail_id);
+			console.error("Unable to create session for user.id " + user?.id);
 			redirectWithHost(res, `/?error=${encodeURIComponent("Unexpected error happened while logging in. Please contact support. Thank you!")}`);
 			console.dir(err);
 		}
@@ -95,6 +94,80 @@ class AuthFacade {
 		}
 	};
 
+	handleLogin = async (req: Request, res: Response): Promise<void> => {
+		try {
+			// Validate request
+			const loginDto = await this.authValidation.validateLoginRequest(req);
+
+			// Login user
+			const user = await this.authService.loginUser(loginDto);
+
+			// Generate JWT
+			const token = this.authService.generateJWT(user.id);
+
+			// Set cookie and redirect
+			res.cookie("token", token, authCookieOptions);
+			redirectWithHost(res, "/");
+		} catch (error) {
+			CustomError.handleError(res, error);
+		}
+	};
+
+	handleRegister = async (req: Request, res: Response): Promise<void> => {
+		try {
+			// Validate request
+			const registerDto = await this.authValidation.validateRegisterRequest(req);
+
+			// Register user
+			const user = await this.authService.registerUser(registerDto);
+
+			// Generate JWT
+			const token = this.authService.generateJWT(user.id);
+
+			// Set cookie and redirect
+			res.cookie("token", token, authCookieOptions);
+			redirectWithHost(res, "/");
+		} catch (error) {
+			CustomError.handleError(res, error);
+		}
+	};
+
+	handleLoginAndroid = async (req: Request, res: Response): Promise<void> => {
+		try {
+			// Validate request
+			const loginDto = await this.authValidation.validateLoginRequest(req);
+
+			// Login user
+			const user = await this.authService.loginUser(loginDto);
+
+			// Generate JWT
+			const token = this.authService.generateJWT(user.id);
+
+			// Return token as JSON
+			res.json({ token });
+		} catch (error) {
+			CustomError.handleError(res, error);
+		}
+	};
+
+	handleRegisterAndroid = async (req: Request, res: Response): Promise<void> => {
+		try {
+			// Validate request
+			const registerDto = await this.authValidation.validateRegisterRequest(req);
+
+			// Register user
+			const user = await this.authService.registerUser(registerDto);
+
+			// Generate JWT
+			const token = this.authService.generateJWT(user.id);
+
+			// Return token as JSON
+			res.json({ token });
+		} catch (error) {
+			CustomError.handleError(res, error);
+		}
+	};
+
 	handleLogout = async (_req: Request, res: Response): Promise<void> => {
 		res.clearCookie("token");
 		redirectWithHost(res, "/");
@@ -117,7 +190,7 @@ class AuthFacade {
 			const tokenContent = this.authService.verifyJWT(token);
 
 			if (tokenContent) {
-				const user = await this.authService.getUser({ gmail_id: tokenContent.gmail_id });
+				const user = await this.authService.getUserById(tokenContent.user_id);
 				sendJsonBigint(res, { user: user ?? null });
 			} else {
 				res.clearCookie("token");
