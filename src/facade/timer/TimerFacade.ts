@@ -141,6 +141,11 @@ class TimerFacade {
 
 											const dataToUpdateAuction = { ...auction, status_id: finishStatus.id };
 											await this.auctionService.updateAuction(auction.id, dataToUpdateAuction);
+
+											// send ws message to rooms
+											this.webSocketManager.sendToRoom(`auction_photo_id_${auctionPhoto.id}`, "finish_auction", {
+												room: `auction_photo_id_${auctionPhoto.id}`,
+											});
 										} else {
 											console.log("[INFO] Auction Decision: change 'auction' status to 'wait_purchase_after_auction'");
 											let updateData = { ...auctionPhoto, status_id: waitPurchaseStatus.id, current_winner_order: 1 };
