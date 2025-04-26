@@ -329,7 +329,7 @@ class BankFacade {
 
 		// add record to photographer payment
 		try {
-			const data = { user_id: req.user.id, status_id: waitStatus.id, payment_amount: paymentToPhotographer };
+			const data = { user_id: photo.user_id, status_id: waitStatus.id, payment_amount: paymentToPhotographer };
 			await this.photographerPaymentService.insertNewPhotographerPayment(data);
 		} catch (error) {
 			CustomError.handleError(res, error);
