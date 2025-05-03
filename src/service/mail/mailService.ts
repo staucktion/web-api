@@ -80,15 +80,6 @@ class MailService {
 					else resolve();
 				});
 			});
-
-			await this.prisma.photo.update({
-				where: {
-					id: photoDto.id,
-				},
-				data: {
-					is_deleted: true,
-				},
-			});
 		} catch (error) {
 			CustomError.builder().setMessage("Cannot send email.").setDetailedMessage(getErrorMessage(error)).setErrorType("Email Error").setStatusCode(500).build().throwError();
 		}
