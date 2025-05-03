@@ -297,7 +297,7 @@ class BankFacade {
 		}
 
 		// check photo status
-		if (photo?.status?.status !== "purchasable" || photo.purchase_now_price === null || photo.is_auctionable) {
+		if (photo?.status?.status !== "purchasable" || photo.purchase_now_price === null) {
 			res.status(400).json({ message: "Photo is not for sale" });
 			return;
 		}
