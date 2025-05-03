@@ -243,7 +243,7 @@ class BankFacade {
 		}
 
 		// send email to purchaser (different loop so that user doesn't have to wait for email)
-		(async () => {
+		void (async () => {
 			try {
 				await this.mailService.sendMail(photoId, MailAction.APPROVE_PURCHASE, req.user.email);
 			} catch (error) {
@@ -354,13 +354,14 @@ class BankFacade {
 			return;
 		}
 
-		// send email to purchaser
-		try {
-			await this.mailService.sendMail(photoId, MailAction.APPROVE_PURCHASE, req.user.email);
-		} catch (error) {
-			CustomError.handleError(res, error);
-			return;
-		}
+		// send email to purchaser (different loop so that user doesn't have to wait for email)
+		void (async () => {
+			try {
+				await this.mailService.sendMail(photoId, MailAction.APPROVE_PURCHASE, req.user.email);
+			} catch (error) {
+				CustomError.handleError(res, error);
+			}
+		})();
 
 		res.status(204).send();
 	}
