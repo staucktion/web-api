@@ -67,8 +67,32 @@ class AuthValidation {
 			CustomError.builder().setMessage("First name cannot be empty.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
+		if (input.first_name.length > 50) {
+			CustomError.builder().setMessage("First name cannot be longer than 50 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		}
+
+		if (input.first_name.length < 2) {
+			CustomError.builder().setMessage("First name cannot be shorter than 2 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		}
+
+		if (!/^[a-zA-Z ]+$/.test(input.first_name)) {
+			CustomError.builder().setMessage("First name can only contain letters and spaces.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		}
+
 		if (input.last_name.trim() === "") {
 			CustomError.builder().setMessage("Last name cannot be empty.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		}
+
+		if (input.last_name.length > 50) {
+			CustomError.builder().setMessage("Last name cannot be longer than 50 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		}
+
+		if (input.last_name.length < 2) {
+			CustomError.builder().setMessage("Last name cannot be shorter than 2 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		}
+
+		if (!/^[a-zA-Z]+$/.test(input.last_name)) {
+			CustomError.builder().setMessage("Last name can only contain letters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
 		const registerDto: RegisterDto = req.body;
