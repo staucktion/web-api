@@ -113,7 +113,7 @@ class TimerFacade {
 								}
 
 								// send ws message to vote room
-								this.webSocketManager.sendToRoom(`vote`, "vote", null);
+								this.webSocketManager.sendToRoom("vote", "vote", null);
 							}
 						}
 					}
