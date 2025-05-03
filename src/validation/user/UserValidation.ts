@@ -52,18 +52,51 @@ class UserValidation {
 		}
 
 		// Validate name and surname if provided
-		if (updateUserDto.first_name && updateUserDto.first_name.trim() === "") {
-			CustomError.builder().setMessage("First name cannot be empty.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		if (updateUserDto.first_name) {
+			if (updateUserDto.first_name.trim() === "") {
+				CustomError.builder().setMessage("First name cannot be empty.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+			if (updateUserDto.first_name.length > 50) {
+				CustomError.builder().setMessage("First name cannot be longer than 50 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+			if (updateUserDto.first_name.length < 2) {
+				CustomError.builder().setMessage("First name cannot be shorter than 2 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+			if (!/^[a-zA-Z ]+$/.test(updateUserDto.first_name)) {
+				CustomError.builder().setMessage("First name can only contain letters and spaces.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
 		}
 
-		if (updateUserDto.last_name && updateUserDto.last_name.trim() === "") {
-			CustomError.builder().setMessage("Last name cannot be empty.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		if (updateUserDto.last_name) {
+			if (updateUserDto.last_name.trim() === "") {
+				CustomError.builder().setMessage("Last name cannot be empty.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+			if (updateUserDto.last_name.length > 50) {
+				CustomError.builder().setMessage("Last name cannot be longer than 50 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+			if (updateUserDto.last_name.length < 2) {
+				CustomError.builder().setMessage("Last name cannot be shorter than 2 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+			if (!/^[a-zA-Z]+$/.test(updateUserDto.last_name)) {
+				CustomError.builder().setMessage("Last name can only contain letters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
 		}
 
-		if (updateUserDto.username && updateUserDto.username.trim() === "") {
-			CustomError.builder().setMessage("Username cannot be empty.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+		if (updateUserDto.username) {
+			if (updateUserDto.username.trim() === "") {
+				CustomError.builder().setMessage("Username cannot be empty.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+			if (updateUserDto.username.length > 50) {
+				CustomError.builder().setMessage("Username cannot be longer than 50 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+			if (updateUserDto.username.length < 2) {
+				CustomError.builder().setMessage("Username cannot be shorter than 2 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
+			if (!/^[a-zA-Z0-9]+$/.test(updateUserDto.username)) {
+				CustomError.builder().setMessage("Username can only contain letters and numbers.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
+			}
 		}
-
+		
 		return updateUserDto;
 	}
 
