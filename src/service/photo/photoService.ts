@@ -12,6 +12,7 @@ import DateUtil from "src/util/dateUtil";
 import { getErrorMessage } from "src/util/getErrorMessage";
 import handlePrismaError from "src/util/handlePrismaError";
 import handlePrismaType from "src/util/handlePrismaType";
+import { mapPhotoToPhotoDto } from "src/util/photoUtil";
 import PrismaUtil from "src/util/PrismaUtil";
 
 class PhotoService {
@@ -195,29 +196,52 @@ class PhotoService {
 				},
 			});
 
-			return photoList.map((photo) => ({
-				id: Number(photo.id),
-				file_path: photo.file_path,
-				title: photo.title,
-				device_info: photo.device_info,
-				vote_count: Number(photo.vote_count),
-				user_id: Number(photo.user_id),
-				auction_id: photo.auction_id ? Number(photo.auction_id) : null,
-				location_id: Number(photo.location_id),
-				category_id: Number(photo.category_id),
-				is_auctionable: photo.is_auctionable,
-				status_id: Number(photo.status_id),
-				purchase_now_price: photo.purchase_now_price ? Number(photo.purchase_now_price) : null,
-				purchased_at: photo.purchased_at ? new Date(photo.purchased_at) : null,
-				created_at: photo.created_at,
-				updated_at: photo.updated_at,
-				category: photo.category,
-				status: photo.status,
-				user: photo.user,
-			}));
+			return photoList.map(mapPhotoToPhotoDto);
 		} catch (error) {
 			handlePrismaError(error);
 		}
+	}
+
+	public async separateFinishedPhotos(photoList: PhotoDto[]): Promise<{ notPurchasedPhotos: PhotoDto[], notBiddedPhotos: PhotoDto[] }> {
+		const notPurchasedPhotos: PhotoDto[] = [];
+		const notBiddedPhotos: PhotoDto[] = [];
+
+		for(const photo of photoList) {
+			const purchasedPhoto = await this.prisma.purchased_photo.findFirst({
+				where: {
+					photo_id: photo.id,
+				},
+			});
+
+			if(!purchasedPhoto) {
+				notPurchasedPhotos.push(mapPhotoToPhotoDto(photo));
+			}
+
+			const auctionPhoto = await this.prisma.auction_photo.findFirst({
+				where: {
+					photo_id: photo.id,
+				},
+			});
+
+			if(!auctionPhoto) {
+				continue;
+			}
+
+			const auctionPhotoBid = await this.prisma.bid.findFirst({
+				where: {
+					auction_photo_id: auctionPhoto.id,
+				},
+			});
+
+			if(!auctionPhotoBid) {
+				notBiddedPhotos.push(mapPhotoToPhotoDto(photo));
+			}
+		}
+
+		return {
+			notPurchasedPhotos,
+			notBiddedPhotos,
+		};
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

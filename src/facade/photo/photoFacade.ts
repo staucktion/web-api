@@ -241,7 +241,10 @@ class PhotoFacade {
 	public async listFinishedPhotos(_req: Request, res: Response): Promise<void> {
 		try {
 			const finishedPhotos = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.FINISH, null);
-			sendJsonBigint(res, finishedPhotos, 200);
+
+			const finishedPhotosSeparated = await this.photoService.separateFinishedPhotos(finishedPhotos);
+
+			sendJsonBigint(res, finishedPhotosSeparated, 200);
 		} catch (error) {
 			CustomError.handleError(res, error);
 			return;
