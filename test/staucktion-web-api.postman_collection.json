@@ -1361,7 +1361,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"app_id\": \"{{OneSignal_APP_ID}}\",\n  \"include_aliases\": {\n    \"external_id\": [\"102306011047288363783\"]\n  },\n  \"target_channel\": \"push\",\n  \"headings\": {\n    \"en\": \"Approval Message\"\n  },\n  \"contents\": {\n    \"en\": \"Your message here\"\n  },\n  \"data\": {\n    \"photo_id\": 1\n  }\n}",
+									"raw": "{\n  \"app_id\": \"{{OneSignal_APP_ID}}\",\n  \"include_aliases\": {\n    \"external_id\": [\"1\"]\n  },\n  \"target_channel\": \"push\",\n  \"headings\": {\n    \"en\": \"Approval Message\"\n  },\n  \"contents\": {\n    \"en\": \"Your message here\"\n  },\n  \"data\": {\n    \"photo_id\": 1,\n    \"action\": \"approve\"\n  }\n}",
 									"options": {
 										"raw": {
 											"language": "json"

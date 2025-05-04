@@ -284,6 +284,7 @@ class PhotoFacade {
 				newStatus === StatusEnum.APPROVE ? "Please decide whether to auction your photo or not." : `Your photo has been rejected with the following reason: ${reason}`,
 				{
 					photo_id: updatedPhoto.id.toString(),
+					action,
 				}
 			);
 		} catch (error) {
