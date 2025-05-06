@@ -111,6 +111,8 @@ class AuthEndpoint {
 		this.router.post("/auth/logout", this.authFacade.handleLogout);
 
 		this.router.post("/auth/info", this.authFacade.handleUserInfo);
+
+		this.router.get("/auth/verify-email", this.authFacade.handleVerifyEmail);
 	}
 
 	public getRouter(): Router {

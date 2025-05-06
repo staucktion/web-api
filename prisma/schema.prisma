@@ -91,6 +91,7 @@ model user {
   gmail_id                                        String?                @db.VarChar(100)
   username                                        String                 @db.VarChar(100)
   email                                           String                 @db.VarChar(100)
+  email_verified                                  Boolean
   password                                        String                 @db.VarChar(255)
   first_name                                      String                 @db.VarChar(100)
   last_name                                       String                 @db.VarChar(100)

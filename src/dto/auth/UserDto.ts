@@ -2,6 +2,7 @@ interface UserDto {
 	id: number;
 	gmail_id: string | null;
 	email: string;
+	email_verified: boolean;
 	username: string;
 	password: string;
 	profile_picture: string;

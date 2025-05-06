@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { authCookieOptions } from "src/constants/authConstants";
 import UserDto from "src/dto/auth/UserDto";
 import AuthService from "src/service/auth/authService";
-import { redirectWithHost } from "src/util/authUtil";
+import { generateJWT, redirectWithHost, verifyJWT } from "src/util/authUtil";
 import sendJsonBigint from "src/util/sendJsonBigint";
 import { OAuth2Client } from "google-auth-library";
 import Config from "src/config/Config";
@@ -43,7 +43,7 @@ class AuthFacade {
 				return;
 			}
 
-			const token = this.authService.generateJWT(user.id);
+			const token = generateJWT(user.id);
 
 			if (req.sendTokenAsJson) {
 				res.json({ token });
@@ -103,7 +103,7 @@ class AuthFacade {
 			const user = await this.authService.loginUser(loginDto);
 
 			// Generate JWT
-			const token = this.authService.generateJWT(user.id);
+			const token = generateJWT(user.id);
 
 			// Set cookie and redirect
 			res.cookie("token", token, authCookieOptions);
@@ -119,13 +119,8 @@ class AuthFacade {
 			const registerDto = await this.authValidation.validateRegisterRequest(req);
 
 			// Register user
-			const user = await this.authService.registerUser(registerDto);
+			await this.authService.registerUser(registerDto);
 
-			// Generate JWT
-			const token = this.authService.generateJWT(user.id);
-
-			// Set cookie and redirect
-			res.cookie("token", token, authCookieOptions);
 			redirectWithHost(res, "/");
 		} catch (error) {
 			CustomError.handleError(res, error);
@@ -141,7 +136,7 @@ class AuthFacade {
 			const user = await this.authService.loginUser(loginDto);
 
 			// Generate JWT
-			const token = this.authService.generateJWT(user.id);
+			const token = generateJWT(user.id);
 
 			// Return token as JSON
 			res.json({ token });
@@ -159,10 +154,10 @@ class AuthFacade {
 			const user = await this.authService.registerUser(registerDto);
 
 			// Generate JWT
-			const token = this.authService.generateJWT(user.id);
+			const token = generateJWT(user.id);
 
 			// Return token as JSON
-			res.json({ token });
+			res.json({ token, message: "User registered successfully. Please verify your email address first by clicking the link in the verification email before logging in." });
 		} catch (error) {
 			CustomError.handleError(res, error);
 		}
@@ -187,7 +182,7 @@ class AuthFacade {
 		}
 
 		try {
-			const tokenContent = this.authService.verifyJWT(token);
+			const tokenContent = verifyJWT(token);
 
 			if (tokenContent) {
 				const user = await this.authService.getUserById(tokenContent.user_id);
@@ -200,6 +195,27 @@ class AuthFacade {
 			res.clearCookie("token");
 			res.status(403).json({ message: "Invalid token. You have been logged out." });
 		}
+	};
+
+	handleVerifyEmail = async (req: Request, res: Response): Promise<void> => {
+		const token = req.query.token as string;
+
+		if (!token) {
+			redirectWithHost(res, `/?error=${encodeURIComponent("Invalid e-mail verification link. Please try again!")}`);
+			return;
+		}
+
+		const tokenContent = verifyJWT(token);
+
+		if (tokenContent) {
+			const user = await this.authService.getUserById(tokenContent.user_id);
+			if (user) {
+				await this.authService.verifyEmail(user.id);
+				redirectWithHost(res, `/?success=${encodeURIComponent("E-mail verified successfully. You can now log in.")}`);
+			}
+		}
+
+		redirectWithHost(res, `/?error=${encodeURIComponent("Invalid e-mail verification link. Please try again!")}`);
 	};
 }
 

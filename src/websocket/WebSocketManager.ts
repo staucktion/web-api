@@ -4,6 +4,7 @@ import Config from "src/config/Config";
 import Logger from "src/log/Logger";
 import AuthService from "src/service/auth/authService";
 import UserDto from "src/dto/auth/UserDto";
+import { verifyJWT } from "src/util/authUtil";
 
 declare module "socket.io" {
 	interface Socket {
@@ -47,7 +48,7 @@ class WebSocketManager {
 			}
 
 			const token = decodeURIComponent(tokenCookie[1]);
-			const tokenContent = this.authService.verifyJWT(token);
+			const tokenContent = verifyJWT(token);
 
 			if (!tokenContent) {
 				Logger.warn(`WebSocket client ${socket.id} provided invalid token`);
