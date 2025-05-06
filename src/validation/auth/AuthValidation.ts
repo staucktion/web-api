@@ -4,6 +4,8 @@ import RegisterDto from "src/dto/auth/RegisterDto";
 import CustomError from "src/error/CustomError";
 import ValidationUtil from "src/util/ValidationUtil";
 
+const unicodeNameRegex = new RegExp(/^[\p{L}\p{M} ]+$/u);
+
 class AuthValidation {
 	public async validateLoginRequest(req: Request): Promise<LoginDto> {
 		const input = req.body;
@@ -75,7 +77,7 @@ class AuthValidation {
 			CustomError.builder().setMessage("First name cannot be shorter than 2 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
-		if (!/^[a-zA-Z ]+$/.test(input.first_name)) {
+		if (!unicodeNameRegex.test(input.first_name)) {
 			CustomError.builder().setMessage("First name can only contain letters and spaces.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
@@ -91,7 +93,7 @@ class AuthValidation {
 			CustomError.builder().setMessage("Last name cannot be shorter than 2 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 
-		if (!/^[a-zA-Z]+$/.test(input.last_name)) {
+		if (!unicodeNameRegex.test(input.last_name)) {
 			CustomError.builder().setMessage("Last name can only contain letters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 		}
 

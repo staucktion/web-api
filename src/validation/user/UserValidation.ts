@@ -2,6 +2,8 @@ import { Request } from "express";
 import UpdateUserDto from "src/dto/user/UpdateUserDto";
 import CustomError from "src/error/CustomError";
 
+const unicodeNameRegex = new RegExp(/^[\p{L}\p{M} ]+$/u);
+
 class UserValidation {
 	public async validateUpdateUserRequest(req: Request): Promise<UpdateUserDto> {
 		// Combine body data with file data if present
@@ -62,7 +64,7 @@ class UserValidation {
 			if (updateUserDto.first_name.length < 2) {
 				CustomError.builder().setMessage("First name cannot be shorter than 2 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 			}
-			if (!/^[a-zA-Z ]+$/.test(updateUserDto.first_name)) {
+			if (!unicodeNameRegex.test(updateUserDto.first_name)) {
 				CustomError.builder().setMessage("First name can only contain letters and spaces.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 			}
 		}
@@ -77,7 +79,7 @@ class UserValidation {
 			if (updateUserDto.last_name.length < 2) {
 				CustomError.builder().setMessage("Last name cannot be shorter than 2 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 			}
-			if (!/^[a-zA-Z]+$/.test(updateUserDto.last_name)) {
+			if (!unicodeNameRegex.test(updateUserDto.last_name)) {
 				CustomError.builder().setMessage("Last name can only contain letters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 			}
 		}
@@ -92,7 +94,7 @@ class UserValidation {
 			if (updateUserDto.username.length < 2) {
 				CustomError.builder().setMessage("Username cannot be shorter than 2 characters.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 			}
-			if (!/^[a-zA-Z0-9]+$/.test(updateUserDto.username)) {
+			if (!unicodeNameRegex.test(updateUserDto.username)) {
 				CustomError.builder().setMessage("Username can only contain letters and numbers.").setErrorType("Input Validation").setStatusCode(400).build().throwError();
 			}
 		}
