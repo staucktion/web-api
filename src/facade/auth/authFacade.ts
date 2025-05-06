@@ -196,6 +196,27 @@ class AuthFacade {
 			res.status(403).json({ message: "Invalid token. You have been logged out." });
 		}
 	};
+
+	handleVerifyEmail = async (req: Request, res: Response): Promise<void> => {
+		const token = req.query.token as string;
+
+		if (!token) {
+			redirectWithHost(res, `/?error=${encodeURIComponent("Invalid e-mail verification link. Please try again!")}`);
+			return;
+		}
+
+		const tokenContent = verifyJWT(token);
+
+		if (tokenContent) {
+			const user = await this.authService.getUserById(tokenContent.user_id);
+			if (user) {
+				await this.authService.verifyEmail(user.id);
+				redirectWithHost(res, `/?success=${encodeURIComponent("E-mail verified successfully. You can now log in.")}`);
+			}
+		}
+
+		redirectWithHost(res, `/?error=${encodeURIComponent("Invalid e-mail verification link. Please try again!")}`);
+	};
 }
 
 export default AuthFacade;

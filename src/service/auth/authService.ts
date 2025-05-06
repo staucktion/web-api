@@ -164,6 +164,13 @@ class AuthService {
 
 		return user;
 	}
+
+	async verifyEmail(userId: number | bigint): Promise<void> {
+		await this.prisma.user.update({
+			where: { id: BigInt(userId) },
+			data: { email_verified: true },
+		});
+	}
 }
 
 export default AuthService;
