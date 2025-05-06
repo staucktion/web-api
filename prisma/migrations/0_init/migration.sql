@@ -72,6 +72,7 @@ CREATE TABLE "user" (
     "gmail_id" VARCHAR(100),
     "username" VARCHAR(100) NOT NULL,
     "email" VARCHAR(100) NOT NULL,
+    "email_verified" BOOLEAN NOT NULL DEFAULT FALSE,
     "password" VARCHAR(255) NOT NULL,
     "first_name" VARCHAR(100) NOT NULL,
     "last_name" VARCHAR(100) NOT NULL,
