@@ -8,6 +8,7 @@ import CustomError from "src/error/CustomError";
 import { MailAction } from "src/types/mailTypes";
 import PrismaUtil from "src/util/PrismaUtil";
 import { getErrorMessage } from "src/util/getErrorMessage";
+import { generateJWT } from "src/util/authUtil";
 
 let transporter: nodemailer.Transporter | null = null;
 
@@ -32,7 +33,7 @@ class MailService {
 		this.prisma = PrismaUtil.getPrismaClient();
 	}
 
-	public async sendMail(photoId: number, action: MailAction, receiverEmail: string): Promise<void> {
+	public async sendPhotoPurchaseMail(photoId: number, action: MailAction, receiverEmail: string): Promise<void> {
 		if (!transporter) CustomError.builder().setMessage("Transporter not reachable.").setErrorType("Email Error").setStatusCode(500).build().throwError();
 
 		const photoDto = await this.prisma.photo.findUnique({
@@ -83,6 +84,24 @@ class MailService {
 		} catch (error) {
 			CustomError.builder().setMessage("Cannot send email.").setDetailedMessage(getErrorMessage(error)).setErrorType("Email Error").setStatusCode(500).build().throwError();
 		}
+	}
+
+	public async sendVerificationMail(userId: number, email: string): Promise<void> {
+		if (!transporter) CustomError.builder().setMessage("Transporter not reachable.").setErrorType("Email Error").setStatusCode(500).build().throwError();
+
+		const mailOptions: nodemailer.SendMailOptions = {
+			from: `ST{AU}CKTION <${Config.email.from}>`,
+			to: email,
+			subject: "Verify your email",
+			text: `Please verify your email by clicking the link below:\n\n${Config.appUrl}/web-api/auth/verify-email?token=${encodeURIComponent(generateJWT(userId))}`,
+		};
+
+		await new Promise<void>((resolve, reject) => {
+			transporter.sendMail(mailOptions, (error, _info) => {
+				if (error) reject(error);
+				else resolve();
+			});
+		});
 	}
 }
 

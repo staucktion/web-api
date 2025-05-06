@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import UserDto from "src/dto/auth/UserDto";
 import AuthService from "src/service/auth/authService";
 import FormattedGoogleProfileDto from "src/dto/auth/FormattedGoogleProfileDto";
-import { isRequestorAdmin, isRequestorValidator } from "src/util/authUtil";
+import { isRequestorAdmin, isRequestorValidator, verifyJWT } from "src/util/authUtil";
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -31,7 +31,7 @@ export class AuthMiddleware {
 		}
 
 		try {
-			const tokenContent = this.authService.verifyJWT(token);
+			const tokenContent = verifyJWT(token);
 
 			if (!tokenContent) {
 				res.status(403).json({ message: "Invalid token" });
@@ -63,7 +63,7 @@ export class AuthMiddleware {
 		}
 
 		try {
-			const tokenContent = this.authService.verifyJWT(token);
+			const tokenContent = verifyJWT(token);
 			if (!tokenContent) {
 				next();
 				return;

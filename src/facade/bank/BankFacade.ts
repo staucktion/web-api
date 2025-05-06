@@ -245,7 +245,7 @@ class BankFacade {
 		// send email to purchaser (different loop so that user doesn't have to wait for email)
 		void (async () => {
 			try {
-				await this.mailService.sendMail(photoId, MailAction.APPROVE_PURCHASE, req.user.email);
+				await this.mailService.sendPhotoPurchaseMail(photoId, MailAction.APPROVE_PURCHASE, req.user.email);
 			} catch (error) {
 				CustomError.handleError(res, error);
 			}
@@ -357,7 +357,7 @@ class BankFacade {
 		// send email to purchaser (different loop so that user doesn't have to wait for email)
 		void (async () => {
 			try {
-				await this.mailService.sendMail(photoId, MailAction.APPROVE_PURCHASE, req.user.email);
+				await this.mailService.sendPhotoPurchaseMail(photoId, MailAction.APPROVE_PURCHASE, req.user.email);
 			} catch (error) {
 				CustomError.handleError(res, error);
 			}
