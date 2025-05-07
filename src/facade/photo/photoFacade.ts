@@ -106,7 +106,7 @@ class PhotoFacade {
 	public async listPublicPhotos(_req: Request, res: Response): Promise<void> {
 		try {
 			// Only show APPROVED photos in the general list
-			const instanceList = await this.photoService.listPhotosByStatusAndUserId(StatusEnum.APPROVE, null);
+			const instanceList = await this.photoService.listPhotosByStatusAndUserId([StatusEnum.APPROVE, StatusEnum.PURCHASABLE, StatusEnum.VOTE, StatusEnum.AUCTION], null);
 			sendJsonBigint(res, instanceList, 200);
 			return;
 		} catch (error) {
@@ -478,38 +478,6 @@ class PhotoFacade {
 
 		sendJsonBigint(res, filteredPhotoList, 200);
 		return;
-	}
-
-	public async getOriginalPhoto(req: Request, res: Response): Promise<void> {
-		if (!req.user) {
-			CustomError.handleError(res, CustomError.builder().setMessage("Unauthorized").setErrorType("Unauthorized").setStatusCode(401).build());
-			return;
-		}
-
-		const photoId = parseInt(req.params.photoId);
-
-		if (!photoId) {
-			CustomError.handleError(res, CustomError.builder().setMessage("photoId must be provided").setErrorType("Bad Request").setStatusCode(400).build());
-			return;
-		}
-
-		let photo: PhotoDto;
-		try {
-			photo = await this.photoService.getPhotoById(photoId);
-		} catch (error) {
-			CustomError.handleError(res, error);
-			return;
-		}
-
-		const purchasedPhoto = await this.purchasedPhotoService.getPurchasedPhotoByPhotoIdAndUserId(photoId, req.user.id);
-
-		if (purchasedPhoto.user_id !== req.user.id) {
-			CustomError.handleError(res, CustomError.builder().setMessage("You are not authorized to access this photo").setErrorType("Unauthorized").setStatusCode(403).build());
-			return;
-		}
-
-		const photoPath = await this.photoService.getOriginalPhotoPath(photo.id);
-		res.sendFile(photoPath);
 	}
 }
 
