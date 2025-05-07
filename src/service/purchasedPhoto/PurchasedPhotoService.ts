@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import PurchasedPhotoDto from "src/dto/photo/PurchasedPhotoDto";
+import CustomError from "src/error/CustomError";
 import handlePrismaError from "src/util/handlePrismaError";
 import handlePrismaType from "src/util/handlePrismaType";
 import PrismaUtil from "src/util/PrismaUtil";
@@ -29,6 +30,22 @@ class PurchasedPhotoService {
 				},
 			});
 			return handlePrismaType(instanceList);
+		} catch (error) {
+			handlePrismaError(error);
+		}
+	}
+
+	public async getPurchasedPhotoByPhotoIdAndUserId(photoId: number, userId: number): Promise<PurchasedPhotoDto> {
+		try {
+			const instance = await this.prisma.purchased_photo.findFirst({
+				where: { photo_id: photoId, user_id: userId },
+			});
+
+			if (!instance) {
+				CustomError.builder().setMessage("Purchased photo not found").setErrorType("Not Found").setStatusCode(404).build().throwError();
+			}
+
+			return handlePrismaType(instance);
 		} catch (error) {
 			handlePrismaError(error);
 		}

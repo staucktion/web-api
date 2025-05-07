@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import * as fs from "fs";
 import path from "path";
 import sharp from "sharp";
-import { WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
+import { ORIGINAL_PHOTO_DIR, WATERMARK_PHOTO_DIR } from "src/constants/photoConstants";
 import BaseResponseDto from "src/dto/base/BaseResponseDto";
 import PhotoDto from "src/dto/photo/PhotoDto";
 import CustomError from "src/error/CustomError";
@@ -309,6 +309,25 @@ class PhotoService {
 			return resolvedPath;
 		} catch (error) {
 			CustomError.builder().setMessage("Error reading photo file").setDetailedMessage(getErrorMessage(error)).setErrorType("Server Error").setStatusCode(500).build().throwError();
+		}
+	}
+
+	public async getOriginalPhotoPath(photoId: number): Promise<string> {
+		try {
+			const instance = await this.prisma.photo.findUnique({
+				where: { id: photoId, is_deleted: false },
+			});
+
+			if (!instance) {
+				CustomError.builder().setMessage("Photo not found").setErrorType("Not Found").setStatusCode(404).build().throwError();
+			}
+
+			const resolvedPath = path.resolve(ORIGINAL_PHOTO_DIR, instance.file_path);
+			if (!fs.existsSync(resolvedPath)) throw new Error();
+			console.log(resolvedPath);
+			return resolvedPath;
+		} catch (error) {
+			handlePrismaError(error);
 		}
 	}
 
